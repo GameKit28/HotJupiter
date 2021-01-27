@@ -1,0 +1,19 @@
+The field is layed out as several hexagonal grids stacked atop one-another. A single hex grid shows movement along the X/Z axis and the stacked grids show movement along the Y axis. These grids are wrapped around a planet-like object to allow movement around the sphere.
+
+Colors are used to more clearly show the "height" of a ship or obstacle from the "ground". Red Orange Yellow Green Blue Violet would show a six-level field. With Red being lowest/near planet.
+
+
+Banking?. To handle more incrimental turning capacity beyond 1/3 of hex, 2/3 of hex, full u-turn. A ship is represented as being poised to complete the partial turn the following round by appearing banked or "tilted on local Z axis". On the following round, the next 1/3 hex rotation can be completed or the player may choose to straighten out.
+
+
+G Forces:
+Certain menuevers inflict g-forces on their pilots. A menuever's g-force rating can range from 0-3 for example. If a pilot experiences too many g-forces in a short amount of time, they will black out. While blacked out, they will be unable to control thier ship for a period of time and will be easy targets and may even crash.
+Some pilots have more tollerance for g-forces. Likewise, inirtail dampeners can mitigate g-forces for a turn.
+The faster a ship is going, the more g-forces are applied to simple menuevers such as turns.
+
+
+
+
+Combat:
+Blasters:
+When a ship with blasters is close enough to an enemy ship (the side of the ship where the blasters are placed is important), the player may choose to target that ship with blasters (this may be automatic when not stealthed). The aim of the pilot and the menuever the plater chooses impacts the accuracy of the blaster shots. As examples, flying straight while the enemy remains in sights has a high accuracy while doing a barrel roll lowers your chance to hit with blasters.

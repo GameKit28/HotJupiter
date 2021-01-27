@@ -1,0 +1,10 @@
+Pilots have a few stats:
+
+Aim - Accuracy when using blasters.
+GForce Tolerance - How many g-forces before a pilot blacks out?
+GForce Resistance - How many g-forces does a pilot ignore from a menuever?
+
+Advanced Menuevers
+
+Idea:
+Pilots have skill levels (from 1 to 5 for example) where each advancement in a skill level unlocks the ability to do a particular menuever. Barrel Roll may be unlocked after Roll Level 2 for example.

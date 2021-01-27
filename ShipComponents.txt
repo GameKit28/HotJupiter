@@ -1,0 +1,61 @@
+Ships are built (internally) from a series of components. Each of them occupying one "slot" on the ship and arranged in a hexagon grid.
+
+Each component has a specific and material function on the ship. (Although some ships may have "plot" components like cargo bays or passenger quarters). This function should be descrite (numerically) so that the player knows exactly how adding a component will impact her ship performance.
+
+When blasters "hit" the ship, the incoming angle is determined to be one of the six hexagonal directions, then the hexagon column is determined. This indicates the ship component that is hit by the blaster fire. Ships with a smaller profile (along an axis) are more likely to be missed (near miss) by blaster fire.
+
+Likewise with a missile strike, the point of impact is determined and all surrounding (adjacent hexoganally) components are damaged.
+
+Idea: A hit from above or below "skips" the first component and hits a component deeper insided.
+
+Components can be damaged and destroyed. Damaged components (may) have reduced functionality. Destroyed components lose thier functionality completely. Destroyed components also no longer block incoming attacks from penetrating deeper into the ship.
+
+
+Component Brainstorm:
+Armor - No function, but can take several hits before being destroyed. Useful for protecting more vital components.
+
+Engine - A manditory component. Powers all other components. Generates X ammount of energy per turn which is typically used by thrusters to turn/accelerate/deaccelerate. Excess energy goes towards recharging spent systems like shields, cloak, emp, etc. Multiple engines increase energy generation - reducing the time to recharge a shield, etc. Priority for recharging system is decided by component's proximity to the engine.
+
+Thruster - Increases the ship's maximum speed by one hex per turn. At least one is required to move at all, but may be excluded for stationary defenses. Restriction, rear half, outside slot.
+
+Booster - Allows for faster acceleration/decelleration. Automatically depletes when ship speeds up or slows down faster than 1 tile per turn. Requires recharge.
+
+Turning Thruster - Sharpen's the ship's turn radius. Restriction, rear half. Placed on the left, increases right-hand turning and visaversa.
+
+Cockpit - Where the pilot sits. A mandatory component. If this is destroyed, you die. Can be ejected to save pilot's life.
+
+Blaster - Allows firing of blasters. More increases more shots fired per turn.
+
+Missile Bay - Allows firing of missiles. More increases the number of missiles that can be fired on the same turn. Take a turn to reload.
+
+Shield Generator - Allows for wrapping of ship in shield. A shield has a % depletion before it is gone and needs to be recharged. Blasters deplete shield and cannot damage components when a shield is up. Missiles have a % chance to penetrate shield based on depletion. Multiple shield generators increase the number of hits before a shield is fully depleted. (Maybe?)A shield generator wraps 1/2 the ship in a shield and the half that is wrapped is opposite to where the shield is placed - making it so that a shield does not shield it's own component.
+
+Cloak Generator - Hides the ship from view when cloak is activated. Multiple increase time ship can spend cloaked. Requires recharge.
+
+Battery / Power Bank - Allows for instant recharge of shield, cloak, or other components. (Limited use per mission?)
+
+Radar - Increases the view distance of the ship and reveals cloaked units in close proximity. Multiple further increase view distance and can detect more distant cloaked units.
+
+EMP - Disables the shields and cloaks of all nearby ships, but also disables that of the current ship. Requires recharge.
+
+Repair Bot - Repairs damaged components. (Maybe needs to be adjacent to said components?)
+
+Hyperdrive - Allows for a hyperjump to escape mission. Requires a few rounds from activation before the jump is performed.
+
+Gravity Engine - Allows for vertical hovering and movement. Multiple increases maximum vertical gain/loss in a single turn.
+
+Inirtial Dampeners - Suppresses g-forces during menuevers for a single turn. Requires recharge. Multiple increase the consecutive turns where sharp menuevers can be performed.
+
+Storage - Increases the ship's payload capacity. (More missiles, mines, countermeasures, etc)
+
+Phase Shift - Allows the ship to pass through solid objects for one turn. (Asteroids, Missiles, Other Ships). Multiple allow more consecutive turns of phase shifting. Requires recharge.
+
+
+Payload:
+Mines
+Missiles
+Countermeasures
+"Hookshots"
+
+Weight Class?
+Perhaps weight class is determined by how many components are present or by the radius from the center. The lightest class has an engine efficacy of three max speed per engine. The second lightest is two. The third lightest is one. Then 1/2? - This would allow small ships to have a reasonable max speed without using all their slots for engines.
