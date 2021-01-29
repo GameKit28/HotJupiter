@@ -27,5 +27,20 @@ public class CommandPointManager : MonoBehaviour
     void OnStartNewTurn(GameControllerFsm.Events.NewTurnEvent @event)
     {
 
+        //Standard Positions
+
+        //Forward Facing (current speed)
+
+        //Forward Facing (speed up)
+
+        //Forward Facing (slow down)
+
+        //Turn Left
+
+        //Turn Right
+
+        //Climb Altitude
+
+        //Descend Altitude
     }
 }

@@ -12,6 +12,7 @@ public partial class GameControllerFsm : MeFsm
         protected override void EnterState()
         {
             base.EnterState();
+            Debug.Log("Entering CommandSelectionState");
 
             EventManager.Publish(new Events.NewTurnEvent());
         }

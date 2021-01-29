@@ -5,7 +5,6 @@ using UnityEngine.Tilemaps;
 
 public class Cursor : MonoBehaviour
 {
-    public Tilemap tilemap;
     public Camera cursorCamera;
 
     private static Vector3 planeCenter = Vector3.zero;
@@ -22,8 +21,9 @@ public class Cursor : MonoBehaviour
     void Update()
     {
         Vector3 cursorWorldPos = GetPlaneIntersection();
-        Vector3Int selectedTile = tilemap.WorldToCell(cursorWorldPos);
-        transform.position = tilemap.CellToWorld(selectedTile);
+        Vector3Int selectedTile = HexMapHelper.GetTileFromWorldPoint(cursorWorldPos);
+        Debug.Log("SelectedTile = " + selectedTile);
+        transform.position = HexMapHelper.GetWorldPointFromTile(selectedTile);
     }
 
     Vector3 GetPlaneIntersection(){
