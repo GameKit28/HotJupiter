@@ -13,15 +13,23 @@ public partial class CommandPointFsm : MeFsm
     public GameObject sprite;
     public BGCurve spline;
 
-    // Start is called before the first frame update
-    void Start()
+    protected override void Start()
     {
-        
+        base.Start();
+
+        //sprite = transform.Find("Sprite").gameObject;
+
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    public void SetDestination(Vector3Int tile, HexDirection direction, int level) {
+
+        //Position the sprite within the Hex
+        sprite.transform.position = HexMapHelper.GetWorldPointFromTile(tile) + (HexMapHelper.GetVectorFromDirection(direction) * HexMapHelper.HexWidth * 0.3f);
+
+        //Face the sprite the correct direction
+        sprite.transform.eulerAngles = new Vector3(90, HexMapHelper.GetAngleFromDirection(direction), 0);
+
+        //Color the sprite based on height
+        sprite.GetComponent<SpriteRenderer>().color = HexMapHelper.GetLevelColor(level);
     }
 }

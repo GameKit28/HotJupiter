@@ -2,10 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+
+public enum HexDirection {
+    NorthEast = 0,
+    East = 1,
+    SouthEast = 2,
+    SouthWest = 3,
+    West = 4,
+    NorthWest = 5
+}
+
 public class HexMapHelper : MonoBehaviour
 {
     public Tilemap baseTileMap;
     static HexMapHelper instance;
+
+    public const float HexWidth = 1.0f;
 
     void Awake(){
         instance = this;
@@ -19,11 +31,11 @@ public class HexMapHelper : MonoBehaviour
         return instance.baseTileMap.CellToWorld(tilePos);
     }
 
-    public float GetAngleFromDirection(HexDirection direction) {
+    public static float GetAngleFromDirection(HexDirection direction) {
         return 30f + ((int)direction) * 60f;
     }
 
-    public Vector3 GetVectorFromDirection(HexDirection direction){
+    public static Vector3 GetVectorFromDirection(HexDirection direction){
         switch(direction){
             case HexDirection.NorthEast:
                 return new Vector3(0.5f, 0, 0.87f);
@@ -42,15 +54,15 @@ public class HexMapHelper : MonoBehaviour
         }
     }
 
-    public int GetLevelFromAltitude(float altitude){
+    public static int GetLevelFromAltitude(float altitude){
         return Mathf.Clamp(Mathf.RoundToInt((altitude + 0.25f) / 0.5f), 0, 6);
     }
 
-    public float GetAltitudeFromLevel(int level) {
+    public static float GetAltitudeFromLevel(int level) {
         return Mathf.Max(0, 0.25f + ((level - 1) * 0.5f));
     }
 
-    public Color GetLevelColor(int level) {
+    public static Color GetLevelColor(int level) {
         switch(level) {
             case 0: 
                 return Color.white;
@@ -79,13 +91,5 @@ public class HexMapHelper : MonoBehaviour
     }
 }
 
-public enum HexDirection {
-    NorthEast = 0,
-    East = 1,
-    SouthEast = 2,
-    SouthWest = 3,
-    West = 4,
-    NorthWest = 5
-}
 
 
