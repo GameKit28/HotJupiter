@@ -7,10 +7,6 @@ using BansheeGz.BGSpline.Components;
 using MeEngine.Events;
 public partial class CommandPointFsm : MeFsm
 {
-    public static class Events {
-        public struct NewCommandPointSelected : IEvent { public CommandPointFsm selectedCommandPoint; }
-    }
-
     public Vector3Int destinationTile;
     public HexDirection destinationDirection;
     public int destinationLevel;
@@ -22,14 +18,18 @@ public partial class CommandPointFsm : MeFsm
     private Vector3 sourcePosition;
     private Vector3 sourceHeading;
 
+    private NavigationSystem myNavigationSystem;
+
     protected override void Start()
     {
         base.Start();
 
-        EventManager.SubscribeAll(this);
-
         //sprite = transform.Find("Sprite").gameObject;
 
+    }
+
+    public void SetNavigationSystem(NavigationSystem navigationSystem){
+        myNavigationSystem = navigationSystem;
     }
 
     public void SetSource(Vector3 sourcePosition, HexDirection sourceDirection) {
@@ -55,8 +55,12 @@ public partial class CommandPointFsm : MeFsm
             HexMapHelper.GetWorldPointFromTile(tile) + new Vector3(0, HexMapHelper.GetAltitudeFromLevel(level), 0), HexMapHelper.GetVectorFromDirection(direction));
     }
 
-    public void SelectPoint(){
-        SwapState<SelectedState>();
+    public void SelectPoint(bool selected){
+        if(selected) {
+            SwapState<SelectedState>();
+        }else{
+            SwapState<WaitingState>();
+        }
     }
 
     protected void SetSpline(Vector3 startPosition, Vector3 startHeading, Vector3 endPosition, Vector3 endHeading){
@@ -66,12 +70,5 @@ public partial class CommandPointFsm : MeFsm
             startPosition - startHeading, startPosition + startHeading, true));
         spline.AddPoint(new BGCurvePoint(spline, endPosition, BGCurvePoint.ControlTypeEnum.BezierSymmetrical,
             endPosition - endHeading, endPosition + endHeading, true));
-    }
-
-    [EventListener]
-    private void OnNewCommandPointSelected(Events.NewCommandPointSelected @event){
-        if(@event.selectedCommandPoint != this) {
-            SwapState<WaitingState>();
-        }
     }
 }

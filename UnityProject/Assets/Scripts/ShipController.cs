@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ShipController : MonoBehaviour, IHaveTilePosition
 {
+    public bool isPlayerControlled = false;
+
     public Vector3Int currentTile;
     public HexDirection currentDirection;
     public int currentLevel;

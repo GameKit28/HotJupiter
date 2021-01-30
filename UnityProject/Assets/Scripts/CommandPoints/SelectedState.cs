@@ -14,9 +14,7 @@ public partial class CommandPointFsm {
 
         protected override void EnterState()
         {
-            base.EnterState();
-
-            EventManager.Publish(new Events.NewCommandPointSelected() { selectedCommandPoint = ParentFsm });
+            ParentFsm.myNavigationSystem.NewPointSelected(ParentFsm);
         }
 
         protected override void ExitState()
@@ -30,7 +28,7 @@ public partial class CommandPointFsm {
         void Update()
         {
             //Swap Color between (Cyan selected color and level color)
-            swapCountdown -= Time.deltaTime;
+            swapCountdown -= TimeManager.UIDeltaTime;
             if(swapCountdown < 0) {
                 ParentFsm.sprite.GetComponent<SpriteRenderer>().color = isBaseColor ? Color.cyan : HexMapHelper.GetLevelColor(ParentFsm.destinationLevel);
                 swapCountdown += colorSwapRate;

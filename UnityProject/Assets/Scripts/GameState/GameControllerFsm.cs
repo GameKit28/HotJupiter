@@ -7,6 +7,7 @@ public partial class GameControllerFsm : MeFsm
 {
     public static class Events{
         public struct NewTurnEvent : IEvent {}
+        public struct PlayingOutTurnEvent : IEvent {}
     }
 
     // Start is called before the first frame update

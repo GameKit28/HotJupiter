@@ -20,6 +20,6 @@ public class LineRenderAnimator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        material.mainTextureOffset += Vector2.left * (Time.deltaTime / scrollRate);
+        material.mainTextureOffset += Vector2.left * (TimeManager.UIDeltaTime / scrollRate);
     }
 }

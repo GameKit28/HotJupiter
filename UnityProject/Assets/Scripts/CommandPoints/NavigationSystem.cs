@@ -9,6 +9,8 @@ public class NavigationSystem: MonoBehaviour
 
     private HashSet<CommandPointFsm> availableCommandPoints = new HashSet<CommandPointFsm>();
 
+    private CommandPointFsm selectedCommandPoint;
+
     void Awake(){
         EventManager.SubscribeAll(this);
     }
@@ -36,7 +38,7 @@ public class NavigationSystem: MonoBehaviour
             shipPiece.currentTile.Traverse(shipPiece.currentDirection, shipPiece.currentSpeed),
             shipPiece.currentDirection,
             shipPiece.currentLevel);
-        defaultSelected.SelectPoint();
+        defaultSelected.SelectPoint(true);
 
         //Forward Facing (speed up)
         if(shipPiece.currentSpeed < ShipController.maxSpeed) {
@@ -97,11 +99,22 @@ public class NavigationSystem: MonoBehaviour
 
     private CommandPointFsm InstantiateCommandPoint(Vector3Int tile, HexDirection direction, int level){
         CommandPointFsm commandPoint = GameObject.Instantiate(commandPointPrefab, Vector3.zero, Quaternion.identity, transform).GetComponent<CommandPointFsm>();
-        
-        commandPoint.SetSource(shipPiece.transform.position + new Vector3(0, HexMapHelper.GetAltitudeFromLevel(shipPiece.currentLevel), 0), shipPiece.currentDirection);
+        commandPoint.SetNavigationSystem(this);
+
+        commandPoint.SetSource(shipPiece.transform.position, shipPiece.currentDirection);
         commandPoint.SetDestination(tile, direction, level);
+        if(!shipPiece.isPlayerControlled) commandPoint.gameObject.SetActive(false);
 
         availableCommandPoints.Add(commandPoint);
         return commandPoint;
     }
+
+    public void NewPointSelected(CommandPointFsm selectedPoint){
+        foreach (var point in availableCommandPoints)
+        {
+            if(point != selectedCommandPoint) point.SelectPoint(false);
+        }
+        selectedCommandPoint = selectedPoint;
+    }
+
 }

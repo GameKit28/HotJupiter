@@ -15,6 +15,6 @@ public class SlowSpin : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        this.transform.RotateAround(Vector3.up, ((Mathf.PI * 2)/rotationRate) * Time.deltaTime);
+        this.transform.Rotate(Vector3.up, ((Mathf.PI * 2)/rotationRate) * TimeManager.TurnDeltaTime);
     }
 }

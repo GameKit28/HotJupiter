@@ -1,0 +1,65 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using MeEngine.FsmManagement;
+using MeEngine.Events;
+public class TimeManager : MeFsm
+{
+    public const float TurnDuration = 2.5f;
+
+    public static float TurnTime {get; private set;} = 0;
+    public static float TurnDeltaTime {get; private set;} = 0;
+
+    public static float TurnRatio {
+        get {
+            return Mathf.Clamp01(TurnTime / TurnDuration);
+        }
+    }
+    
+    public static float UITime {get; private set;} = 0;
+    public static float UIDeltaTime {get; private set;} = 0;
+ 
+    public static float SimulationTime {get; private set;} = 0;
+    public static float SimulationDeltaTime {get; private set;} = 0;
+
+    public static float SimulationRatio {
+        get {
+            return Mathf.Clamp01(SimulationTime / TurnDuration);
+        }
+    }
+
+    public static float ElapsedGameTime {get; private set;} = 0;
+
+    void Update()
+    {
+        UIDeltaTime = Time.deltaTime;
+        UITime += UIDeltaTime;
+
+        SimulationDeltaTime = Time.deltaTime;
+        SimulationTime += SimulationDeltaTime;
+    }
+
+    class SimulatingState : MeFsmState<TimeManager> {
+
+        protected override void EnterState()
+        {
+            TurnTime = 0;
+            TurnDeltaTime = 0;
+        }
+    }
+
+    class PlayingState : MeFsmState<TimeManager> 
+    {
+        protected override void EnterState()
+        {
+            TurnTime = 0;
+        }
+
+        void Update() {
+            TurnDeltaTime = Time.deltaTime;
+            TurnTime += TurnDeltaTime;
+            ElapsedGameTime += TurnDeltaTime;            
+        }
+    }
+
+}

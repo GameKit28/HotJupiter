@@ -9,6 +9,7 @@ public class AltitudeIndicator : MonoBehaviour
     public List<MeshRenderer> cubes;
     public GameObject cubeHolder;
     public GameObject heightCylinder;
+    public GameObject baseSprite;
 
     private float xzScale;
 
@@ -29,6 +30,10 @@ public class AltitudeIndicator : MonoBehaviour
         heightCylinder.transform.position = new Vector3(attachedObject.position.x, HexMapUI.currentUIMapAltitude + (objectRelativeAltitude / 2f), attachedObject.position.z);
         heightCylinder.transform.localScale = new Vector3(xzScale, objectRelativeAltitude / primitiveHeight, xzScale);
         cubeHolder.transform.position = new Vector3(attachedObject.position.x, 0, attachedObject.position.z);
+
+        //Set the little target sprite to grid height
+        baseSprite.transform.position = new Vector3(attachedObject.position.x, HexMapUI.currentUIMapAltitude, attachedObject.position.z);
+        baseSprite.GetComponent<SpriteRenderer>().color = HexMapHelper.GetLevelColor(HexMapUI.currentUIMapLevel);
 
         float lowBounds = Mathf.Min(attachedObject.position.y, HexMapUI.currentUIMapAltitude);
         float highBounds = Mathf.Max(attachedObject.position.y, HexMapUI.currentUIMapAltitude);

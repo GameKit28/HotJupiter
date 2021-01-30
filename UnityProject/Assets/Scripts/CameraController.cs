@@ -17,15 +17,15 @@ public class CameraController : MonoBehaviour
     void Update()
     {
         if(Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) {
-            this.transform.Translate(Vector3.left * cameraSpeedX * Time.deltaTime);
+            this.transform.Translate(Vector3.left * cameraSpeedX * TimeManager.UIDeltaTime);
         }else if(Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) {
-            this.transform.Translate(Vector3.right * cameraSpeedX * Time.deltaTime);
+            this.transform.Translate(Vector3.right * cameraSpeedX * TimeManager.UIDeltaTime);
         }
 
         if(Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) {
-            this.transform.Translate(Vector3.forward * cameraSpeedZ * Time.deltaTime);
+            this.transform.Translate(Vector3.forward * cameraSpeedZ * TimeManager.UIDeltaTime);
         }else if(Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) {
-            this.transform.Translate(Vector3.back * cameraSpeedZ * Time.deltaTime);
+            this.transform.Translate(Vector3.back * cameraSpeedZ * TimeManager.UIDeltaTime);
         }
     }
 }
