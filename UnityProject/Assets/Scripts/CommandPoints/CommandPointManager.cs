@@ -26,8 +26,6 @@ public class CommandPointManager : MonoBehaviour
     [EventListener]
     void OnStartNewTurn(GameControllerFsm.Events.NewTurnEvent @event)
     {
-        
-
         //Standard Positions
 
         //Forward Facing (current speed)
@@ -94,8 +92,9 @@ public class CommandPointManager : MonoBehaviour
     }
 
     private void InstantiateCommandPoint(Vector3Int tile, HexDirection direction, int level){
-        CommandPointFsm commandPoint = GameObject.Instantiate(commandPointPrefab).GetComponent<CommandPointFsm>();
+        CommandPointFsm commandPoint = GameObject.Instantiate(commandPointPrefab, Vector3.zero, Quaternion.identity, transform).GetComponent<CommandPointFsm>();
         
+        commandPoint.SetSource(playerShipPiece.transform.position + new Vector3(0, HexMapHelper.GetAltitudeFromLevel(playerShipPiece.currentLevel), 0), playerShipPiece.currentDirection);
         commandPoint.SetDestination(tile, direction, level);
     }
 }

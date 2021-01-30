@@ -9,6 +9,13 @@ public partial class CommandPointFsm {
         protected override void EnterState()
         {
             base.EnterState();
+
+            ParentFsm.spline.gameObject.SetActive(false);
+        }
+
+        void OnMouseEnter(){
+            Debug.Log("Mouse Entered");
+            SwapState<HoverState>();
         }
 
         // Update is called once per frame

@@ -56,10 +56,10 @@ public static class HexExtensions {
     }
 
     public static HexDirection RotateClockwise(this HexDirection startingDirection, int steps = 1) {
-        return (HexDirection)((((int)startingDirection) + steps) % 6);
+        return (HexDirection)(MathHelper.Mod(((int)startingDirection) + steps, 6));
     }
 
     public static HexDirection RotateCounterClockwise(this HexDirection startingDirection, int steps = 1) {
-        return (HexDirection)((((int)startingDirection) - steps) % 6); //Kit Start Here. Mod of negative number doesn't work as expected
+        return (HexDirection)(MathHelper.Mod(((int)startingDirection) - steps, 6));
     }
 }
