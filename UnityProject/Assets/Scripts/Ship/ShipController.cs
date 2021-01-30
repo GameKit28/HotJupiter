@@ -4,7 +4,7 @@ using UnityEngine;
 using BansheeGz.BGSpline.Curve;
 using BansheeGz.BGSpline.Components;
 using MeEngine.Events;
-public class ShipController : MonoBehaviour, IHaveTilePosition
+public class ShipController : MonoBehaviour, IHaveTilePosition, IHaveHexDirection
 {
     public bool isPlayerControlled = false;
 
@@ -41,6 +41,10 @@ public class ShipController : MonoBehaviour, IHaveTilePosition
 
     public int GetLevel(){
         return currentLevel;
+    }
+
+    public HexDirection GetHexDirection(){
+        return currentDirection;
     }
 
     void Awake() {

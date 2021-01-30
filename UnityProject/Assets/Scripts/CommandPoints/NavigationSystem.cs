@@ -7,7 +7,7 @@ public class NavigationSystem: MonoBehaviour
     public GameObject commandPointPrefab;
     public ShipController shipPiece;
 
-    private HashSet<CommandPointFsm> availableCommandPoints = new HashSet<CommandPointFsm>();
+    private List<CommandPointFsm> availableCommandPoints = new List<CommandPointFsm>();
 
     private CommandPointFsm selectedCommandPoint;
 
@@ -35,16 +35,14 @@ public class NavigationSystem: MonoBehaviour
             selectedCommandPoint = null;
         }
 
-        //Standard Positions
+        //Standard Destinations
 
         //Forward Facing (current speed)
-        //This is the default selected command point
+        //This is the default selected command point for players
         var defaultSelected = InstantiateCommandPoint(
             shipPiece.currentTile.Traverse(shipPiece.currentDirection, shipPiece.currentSpeed),
             shipPiece.currentDirection,
             shipPiece.currentLevel);
-        defaultSelected.SelectPoint(true);
-        selectedCommandPoint = defaultSelected;
 
         //Forward Facing (speed up)
         if(shipPiece.currentSpeed < ShipController.maxSpeed) {
@@ -101,6 +99,15 @@ public class NavigationSystem: MonoBehaviour
                 shipPiece.currentDirection,
                 shipPiece.currentLevel - 1);
         }
+
+        if(shipPiece.isPlayerControlled) {
+            defaultSelected.SelectPoint(true);
+            selectedCommandPoint = defaultSelected;
+        }else{
+            //Have enemies fly randomly for now
+            selectedCommandPoint = availableCommandPoints[Random.Range(0, availableCommandPoints.Count)];
+        }
+
     }
 
     [EventListener]
