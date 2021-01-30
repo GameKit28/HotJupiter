@@ -15,9 +15,11 @@ public partial class GameControllerFsm : MeFsm
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    public void OnEndTurnClicked() {
+        DoEndTurn();
+    }
+
+    private void DoEndTurn(){
+        Debug.Log("end turn");
     }
 }

@@ -43,8 +43,7 @@ public partial class CommandPointFsm : MeFsm
         destinationLevel = level;
 
         //Position the sprite within the Hex
-        sprite.transform.position = HexMapHelper.GetWorldPointFromTile(tile) + (HexMapHelper.GetVectorFromDirection(direction) * HexMapHelper.HexWidth * 0.3f);
-        //Position at level height?
+        sprite.transform.position = HexMapHelper.GetWorldPointFromTile(tile, level) + (HexMapHelper.GetVectorFromDirection(direction) * HexMapHelper.HexWidth * 0.3f);
 
         //Face the sprite the correct direction
         sprite.transform.eulerAngles = new Vector3(90, HexMapHelper.GetAngleFromDirection(direction), 0);
@@ -54,6 +53,10 @@ public partial class CommandPointFsm : MeFsm
 
         SetSpline(sourcePosition, sourceHeading,
             HexMapHelper.GetWorldPointFromTile(tile) + new Vector3(0, HexMapHelper.GetAltitudeFromLevel(level), 0), HexMapHelper.GetVectorFromDirection(direction));
+    }
+
+    public void SelectPoint(){
+        SwapState<SelectedState>();
     }
 
     protected void SetSpline(Vector3 startPosition, Vector3 startHeading, Vector3 endPosition, Vector3 endHeading){

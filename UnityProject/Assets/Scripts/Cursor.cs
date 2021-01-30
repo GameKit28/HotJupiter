@@ -7,9 +7,7 @@ public class Cursor : MonoBehaviour
 {
     public Camera cursorCamera;
 
-    private static Vector3 planeCenter = Vector3.zero;
-    private Plane plane = new Plane(Vector3.up, planeCenter);
-    
+    public float scrollThreshold = 0.1f;
 
     // Start is called before the first frame update
     void Start()
@@ -23,12 +21,12 @@ public class Cursor : MonoBehaviour
         Vector3 cursorWorldPos = GetPlaneIntersection();
         Vector3Int selectedTile = HexMapHelper.GetTileFromWorldPoint(cursorWorldPos);
         //Debug.Log("SelectedTile = " + selectedTile);
-        transform.position = HexMapHelper.GetWorldPointFromTile(selectedTile);
+        transform.position = HexMapHelper.GetWorldPointFromTile(selectedTile, HexMapUI.currentUIMapLevel);
     }
 
     Vector3 GetPlaneIntersection(){
         Ray ray = cursorCamera.ScreenPointToRay(Input.mousePosition);
-        float delta = ray.origin.y - planeCenter.y;
+        float delta = ray.origin.y - HexMapUI.currentUIMapAltitude;
         Vector3 dirNorm = ray.direction / ray.direction.y;
         return ray.origin - dirNorm * delta;
     }

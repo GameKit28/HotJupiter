@@ -20,7 +20,9 @@ public partial class GameControllerFsm : MeFsm
         // Update is called once per frame
         void Update()
         {
-            
+            if(Input.GetKeyDown(KeyCode.Space)) {
+                ParentFsm.DoEndTurn();
+            }
         }
     }
 }

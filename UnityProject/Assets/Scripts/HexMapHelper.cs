@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using MeEngine.Events;
 
 public enum HexDirection {
     NorthEast = 0,
@@ -14,8 +15,9 @@ public enum HexDirection {
 
 public class HexMapHelper : MonoBehaviour
 {
-    public Tilemap baseTileMap;
-    static HexMapHelper instance;
+    private static HexMapHelper instance;
+
+    public Tilemap baseTilemap;
 
     public const float HexWidth = 1.0f;
 
@@ -24,11 +26,11 @@ public class HexMapHelper : MonoBehaviour
     }
 
     public static Vector3Int GetTileFromWorldPoint(Vector3 worldPos){
-        return instance.baseTileMap.WorldToCell(worldPos);
+        return instance.baseTilemap.WorldToCell(worldPos);
     }
 
-    public static Vector3 GetWorldPointFromTile(Vector3Int tilePos){
-        return instance.baseTileMap.CellToWorld(tilePos);
+    public static Vector3 GetWorldPointFromTile(Vector3Int tilePos, int level = 0){
+        return instance.baseTilemap.CellToWorld(tilePos) + new Vector3(0, GetAltitudeFromLevel(level), 0);
     }
 
     public static float GetAngleFromDirection(HexDirection direction) {
