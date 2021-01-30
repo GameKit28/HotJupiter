@@ -4,8 +4,13 @@ using UnityEngine;
 using MeEngine.FsmManagement;
 using BansheeGz.BGSpline.Curve;
 using BansheeGz.BGSpline.Components;
+using MeEngine.Events;
 public partial class CommandPointFsm : MeFsm
 {
+    public static class Events {
+        public struct NewCommandPointSelected : IEvent { public CommandPointFsm selectedCommandPoint; }
+    }
+
     public Vector3Int destinationTile;
     public HexDirection destinationDirection;
     public int destinationLevel;
@@ -21,6 +26,8 @@ public partial class CommandPointFsm : MeFsm
     {
         base.Start();
 
+        EventManager.SubscribeAll(this);
+
         //sprite = transform.Find("Sprite").gameObject;
 
     }
@@ -31,6 +38,9 @@ public partial class CommandPointFsm : MeFsm
     }
 
     public void SetDestination(Vector3Int tile, HexDirection direction, int level) {
+        destinationTile = tile;
+        destinationDirection = direction;
+        destinationLevel = level;
 
         //Position the sprite within the Hex
         sprite.transform.position = HexMapHelper.GetWorldPointFromTile(tile) + (HexMapHelper.GetVectorFromDirection(direction) * HexMapHelper.HexWidth * 0.3f);
@@ -53,5 +63,12 @@ public partial class CommandPointFsm : MeFsm
             startPosition - startHeading, startPosition + startHeading, true));
         spline.AddPoint(new BGCurvePoint(spline, endPosition, BGCurvePoint.ControlTypeEnum.BezierSymmetrical,
             endPosition - endHeading, endPosition + endHeading, true));
+    }
+
+    [EventListener]
+    private void OnNewCommandPointSelected(Events.NewCommandPointSelected @event){
+        if(@event.selectedCommandPoint != this) {
+            SwapState<WaitingState>();
+        }
     }
 }

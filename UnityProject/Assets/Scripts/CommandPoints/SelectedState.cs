@@ -2,18 +2,40 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MeEngine.FsmManagement;
+using MeEngine.Events;
 
 public partial class CommandPointFsm {
     public class SelectedState : MeFsmState<CommandPointFsm>
     {
+        private const float colorSwapRate = 0.5f; // seconds
+
+        private float swapCountdown = 0f;
+        private bool isBaseColor = true;
+
         protected override void EnterState()
         {
             base.EnterState();
+
+            EventManager.Publish(new Events.NewCommandPointSelected() { selectedCommandPoint = ParentFsm });
+        }
+
+        protected override void ExitState()
+        {
+            base.ExitState();
+
+            ParentFsm.sprite.GetComponent<SpriteRenderer>().color = HexMapHelper.GetLevelColor(ParentFsm.destinationLevel);
         }
 
         // Update is called once per frame
         void Update()
         {
+            //Swap Color between (Cyan selected color and level color)
+            swapCountdown -= Time.deltaTime;
+            if(swapCountdown < 0) {
+                ParentFsm.sprite.GetComponent<SpriteRenderer>().color = isBaseColor ? Color.cyan : HexMapHelper.GetLevelColor(ParentFsm.destinationLevel);
+                swapCountdown += colorSwapRate;
+                isBaseColor = !isBaseColor;
+            }
             
         }
     }

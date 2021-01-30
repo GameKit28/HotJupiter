@@ -7,6 +7,8 @@ public class CommandPointManager : MonoBehaviour
     public GameObject commandPointPrefab;
     public ShipController playerShipPiece;
 
+    private HashSet<CommandPointFsm> activeCommandPoints = new HashSet<CommandPointFsm>();
+
     void Awake(){
         EventManager.SubscribeAll(this);
     }
@@ -96,5 +98,7 @@ public class CommandPointManager : MonoBehaviour
         
         commandPoint.SetSource(playerShipPiece.transform.position + new Vector3(0, HexMapHelper.GetAltitudeFromLevel(playerShipPiece.currentLevel), 0), playerShipPiece.currentDirection);
         commandPoint.SetDestination(tile, direction, level);
+
+        activeCommandPoints.Add(commandPoint);
     }
 }
