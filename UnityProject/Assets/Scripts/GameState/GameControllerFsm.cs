@@ -7,13 +7,8 @@ public partial class GameControllerFsm : MeFsm
 {
     public static class Events{
         public struct NewTurnEvent : IEvent {}
-        public struct PlayingOutTurnEvent : IEvent {}
-    }
-
-    // Start is called before the first frame update
-    protected override void Start()
-    {
-
+        public struct BeginPlayingOutTurnEvent : IEvent {}
+        public struct EndPlayingOutTurnEvent : IEvent {}
     }
 
     public void OnEndTurnClicked() {
@@ -22,5 +17,6 @@ public partial class GameControllerFsm : MeFsm
 
     private void DoEndTurn(){
         Debug.Log("end turn");
+        SwapState<CalculatingInterceptsState>();
     }
 }

@@ -35,7 +35,7 @@ public class AltitudeIndicator : MonoBehaviour
         baseSprite.transform.position = new Vector3(attachedObject.position.x, HexMapUI.currentUIMapAltitude, attachedObject.position.z);
         baseSprite.GetComponent<SpriteRenderer>().color = HexMapHelper.GetLevelColor(HexMapUI.currentUIMapLevel);
 
-        float lowBounds = Mathf.Min(attachedObject.position.y, HexMapUI.currentUIMapAltitude);
+        /*float lowBounds = Mathf.Min(attachedObject.position.y, HexMapUI.currentUIMapAltitude);
         float highBounds = Mathf.Max(attachedObject.position.y, HexMapUI.currentUIMapAltitude);
 
         //Hide or show height cubes
@@ -47,6 +47,7 @@ public class AltitudeIndicator : MonoBehaviour
                 cubes[cubeI].enabled = false;
             }
         }
+        */
     }
 
     //[EventListener]

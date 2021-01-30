@@ -11,10 +11,13 @@ public partial class GameControllerFsm : MeFsm
     {
         protected override void EnterState()
         {
-            base.EnterState();
             Debug.Log("Entering PlayingOutTurnState");
+            EventManager.Publish(new Events.BeginPlayingOutTurnEvent());
+        }
 
-            EventManager.Publish(new Events.PlayingOutTurnEvent());
+        protected override void ExitState()
+        {
+            EventManager.Publish(new Events.EndPlayingOutTurnEvent());
         }
 
         // Update is called once per frame

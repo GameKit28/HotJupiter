@@ -30,6 +30,11 @@ public class NavigationSystem: MonoBehaviour
     [EventListener]
     void OnStartNewTurn(GameControllerFsm.Events.NewTurnEvent @event)
     {
+        if(selectedCommandPoint != null) {
+            GameObject.Destroy(selectedCommandPoint.gameObject);
+            selectedCommandPoint = null;
+        }
+
         //Standard Positions
 
         //Forward Facing (current speed)
@@ -39,6 +44,7 @@ public class NavigationSystem: MonoBehaviour
             shipPiece.currentDirection,
             shipPiece.currentLevel);
         defaultSelected.SelectPoint(true);
+        selectedCommandPoint = defaultSelected;
 
         //Forward Facing (speed up)
         if(shipPiece.currentSpeed < ShipController.maxSpeed) {
@@ -97,11 +103,24 @@ public class NavigationSystem: MonoBehaviour
         }
     }
 
+    [EventListener]
+    void OnStartPlayingTurn(GameControllerFsm.Events.BeginPlayingOutTurnEvent @event){
+        shipPiece.SetActivePath(selectedCommandPoint.spline);
+        shipPiece.SetDestination(selectedCommandPoint.destinationTile, selectedCommandPoint.destinationDirection, selectedCommandPoint.destinationLevel);
+
+        foreach(CommandPointFsm point in availableCommandPoints) {
+            if(point != selectedCommandPoint) {
+                GameObject.Destroy(point.gameObject);
+            }
+        }
+        availableCommandPoints.Clear();
+    }
+
     private CommandPointFsm InstantiateCommandPoint(Vector3Int tile, HexDirection direction, int level){
         CommandPointFsm commandPoint = GameObject.Instantiate(commandPointPrefab, Vector3.zero, Quaternion.identity, transform).GetComponent<CommandPointFsm>();
         commandPoint.SetNavigationSystem(this);
 
-        commandPoint.SetSource(shipPiece.transform.position, shipPiece.currentDirection);
+        commandPoint.SetSource(shipPiece.worldShip.transform.position, shipPiece.currentDirection);
         commandPoint.SetDestination(tile, direction, level);
         if(!shipPiece.isPlayerControlled) commandPoint.gameObject.SetActive(false);
 
@@ -110,9 +129,10 @@ public class NavigationSystem: MonoBehaviour
     }
 
     public void NewPointSelected(CommandPointFsm selectedPoint){
+        Debug.Log("Selecting Command Point: " + selectedPoint);
         foreach (var point in availableCommandPoints)
         {
-            if(point != selectedCommandPoint) point.SelectPoint(false);
+            if(point != selectedPoint) point.SelectPoint(false);
         }
         selectedCommandPoint = selectedPoint;
     }

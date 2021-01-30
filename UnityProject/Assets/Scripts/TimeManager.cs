@@ -30,6 +30,10 @@ public class TimeManager : MeFsm
 
     public static float ElapsedGameTime {get; private set;} = 0;
 
+    protected override void Start(){
+        EventManager.SubscribeAll(this);
+    }
+
     void Update()
     {
         UIDeltaTime = Time.deltaTime;
@@ -39,12 +43,23 @@ public class TimeManager : MeFsm
         SimulationTime += SimulationDeltaTime;
     }
 
+    [EventListener]
+    void OnPlaymodeStart(GameControllerFsm.Events.BeginPlayingOutTurnEvent @event) {
+        SwapState<PlayingState>();
+    }
+
+    [EventListener]
+    void OnPlanModeStart(GameControllerFsm.Events.NewTurnEvent @event){
+        SwapState<SimulatingState>();
+    }
+
     class SimulatingState : MeFsmState<TimeManager> {
 
         protected override void EnterState()
         {
             TurnTime = 0;
             TurnDeltaTime = 0;
+            Debug.Log("Entering SimulatingState");
         }
     }
 
@@ -53,6 +68,7 @@ public class TimeManager : MeFsm
         protected override void EnterState()
         {
             TurnTime = 0;
+            Debug.Log("Entering PlayingState");
         }
 
         void Update() {
