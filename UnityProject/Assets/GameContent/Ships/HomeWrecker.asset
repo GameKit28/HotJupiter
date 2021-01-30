@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca0e8b03c4e3bb8459fcc5805772b616, type: 3}
-  m_Name: Viper
+  m_Name: HomeWrecker
   m_EditorClassIdentifier: 
   numThrusters: 3
   numVectorThrusters: 2
-  shipModel: {fileID: 209291574891395560, guid: 4236befb1470a0743af58ef19b9d99e4,
+  shipModel: {fileID: 1530529571317496691, guid: 0ff36e904225ca241a75d52f5b5ddd93,
     type: 3}

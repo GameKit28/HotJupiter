@@ -8,6 +8,8 @@ public class ShipStats : ScriptableObject
     public int numThrusters = 3;
     public int numVectorThrusters = 2;
 
+    public GameObject shipModel;
+
     public int TopSpeed { get {
         return numThrusters;
     }}
