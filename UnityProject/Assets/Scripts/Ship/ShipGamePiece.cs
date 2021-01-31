@@ -11,6 +11,8 @@ public class ShipGamePiece : NavigatingGamePiece
     int missileCount;
     int missileCooldown;
 
+    bool willFireMissileThisTurn = false;
+
     protected override void Awake() {
         base.Awake();
 
@@ -31,12 +33,26 @@ public class ShipGamePiece : NavigatingGamePiece
 
         if(Input.GetKeyDown(KeyCode.M)) {
             Debug.Log("Firing Missile");
-            FireMissile();
+            QueueMissile(true);
         }
     }
 
-    public void FireMissile(){
-        if(missileCooldown < 1 && missileCount > 0) {
+    public void QueueMissile(bool fireThisTurn){
+        Debug.Log("Will Fire Missile: " + fireThisTurn);
+        willFireMissileThisTurn = fireThisTurn;
+    }
+
+    public bool CanFireMissile() {
+        return missileCooldown < 1 && missileCount > 0;
+    }
+
+    public int GetMissileCount() {
+        return missileCount;
+    }
+
+    private void FireMissile(){
+        if(CanFireMissile()) {
+            Debug.Log("Firing Missile");
             missileCount -= 1;
             missileCooldown = shipTemplete.missileFireCooldownTurns;
 
@@ -45,7 +61,17 @@ public class ShipGamePiece : NavigatingGamePiece
     }
 
     [EventListener]
-    protected void OnEndPlayingPhase(GameControllerFsm.Events.EndPlayingOutTurnEvent @event){
+    public void OnProcessEndTurn(GameControllerFsm.Events.ProcessEndTurnEvent @event) {
+        Debug.Log("On Process End Turn");
+        if(willFireMissileThisTurn){
+            FireMissile();
+            willFireMissileThisTurn = false;
+        }
+    }
+
+
+    [EventListener]
+    protected override void OnEndPlayingPhase(GameControllerFsm.Events.EndPlayingOutTurnEvent @event){
         base.OnEndPlayingPhase(@event);
 
         missileCooldown = Mathf.Max(0, missileCooldown - 1);

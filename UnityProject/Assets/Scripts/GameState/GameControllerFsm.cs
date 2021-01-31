@@ -9,6 +9,8 @@ public partial class GameControllerFsm : MeFsm
         public struct NewTurnEvent : IEvent {}
         public struct BeginPlayingOutTurnEvent : IEvent {}
         public struct EndPlayingOutTurnEvent : IEvent {}
+
+        public struct ProcessEndTurnEvent : IEvent {}
     }
 
     public void OnEndTurnClicked() {
@@ -17,6 +19,6 @@ public partial class GameControllerFsm : MeFsm
 
     private void DoEndTurn(){
         Debug.Log("end turn");
-        SwapState<CalculatingInterceptsState>();
+        SwapState<ProcessingCommandsState>();
     }
 }

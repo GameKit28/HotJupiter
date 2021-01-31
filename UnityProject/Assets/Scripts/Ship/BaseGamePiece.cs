@@ -59,12 +59,12 @@ public class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveHexDirection
     }
 
     [EventListener]
-    protected void OnBeginPlayingPhase(GameControllerFsm.Events.BeginPlayingOutTurnEvent @event) {
+    protected virtual void OnBeginPlayingPhase(GameControllerFsm.Events.BeginPlayingOutTurnEvent @event) {
         gameObject.SetActive(false);
     }
 
     [EventListener]
-    protected void OnEndPlayingPhase(GameControllerFsm.Events.EndPlayingOutTurnEvent @event){
+    protected virtual void OnEndPlayingPhase(GameControllerFsm.Events.EndPlayingOutTurnEvent @event){
         Debug.Log("Applying Destination");
         currentTile = destinationTile;
         currentDirection = destinationDirection;
