@@ -5,7 +5,7 @@ using MeEngine.Events;
 public class NavigationSystem: MonoBehaviour
 {
     public GameObject commandPointPrefab;
-    public ShipController shipPiece;
+    public PieceController pieceController;
 
     private List<CommandPointFsm> availableCommandPoints = new List<CommandPointFsm>();
 
@@ -13,18 +13,6 @@ public class NavigationSystem: MonoBehaviour
 
     void Awake(){
         EventManager.SubscribeAll(this);
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     [EventListener]
@@ -40,67 +28,67 @@ public class NavigationSystem: MonoBehaviour
         //Forward Facing (current speed)
         //This is the default selected command point for players
         var defaultSelected = InstantiateCommandPoint(
-            shipPiece.currentTile.Traverse(shipPiece.currentDirection, shipPiece.currentSpeed),
-            shipPiece.currentDirection,
-            shipPiece.currentLevel);
+            pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity),
+            pieceController.GetHexDirection(),
+            pieceController.GetLevel());
 
         //Forward Facing (speed up)
-        if(shipPiece.currentSpeed < ShipController.maxSpeed) {
+        if(pieceController.gamePiece.currentVelocity < pieceController.gamePiece.maxSpeed) {
             InstantiateCommandPoint(
-            shipPiece.currentTile.Traverse(shipPiece.currentDirection, shipPiece.currentSpeed + 1),
-            shipPiece.currentDirection,
-            shipPiece.currentLevel);
+            pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity + 1),
+            pieceController.GetHexDirection(),
+            pieceController.GetLevel());
         }
 
         //Forward Facing (slow down)
-        if(shipPiece.currentSpeed > 2) {
+        if(pieceController.gamePiece.currentVelocity > 2) {
             InstantiateCommandPoint(
-            shipPiece.currentTile.Traverse(shipPiece.currentDirection, shipPiece.currentSpeed - 1),
-            shipPiece.currentDirection,
-            shipPiece.currentLevel);
+            pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity - 1),
+            pieceController.GetHexDirection(),
+            pieceController.GetLevel());
         }
 
         //Turn Left (straight bank)
         InstantiateCommandPoint(
-            shipPiece.currentTile.Traverse(shipPiece.currentDirection, shipPiece.currentSpeed),
-            shipPiece.currentDirection.RotateCounterClockwise(),
-            shipPiece.currentLevel);
+            pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity),
+            pieceController.GetHexDirection().RotateCounterClockwise(),
+            pieceController.GetLevel());
 
         //Turn Left
         InstantiateCommandPoint(
-            shipPiece.currentTile.Traverse(shipPiece.currentDirection, shipPiece.currentSpeed - 1).Traverse(shipPiece.currentDirection.RotateCounterClockwise()),
-            shipPiece.currentDirection.RotateCounterClockwise(),
-            shipPiece.currentLevel);
+            pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity - 1).Traverse(pieceController.GetHexDirection().RotateCounterClockwise()),
+            pieceController.GetHexDirection().RotateCounterClockwise(),
+            pieceController.GetLevel());
 
         //Turn Right (straight bank)
         InstantiateCommandPoint(
-            shipPiece.currentTile.Traverse(shipPiece.currentDirection, shipPiece.currentSpeed),
-            shipPiece.currentDirection.RotateClockwise(),
-            shipPiece.currentLevel);
+            pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity),
+            pieceController.GetHexDirection().RotateClockwise(),
+            pieceController.GetLevel());
 
         //Turn Right
         InstantiateCommandPoint(
-            shipPiece.currentTile.Traverse(shipPiece.currentDirection, shipPiece.currentSpeed - 1).Traverse(shipPiece.currentDirection.RotateClockwise()),
-            shipPiece.currentDirection.RotateClockwise(),
-            shipPiece.currentLevel);
+            pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity - 1).Traverse(pieceController.GetHexDirection().RotateClockwise()),
+            pieceController.GetHexDirection().RotateClockwise(),
+            pieceController.GetLevel());
 
         //Climb Altitude
-        if(shipPiece.currentLevel < 6){
+        if(pieceController.GetLevel() < 6){
             InstantiateCommandPoint(
-                shipPiece.currentTile.Traverse(shipPiece.currentDirection, shipPiece.currentSpeed - 1),
-                shipPiece.currentDirection,
-                shipPiece.currentLevel + 1);
+                pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity - 1),
+                pieceController.GetHexDirection(),
+                pieceController.GetLevel() + 1);
         }
 
         //Descend Altitude
-        if(shipPiece.currentLevel > 1){
+        if(pieceController.GetLevel() > 1){
             InstantiateCommandPoint(
-                shipPiece.currentTile.Traverse(shipPiece.currentDirection, shipPiece.currentSpeed),
-                shipPiece.currentDirection,
-                shipPiece.currentLevel - 1);
+                pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity),
+                pieceController.GetHexDirection(),
+                pieceController.GetLevel() - 1);
         }
 
-        if(shipPiece.isPlayerControlled) {
+        if(pieceController.isPlayerControlled) {
             defaultSelected.SelectPoint(true);
             selectedCommandPoint = defaultSelected;
         }else{
@@ -112,8 +100,8 @@ public class NavigationSystem: MonoBehaviour
 
     [EventListener]
     void OnStartPlayingTurn(GameControllerFsm.Events.BeginPlayingOutTurnEvent @event){
-        shipPiece.SetActivePath(selectedCommandPoint.spline);
-        shipPiece.SetDestination(selectedCommandPoint.destinationTile, selectedCommandPoint.destinationDirection, selectedCommandPoint.destinationLevel);
+        pieceController.SetActivePath(selectedCommandPoint.spline);
+        pieceController.gamePiece.SetDestination(selectedCommandPoint.destinationTile, selectedCommandPoint.destinationDirection, selectedCommandPoint.destinationLevel);
 
         foreach(CommandPointFsm point in availableCommandPoints) {
             if(point != selectedCommandPoint) {
@@ -127,9 +115,9 @@ public class NavigationSystem: MonoBehaviour
         CommandPointFsm commandPoint = GameObject.Instantiate(commandPointPrefab, Vector3.zero, Quaternion.identity, transform).GetComponent<CommandPointFsm>();
         commandPoint.SetNavigationSystem(this);
 
-        commandPoint.SetSource(shipPiece.worldShip.transform.position, shipPiece.currentDirection);
+        commandPoint.SetSource(pieceController.worldModel.transform.position, pieceController.GetHexDirection());
         commandPoint.SetDestination(tile, direction, level);
-        if(!shipPiece.isPlayerControlled) commandPoint.gameObject.SetActive(false);
+        if(!pieceController.isPlayerControlled) commandPoint.gameObject.SetActive(false);
 
         availableCommandPoints.Add(commandPoint);
         return commandPoint;

@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7571089963196293941}
+  - component: {fileID: 7446146060042822933}
   m_Layer: 0
   m_Name: ShipGamePiece
   m_TagString: Untagged
@@ -32,6 +33,25 @@ Transform:
   m_Father: {fileID: 5258136340152230713}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7446146060042822933
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 123629963477168360}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a522282b0f209f04f9dd6438b7f18a42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentTile: {x: 0, y: 0, z: 0}
+  currentDirection: 0
+  currentLevel: 0
+  gamePieceModel: {fileID: 5258136339442636985}
+  currentVelocity: 3
+  maxSpeed: 6
+  shipTemplete: {fileID: 11400000, guid: f1fb0484619df4244875e4ab7a973305, type: 2}
 --- !u!1 &3526316790202656933
 GameObject:
   m_ObjectHideFlags: 0
@@ -170,22 +190,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 5258136340152230712}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e7ce9953717549468936c8c1f2070ab, type: 3}
+  m_Script: {fileID: 11500000, guid: dc0056c0d20c7624d934cdd88e48fa45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   isPlayerControlled: 0
   shipTemplete: {fileID: 11400000, guid: f1fb0484619df4244875e4ab7a973305, type: 2}
-  currentTile: {x: 0, y: 0, z: 0}
-  currentDirection: 0
-  currentLevel: 0
-  destinationTile: {x: 0, y: 0, z: 0}
-  destinationDirection: 0
-  destinationLevel: 0
-  currentSpeed: 3
-  shipPieceModel: {fileID: 5258136339442636985}
-  shipWorldModel: {fileID: 3526316790202656933}
-  shipGamePiece: {fileID: 123629963477168360}
-  worldShip: {fileID: 9194300592052839165}
+  gamePiece: {fileID: 7446146060042822933}
+  worldModel: {fileID: 3526316790202656933}
+  worldBase: {fileID: 9194300592052839165}
 --- !u!1 &7132915082841308629
 GameObject:
   m_ObjectHideFlags: 0
@@ -5077,7 +5089,7 @@ PrefabInstance:
         type: 3}
       propertyPath: attachedObject
       value: 
-      objectReference: {fileID: 5258136340152230712}
+      objectReference: {fileID: 123629963477168360}
     - target: {fileID: 7200789963159951781, guid: 20850d9126e20c440bd7f16b3acabcda,
         type: 3}
       propertyPath: m_RootOrder
@@ -5367,7 +5379,7 @@ PrefabInstance:
         type: 3}
       propertyPath: attachedObject
       value: 
-      objectReference: {fileID: 5258136340152230712}
+      objectReference: {fileID: 123629963477168360}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ca813a61a4e20a44f9c5bbb54eb216fe, type: 3}
 --- !u!4 &5258136339255684166 stripped
@@ -5466,6 +5478,11 @@ PrefabInstance:
     - target: {fileID: 525200103300990859, guid: 6401f62795a6485479fc499a41301a8b,
         type: 3}
       propertyPath: shipPiece
+      value: 
+      objectReference: {fileID: 4472176637989411702}
+    - target: {fileID: 525200103300990859, guid: 6401f62795a6485479fc499a41301a8b,
+        type: 3}
+      propertyPath: pieceController
       value: 
       objectReference: {fileID: 4472176637989411702}
     - target: {fileID: 6203100925872966005, guid: 6401f62795a6485479fc499a41301a8b,

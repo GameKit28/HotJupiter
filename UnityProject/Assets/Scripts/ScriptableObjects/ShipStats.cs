@@ -11,6 +11,6 @@ public class ShipStats : ScriptableObject
     public GameObject shipModel;
 
     public int TopSpeed { get {
-        return numThrusters;
+        return numThrusters * 2;
     }}
 }
