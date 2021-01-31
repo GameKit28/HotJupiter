@@ -9,34 +9,21 @@ public class NavigationSystem: MonoBehaviour
 
     private List<CommandPointFsm> availableCommandPoints = new List<CommandPointFsm>();
 
-    private CommandPointFsm selectedCommandPoint;
-
     bool hasGeneratedThisTurn = false;
 
     void Awake(){
         EventManager.SubscribeAll(this);
     }
 
-    [EventListener]
-    void OnStartNewTurn(GameControllerFsm.Events.NewTurnEvent @event)
-    {
-        GenerateCommandPoints();
-    }
-
     public void GenerateCommandPoints()
     {
         if (hasGeneratedThisTurn) return;
-
-        if(selectedCommandPoint != null) {
-            GameObject.Destroy(selectedCommandPoint.gameObject);
-            selectedCommandPoint = null;
-        }
 
         //Standard Destinations
 
         //Forward Facing (current speed)
         //This is the default selected command point for players
-        var defaultSelected = InstantiateCommandPoint(
+        var defalutSelectedPoint = InstantiateCommandPoint(
             pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity),
             pieceController.GetHexDirection(),
             pieceController.GetLevel());
@@ -97,29 +84,25 @@ public class NavigationSystem: MonoBehaviour
                 pieceController.GetLevel() - 1);
         }
 
-        if(pieceController.isPlayerControlled) {
-            defaultSelected.SelectPoint(true);
-            selectedCommandPoint = defaultSelected;
-        }else{
-            //Have enemies fly randomly for now
-            selectedCommandPoint = availableCommandPoints[Random.Range(0, availableCommandPoints.Count)];
-        }
+        if(pieceController.isPlayerControlled) defalutSelectedPoint.SelectPoint(true);
 
         hasGeneratedThisTurn = true;
     }
 
-    [EventListener]
-    void OnStartPlayingTurn(GameControllerFsm.Events.BeginPlayingOutTurnEvent @event){
-        pieceController.SetActivePath(selectedCommandPoint.spline);
-        pieceController.gamePiece.SetDestination(selectedCommandPoint.destinationTile, selectedCommandPoint.destinationDirection, selectedCommandPoint.destinationLevel);
+    public List<CommandPointFsm> GetAvailableCommandPoints(){
+        return availableCommandPoints;
+    }
 
+    [EventListener]
+    void OnStartNewTurn(GameControllerFsm.Events.NewTurnEvent @event)
+    {
         foreach(CommandPointFsm point in availableCommandPoints) {
-            if(point != selectedCommandPoint) {
-                GameObject.Destroy(point.gameObject);
-            }
+            GameObject.Destroy(point.gameObject);
         }
         availableCommandPoints.Clear();
+
         hasGeneratedThisTurn = false;
+        GenerateCommandPoints();
     }
 
     private CommandPointFsm InstantiateCommandPoint(Vector3Int tile, HexDirection direction, int level){
@@ -140,7 +123,7 @@ public class NavigationSystem: MonoBehaviour
         {
             if(point != selectedPoint) point.SelectPoint(false);
         }
-        selectedCommandPoint = selectedPoint;
+        pieceController.SetSelectedCommandPoint(selectedPoint);
     }
 
 }

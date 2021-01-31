@@ -91,6 +91,12 @@ public class HexMapHelper : MonoBehaviour
                 return Color.white;
         }
     }
+
+    public static float CrowFlyDistance(Vector3Int hex1Tile, int hex1Height, Vector3Int hex2Tile, int hex2Height){
+        Vector3 pos1 = GetWorldPointFromTile(hex1Tile, hex1Height);
+        Vector3 pos2 = GetWorldPointFromTile(hex2Tile, hex2Height);
+        return Vector3.Distance(pos1, pos2);
+    }
 }
 
 

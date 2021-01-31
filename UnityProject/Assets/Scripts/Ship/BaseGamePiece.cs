@@ -47,10 +47,19 @@ public class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveHexDirection
     }
 
     public void SetDestination(Vector3Int destinationTile, HexDirection destinationDirection, int destinationLevel) {
-        Debug.Log("Destination Set");
         this.destinationTile = destinationTile;
         this.destinationDirection = destinationDirection;
         this.destinationLevel = destinationLevel;
+    }
+
+    public Vector3Int GetDestinationTile(){
+        //Used by missiles to intercept
+        return this.destinationTile;
+    }
+
+    public int GetDestinationLevel(){
+        //Used by missiles to intercept
+        return this.destinationLevel;
     }
 
     public void PositionAndOrientPiece(){
@@ -65,7 +74,6 @@ public class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveHexDirection
 
     [EventListener]
     protected virtual void OnEndPlayingPhase(GameControllerFsm.Events.EndPlayingOutTurnEvent @event){
-        Debug.Log("Applying Destination");
         currentTile = destinationTile;
         currentDirection = destinationDirection;
         currentLevel = destinationLevel;

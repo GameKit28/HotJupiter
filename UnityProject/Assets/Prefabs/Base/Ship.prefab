@@ -178,6 +178,7 @@ Transform:
   m_Children:
   - {fileID: 7571089963196293941}
   - {fileID: 6578902721629530362}
+  - {fileID: 7929105535757140536}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -194,8 +195,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isPlayerControlled: 0
-  shipTemplete: {fileID: 11400000, guid: f1fb0484619df4244875e4ab7a973305, type: 2}
+  pieceTemplate: {fileID: 0}
   gamePiece: {fileID: 7446146060042822933}
+  controllingBrain: {fileID: 0}
+  navigationSystem: {fileID: 8832686492427905261}
   worldModel: {fileID: 3526316790202656933}
   worldBase: {fileID: 9194300592052839165}
 --- !u!1 &7132915082841308629
@@ -5041,6 +5044,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f328c006a5974a468da8543dc8b0df8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &8423454991927879983
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7929105535757140536}
+  - component: {fileID: 4150551835137847047}
+  m_Layer: 0
+  m_Name: ShipBrain
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7929105535757140536
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8423454991927879983}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 5258136340152230713}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4150551835137847047
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8423454991927879983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37f09b6a5d512784fa29411a6966b09b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myGamePiece: {fileID: 7446146060042822933}
+  pieceController: {fileID: 4472176637989411702}
+  currentTarget: {fileID: 0}
 --- !u!1 &9194300592052839165
 GameObject:
   m_ObjectHideFlags: 0
@@ -5547,6 +5596,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6401f62795a6485479fc499a41301a8b, type: 3}
+--- !u!114 &8832686492427905261 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 525200103300990859, guid: 6401f62795a6485479fc499a41301a8b,
+    type: 3}
+  m_PrefabInstance: {fileID: 9069654981787742054}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 346651bb65b51bd4ca6c1169b9fc90c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &3154829031812195859 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6203100925872966005, guid: 6401f62795a6485479fc499a41301a8b,

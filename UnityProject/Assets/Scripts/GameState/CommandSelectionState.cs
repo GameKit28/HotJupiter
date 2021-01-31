@@ -15,6 +15,7 @@ public partial class GameControllerFsm : MeFsm
             Debug.Log("Entering CommandSelectionState");
 
             EventManager.Publish(new Events.NewTurnEvent());
+            EventManager.Publish(new Events.NewTurnEventPost()); //Some systems need to do their thing after others have
         }
 
         // Update is called once per frame

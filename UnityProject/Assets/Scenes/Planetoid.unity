@@ -18314,6 +18314,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1847850608}
     m_Modifications:
+    - target: {fileID: 4150551835137847047, guid: 58c2d8a6c8b67a34295c686f660087c2,
+        type: 3}
+      propertyPath: currentTarget
+      value: 
+      objectReference: {fileID: 468382252}
     - target: {fileID: 4472176637989411702, guid: 58c2d8a6c8b67a34295c686f660087c2,
         type: 3}
       propertyPath: shipTemplete
@@ -55103,6 +55108,18 @@ Transform:
   m_Father: {fileID: 1481475151}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &558442215 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4472176637989411702, guid: 58c2d8a6c8b67a34295c686f660087c2,
+    type: 3}
+  m_PrefabInstance: {fileID: 5258136339479453370}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc0056c0d20c7624d934cdd88e48fa45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &604335963
 GameObject:
   m_ObjectHideFlags: 0
@@ -78841,6 +78858,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1847850608}
     m_Modifications:
+    - target: {fileID: 4150551835137847047, guid: 58c2d8a6c8b67a34295c686f660087c2,
+        type: 3}
+      propertyPath: currentTarget
+      value: 
+      objectReference: {fileID: 468382252}
     - target: {fileID: 4472176637989411702, guid: 58c2d8a6c8b67a34295c686f660087c2,
         type: 3}
       propertyPath: shipTemplete
@@ -83740,6 +83762,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1847850608}
     m_Modifications:
+    - target: {fileID: 4150551835137847047, guid: 58c2d8a6c8b67a34295c686f660087c2,
+        type: 3}
+      propertyPath: currentTarget
+      value: 
+      objectReference: {fileID: 468382252}
     - target: {fileID: 4472176637989411702, guid: 58c2d8a6c8b67a34295c686f660087c2,
         type: 3}
       propertyPath: shipTemplete
@@ -148803,5 +148830,27 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4150551835137847047, guid: 58c2d8a6c8b67a34295c686f660087c2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 58c2d8a6c8b67a34295c686f660087c2, type: 3}
+--- !u!1 &5258136339479453371 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8423454991927879983, guid: 58c2d8a6c8b67a34295c686f660087c2,
+    type: 3}
+  m_PrefabInstance: {fileID: 5258136339479453370}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5258136339479453372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5258136339479453371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d9b853a2268a2b4e96a230ef9c6024e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myGamePiece: {fileID: 468382252}
+  pieceController: {fileID: 558442215}
+  currentTarget: {fileID: 0}

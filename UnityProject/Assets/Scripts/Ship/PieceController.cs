@@ -12,6 +12,9 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveHexDirecti
 
     public NavigatingGamePiece gamePiece;
 
+    private CommandPointFsm selectedCommandPoint;
+
+    public NavigationSystem navigationSystem;
 
     public GameObject worldModel;
     public GameObject worldBase;
@@ -48,6 +51,9 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveHexDirecti
         worldModel.transform.localEulerAngles = new Vector3(0, HexMapHelper.GetAngleFromDirection(GetHexDirection()), 0);
     }
 
+    public void SetSelectedCommandPoint(CommandPointFsm point){
+        selectedCommandPoint = point;
+    }
     public void SetActivePath(BGCurve path) {
         activeWorldPath = path;
     }
@@ -63,5 +69,11 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveHexDirecti
             worldBase.transform.position = math.CalcPositionAndTangentByDistanceRatio(TimeManager.TurnRatio, out tangent);
             worldModel.transform.rotation = Quaternion.LookRotation(tangent);
         }
+    }
+
+    [EventListener]
+    void OnStartPlayingTurn(GameControllerFsm.Events.BeginPlayingOutTurnEvent @event){
+        SetActivePath(selectedCommandPoint.spline);
+        gamePiece.SetDestination(selectedCommandPoint.destinationTile, selectedCommandPoint.destinationDirection, selectedCommandPoint.destinationLevel);
     }
 }

@@ -28,5 +28,9 @@ public class MissileFactory : MonoBehaviour
         newMissile.GetComponentInChildren<PieceController>().worldModel.transform.localEulerAngles = new Vector3(0, HexMapHelper.GetAngleFromDirection(direction), 0);
 
         newMissile.GetComponentInChildren<NavigationSystem>().GenerateCommandPoints();
+
+        newMissile.GetComponentInChildren<MissileBrain>().FindTarget();
+        var selectedCommand = newMissile.GetComponentInChildren<MissileBrain>().SelectCommand();
+        newMissile.GetComponentInChildren<PieceController>().SetSelectedCommandPoint(selectedCommand);
     }
 }
