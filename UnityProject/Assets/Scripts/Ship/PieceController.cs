@@ -47,7 +47,10 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveHexDirecti
     void Start()
     {
         //Kit - Potential race condition here as the gamePiece is setting up it's position in Start as well
-        worldBase.transform.position = HexMapHelper.GetWorldPointFromTile(GetTilePosition(), GetLevel());
+        var assumedTile = HexMapHelper.GetTileFromWorldPoint(transform.position);
+        var assumedHeight = HexMapHelper.GetLevelFromAltitude(transform.position.y);
+
+        worldBase.transform.position = HexMapHelper.GetWorldPointFromTile(assumedTile, assumedHeight);
         worldModel.transform.localEulerAngles = new Vector3(0, HexMapHelper.GetAngleFromDirection(GetHexDirection()), 0);
     }
 
