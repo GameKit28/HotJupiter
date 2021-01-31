@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   numThrusters: 3
   numVectorThrusters: 2
-  shipModel: {fileID: 209291574891395560, guid: 4236befb1470a0743af58ef19b9d99e4,
-    type: 3}
+  model: {fileID: 209291574891395560, guid: 4236befb1470a0743af58ef19b9d99e4, type: 3}
+  health: 3

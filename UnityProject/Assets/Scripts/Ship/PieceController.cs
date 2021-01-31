@@ -8,7 +8,7 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveHexDirecti
 {
     public bool isPlayerControlled = false;
 
-    public ShipStats shipTemplete;
+    public BaseManuStats pieceTemplate;
 
     public NavigatingGamePiece gamePiece;
 
@@ -34,7 +34,10 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveHexDirecti
     void Awake() {
         EventManager.SubscribeAll(this);
 
-        GameObject.Instantiate(shipTemplete.shipModel, worldModel.transform, false);
+        GameObject worldObject = GameObject.Instantiate(pieceTemplate.model, worldModel.transform, false);
+        worldObject.transform.localPosition = Vector3.zero;
+        worldObject.transform.localScale = Vector3.one;
+        worldObject.transform.localRotation = Quaternion.identity;
     }
 
     // Start is called before the first frame update

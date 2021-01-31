@@ -3,14 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Ship", menuName = "ScriptableObjects/Ship", order = 1)]
-public class ShipStats : ScriptableObject
+public class ShipStats : BaseManuStats
 {
-    public int numThrusters = 3;
-    public int numVectorThrusters = 2;
-
-    public GameObject shipModel;
-
-    public int TopSpeed { get {
-        return numThrusters * 2;
-    }}
+    public int health = 3;
 }

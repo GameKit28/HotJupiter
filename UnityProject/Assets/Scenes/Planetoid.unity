@@ -18385,6 +18385,12 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7446146060042822933, guid: 58c2d8a6c8b67a34295c686f660087c2,
+        type: 3}
+      propertyPath: shipTemplete
+      value: 
+      objectReference: {fileID: 11400000, guid: 78696d59f10093a4fb34c8a396c44607,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 58c2d8a6c8b67a34295c686f660087c2, type: 3}
 --- !u!1 &15046988
@@ -78808,6 +78814,12 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7446146060042822933, guid: 58c2d8a6c8b67a34295c686f660087c2,
+        type: 3}
+      propertyPath: shipTemplete
+      value: 
+      objectReference: {fileID: 11400000, guid: 78696d59f10093a4fb34c8a396c44607,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 58c2d8a6c8b67a34295c686f660087c2, type: 3}
 --- !u!1 &1296567670
@@ -83695,6 +83707,12 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7446146060042822933, guid: 58c2d8a6c8b67a34295c686f660087c2,
+        type: 3}
+      propertyPath: shipTemplete
+      value: 
+      objectReference: {fileID: 11400000, guid: 78696d59f10093a4fb34c8a396c44607,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 58c2d8a6c8b67a34295c686f660087c2, type: 3}
 --- !u!1 &1344120876
@@ -125217,7 +125235,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1847850608}
   m_Layer: 0
-  m_Name: ShipPieceHolder
+  m_Name: GamePieceHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
