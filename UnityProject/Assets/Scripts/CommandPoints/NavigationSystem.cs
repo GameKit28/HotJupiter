@@ -31,17 +31,17 @@ public class NavigationSystem: MonoBehaviour
         //Forward Facing (speed up)
         if(pieceController.gamePiece.currentVelocity < pieceController.gamePiece.maxSpeed && pieceController.pieceTemplate.canAccelerate) {
             InstantiateCommandPoint(
-            pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity + 1),
-            pieceController.GetHexDirection(),
-            pieceController.GetLevel());
+                pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity + 1),
+                pieceController.GetHexDirection(),
+                pieceController.GetLevel());
         }
 
         //Forward Facing (slow down)
         if(pieceController.gamePiece.currentVelocity > 2 && pieceController.pieceTemplate.canDecelerate) {
             InstantiateCommandPoint(
-            pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity - 1),
-            pieceController.GetHexDirection(),
-            pieceController.GetLevel());
+                pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity - 1),
+                pieceController.GetHexDirection(),
+                pieceController.GetLevel());
         }
 
         //Turn Left (straight bank)
@@ -89,11 +89,21 @@ public class NavigationSystem: MonoBehaviour
         
 
         //Climb Altitude
-        if(pieceController.GetLevel() < 6){
-            InstantiateCommandPoint(
-                pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity - 1),
-                pieceController.GetHexDirection(),
-                pieceController.GetLevel() + 1);
+        if(pieceController.pieceTemplate.effortlessClimb){
+            if(pieceController.GetLevel() < 6){
+                InstantiateCommandPoint(
+                    pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity),
+                    pieceController.GetHexDirection(),
+                    pieceController.GetLevel() + 1);
+                }
+
+        }else{
+            if(pieceController.GetLevel() < 6){
+                InstantiateCommandPoint(
+                    pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity - 1),
+                    pieceController.GetHexDirection(),
+                    pieceController.GetLevel() + 1);
+            }
         }
 
         //Descend Altitude

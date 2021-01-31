@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: d1c3109bdb54ad54c8a2b2838528e640
+    path: Assets/Scenes/TitleScreen.unity
+    guid: 2daf3639688042848806210e50d5cf87
+  - enabled: 1
+    path: Assets/Scenes/Planetoid.unity
+    guid: 19996f092d5aa0f40aebad5d867a7b30
   m_configObjects: {}

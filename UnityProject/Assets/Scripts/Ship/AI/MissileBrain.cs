@@ -11,7 +11,7 @@ public class MissileBrain : BaseBrain<MissileGamePiece>
 
     public override BaseGamePiece FindTarget()
     {
-        ShipGamePiece[] allShips = GameObject.FindObjectsOfType<ShipGamePiece>();
+        List<ShipGamePiece> allShips = ShipManager.GetAllShips();
 
         //Next Turn Hex
         Vector3Int headingTile = myGamePiece.currentTile.Traverse(myGamePiece.currentDirection, myGamePiece.currentVelocity);

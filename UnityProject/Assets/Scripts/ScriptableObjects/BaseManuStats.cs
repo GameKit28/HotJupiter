@@ -12,10 +12,12 @@ public class BaseManuStats : ScriptableObject
 
     public bool canStrafe = true;
 
+    public bool effortlessClimb = false;
+
     public GameObject model;
 
     public int TopSpeed { get {
-        return numThrusters * 2;
+        return numThrusters;
     }}
 
     public int Maneuverability { get {

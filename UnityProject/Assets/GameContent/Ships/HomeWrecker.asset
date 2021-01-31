@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca0e8b03c4e3bb8459fcc5805772b616, type: 3}
   m_Name: HomeWrecker
   m_EditorClassIdentifier: 
-  numThrusters: 3
+  numThrusters: 5
   numVectorThrusters: 1
   canAccelerate: 1
   canDecelerate: 1
   canStrafe: 1
+  effortlessClimb: 0
   model: {fileID: 1530529571317496691, guid: 0ff36e904225ca241a75d52f5b5ddd93, type: 3}
   health: 3
   missileCount: 10

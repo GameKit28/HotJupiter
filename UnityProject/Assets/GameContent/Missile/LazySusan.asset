@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e7fc490dceb9e74b9f567c0400cd033, type: 3}
   m_Name: LazySusan
   m_EditorClassIdentifier: 
-  numThrusters: 4
+  numThrusters: 8
   numVectorThrusters: 3
   canAccelerate: 1
   canDecelerate: 0
   canStrafe: 1
+  effortlessClimb: 1
   model: {fileID: 1687536067985334, guid: 19e5b144b66a9fa4288bcca51570870a, type: 3}
   payload: 2
