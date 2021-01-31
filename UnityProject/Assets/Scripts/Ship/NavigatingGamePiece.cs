@@ -7,6 +7,4 @@ using MeEngine.Events;
 public class NavigatingGamePiece : BaseGamePiece
 {
     public int currentVelocity;
-
-    public int maxSpeed = 6;
 }

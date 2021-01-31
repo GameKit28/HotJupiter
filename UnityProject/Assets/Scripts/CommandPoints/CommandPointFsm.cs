@@ -11,6 +11,8 @@ public partial class CommandPointFsm : MeFsm
     public HexDirection destinationDirection;
     public int destinationLevel;
 
+    public int endVelocity;
+
 
     public GameObject sprite;
     public BGCurve spline;
@@ -53,6 +55,10 @@ public partial class CommandPointFsm : MeFsm
 
         SetSpline(sourcePosition, sourceHeading,
             HexMapHelper.GetWorldPointFromTile(tile) + new Vector3(0, HexMapHelper.GetAltitudeFromLevel(level), 0), HexMapHelper.GetVectorFromDirection(direction));
+    }
+
+    public void SetEndVelocity(int velocity) {
+        endVelocity = velocity;
     }
 
     public void SelectPoint(bool selected){

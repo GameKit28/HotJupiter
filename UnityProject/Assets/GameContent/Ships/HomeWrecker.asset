@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca0e8b03c4e3bb8459fcc5805772b616, type: 3}
   m_Name: HomeWrecker
   m_EditorClassIdentifier: 
-  numThrusters: 5
+  numThrusters: 4
   numVectorThrusters: 1
   canAccelerate: 1
   canDecelerate: 1

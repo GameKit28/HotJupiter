@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca0e8b03c4e3bb8459fcc5805772b616, type: 3}
   m_Name: Viper
   m_EditorClassIdentifier: 
-  numThrusters: 3
+  numThrusters: 4
   numVectorThrusters: 1
   canAccelerate: 1
   canDecelerate: 1
   canStrafe: 1
+  effortlessClimb: 0
   model: {fileID: 209291574891395560, guid: 4236befb1470a0743af58ef19b9d99e4, type: 3}
   health: 3
   missileCount: 10
