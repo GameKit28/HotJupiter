@@ -6,4 +6,9 @@ using UnityEngine;
 public class ShipStats : BaseManuStats
 {
     public int health = 3;
+
+    public int missileCount = 10;
+    public int missileFireCooldownTurns = 2;
+
+    public MissileStats missileTemplate;
 }

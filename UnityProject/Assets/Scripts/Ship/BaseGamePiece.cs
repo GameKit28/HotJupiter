@@ -42,6 +42,10 @@ public class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveHexDirection
         PositionAndOrientPiece();
     }
 
+    protected virtual void Update(){
+
+    }
+
     public void SetDestination(Vector3Int destinationTile, HexDirection destinationDirection, int destinationLevel) {
         Debug.Log("Destination Set");
         this.destinationTile = destinationTile;
@@ -49,7 +53,7 @@ public class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveHexDirection
         this.destinationLevel = destinationLevel;
     }
 
-    private void PositionAndOrientPiece(){
+    public void PositionAndOrientPiece(){
         transform.position = HexMapHelper.GetWorldPointFromTile(currentTile, currentLevel);
         gamePieceModel.transform.localEulerAngles = new Vector3(0, HexMapHelper.GetAngleFromDirection(currentDirection), 0);
     }

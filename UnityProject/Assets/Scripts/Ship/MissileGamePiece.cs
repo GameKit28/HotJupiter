@@ -8,6 +8,8 @@ public class MissileGamePiece : NavigatingGamePiece
 {
     public MissileStats missileTemplate;
 
+    public BaseGamePiece motherGamePiece;
+
     protected override void Awake() {
         base.Awake();
 

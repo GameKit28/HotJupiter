@@ -16,3 +16,6 @@ MonoBehaviour:
   numVectorThrusters: 2
   model: {fileID: 1530529571317496691, guid: 0ff36e904225ca241a75d52f5b5ddd93, type: 3}
   health: 3
+  missileCount: 10
+  missileFireCooldownTurns: 2
+  missileTemplate: {fileID: 11400000, guid: 243cd1f00b33c26468adf0ae9958bf3a, type: 2}

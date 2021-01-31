@@ -11,6 +11,8 @@ public class NavigationSystem: MonoBehaviour
 
     private CommandPointFsm selectedCommandPoint;
 
+    bool hasGeneratedThisTurn = false;
+
     void Awake(){
         EventManager.SubscribeAll(this);
     }
@@ -18,6 +20,13 @@ public class NavigationSystem: MonoBehaviour
     [EventListener]
     void OnStartNewTurn(GameControllerFsm.Events.NewTurnEvent @event)
     {
+        GenerateCommandPoints();
+    }
+
+    public void GenerateCommandPoints()
+    {
+        if (hasGeneratedThisTurn) return;
+
         if(selectedCommandPoint != null) {
             GameObject.Destroy(selectedCommandPoint.gameObject);
             selectedCommandPoint = null;
@@ -96,6 +105,7 @@ public class NavigationSystem: MonoBehaviour
             selectedCommandPoint = availableCommandPoints[Random.Range(0, availableCommandPoints.Count)];
         }
 
+        hasGeneratedThisTurn = true;
     }
 
     [EventListener]
@@ -109,6 +119,7 @@ public class NavigationSystem: MonoBehaviour
             }
         }
         availableCommandPoints.Clear();
+        hasGeneratedThisTurn = false;
     }
 
     private CommandPointFsm InstantiateCommandPoint(Vector3Int tile, HexDirection direction, int level){
