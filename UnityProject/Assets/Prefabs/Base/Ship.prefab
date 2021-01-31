@@ -50,7 +50,7 @@ MonoBehaviour:
   currentLevel: 0
   gamePieceModel: {fileID: 5258136339442636985}
   currentVelocity: 3
-  maxSpeed: 6
+  missileFireSound: {fileID: 8300000, guid: 1e6be1c3f7a0901449d23d34c934d1b3, type: 3}
   shipTemplete: {fileID: 11400000, guid: f1fb0484619df4244875e4ab7a973305, type: 2}
 --- !u!1 &3526316790202656933
 GameObject:
@@ -197,7 +197,6 @@ MonoBehaviour:
   isPlayerControlled: 0
   pieceTemplate: {fileID: 0}
   gamePiece: {fileID: 7446146060042822933}
-  controllingBrain: {fileID: 0}
   navigationSystem: {fileID: 8832686492427905261}
   worldModel: {fileID: 3526316790202656933}
   worldBase: {fileID: 9194300592052839165}

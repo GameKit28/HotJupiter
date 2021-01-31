@@ -6,6 +6,8 @@ using BansheeGz.BGSpline.Components;
 using MeEngine.Events;
 public class ShipGamePiece : NavigatingGamePiece
 {
+    public AudioClip missileFireSound;
+
     public ShipStats shipTemplete;
 
     int missileCount;
@@ -57,6 +59,7 @@ public class ShipGamePiece : NavigatingGamePiece
             missileCooldown = shipTemplete.missileFireCooldownTurns;
 
             MissileFactory.SpawnMissile(currentTile, currentDirection, currentLevel, this, shipTemplete.missileTemplate);
+            AudioSource.PlayClipAtPoint(missileFireSound, transform.position);
         }
     }
 
