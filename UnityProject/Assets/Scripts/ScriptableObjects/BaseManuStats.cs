@@ -7,6 +7,11 @@ public class BaseManuStats : ScriptableObject
     public int numThrusters = 3;
     public int numVectorThrusters = 2;
 
+    public bool canAccelerate = true;
+    public bool canDecelerate = true;
+
+    public bool canStrafe = true;
+
     public GameObject model;
 
     public int TopSpeed { get {

@@ -29,7 +29,7 @@ public class NavigationSystem: MonoBehaviour
             pieceController.GetLevel());
 
         //Forward Facing (speed up)
-        if(pieceController.gamePiece.currentVelocity < pieceController.gamePiece.maxSpeed) {
+        if(pieceController.gamePiece.currentVelocity < pieceController.gamePiece.maxSpeed && pieceController.pieceTemplate.canAccelerate) {
             InstantiateCommandPoint(
             pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity + 1),
             pieceController.GetHexDirection(),
@@ -37,7 +37,7 @@ public class NavigationSystem: MonoBehaviour
         }
 
         //Forward Facing (slow down)
-        if(pieceController.gamePiece.currentVelocity > 2) {
+        if(pieceController.gamePiece.currentVelocity > 2 && pieceController.pieceTemplate.canDecelerate) {
             InstantiateCommandPoint(
             pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity - 1),
             pieceController.GetHexDirection(),
@@ -50,23 +50,43 @@ public class NavigationSystem: MonoBehaviour
             pieceController.GetHexDirection().RotateCounterClockwise(),
             pieceController.GetLevel());
 
-        //Turn Left
-        InstantiateCommandPoint(
-            pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity - 1).Traverse(pieceController.GetHexDirection().RotateCounterClockwise()),
-            pieceController.GetHexDirection().RotateCounterClockwise(),
-            pieceController.GetLevel());
-
         //Turn Right (straight bank)
         InstantiateCommandPoint(
             pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity),
             pieceController.GetHexDirection().RotateClockwise(),
             pieceController.GetLevel());
 
-        //Turn Right
-        InstantiateCommandPoint(
-            pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity - 1).Traverse(pieceController.GetHexDirection().RotateClockwise()),
-            pieceController.GetHexDirection().RotateClockwise(),
-            pieceController.GetLevel());
+        for(int manu = 1; manu <= pieceController.pieceTemplate.Maneuverability; manu++){
+            if(pieceController.gamePiece.currentVelocity - manu >= 1) {
+                if(pieceController.pieceTemplate.canStrafe){
+                    //Strafe Left
+                    InstantiateCommandPoint(
+                        pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity - manu).Traverse(pieceController.GetHexDirection().RotateCounterClockwise(), manu),
+                        pieceController.GetHexDirection(),
+                        pieceController.GetLevel());
+
+                    //Strafe Right (straight bank)
+                    InstantiateCommandPoint(
+                        pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity - manu).Traverse(pieceController.GetHexDirection().RotateClockwise(), manu),
+                        pieceController.GetHexDirection(),
+                        pieceController.GetLevel());
+                }
+
+                //Turn Left
+                InstantiateCommandPoint(
+                    pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity - manu).Traverse(pieceController.GetHexDirection().RotateCounterClockwise(), manu),
+                    pieceController.GetHexDirection().RotateCounterClockwise(),
+                    pieceController.GetLevel());
+
+                //Turn Right
+                InstantiateCommandPoint(
+                    pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity - manu).Traverse(pieceController.GetHexDirection().RotateClockwise(), manu),
+                    pieceController.GetHexDirection().RotateClockwise(),
+                    pieceController.GetLevel());
+            }
+        }
+
+        
 
         //Climb Altitude
         if(pieceController.GetLevel() < 6){
