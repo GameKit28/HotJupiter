@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Tilemaps;
+//using UnityEngine.Tilemaps;
 using MeEngine.Events;
+using HexasphereGrid;
 
 public class HexMapUI : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class HexMapUI : MonoBehaviour
         public struct UIMapLevelChanged : IEvent { public int previousMapLevel; public int newMapLevel; }
     }
 
-    public List<Tilemap> tilemaps = new List<Tilemap>();
+    public List<Hexasphere> tilemaps = new List<Hexasphere>();
     static HexMapUI instance;
 
     public float scrollThreshold = 0.1f;
@@ -24,7 +25,7 @@ public class HexMapUI : MonoBehaviour
     }
     private int _UIMapLevel;
 
-    public static Tilemap currentTilemap {
+    public static Hexasphere currentTilemap {
         get {
             return instance.tilemaps[instance._UIMapLevel];
         }
@@ -63,8 +64,13 @@ public class HexMapUI : MonoBehaviour
     }
 
     private void HideAllButCurrentUILevel(){
-        for(int levelI = 0; levelI < tilemaps.Count; levelI++){
-            tilemaps[levelI].gameObject.SetActive(levelI == currentUIMapLevel);
+        //The base sphere (the planet) behaves a little differently
+        tilemaps[0].style = currentUIMapLevel == 0 ? STYLE.ShadedWireframe : STYLE.Shaded;
+        tilemaps[0].GetComponent<SphereCollider>().enabled = currentUIMapLevel == 0;
+
+        //The grids can be simply enabled or disabled
+        for(int levelIndex = 1; levelIndex < tilemaps.Count; levelIndex++){
+            tilemaps[levelIndex].gameObject.SetActive(levelIndex == currentUIMapLevel);
         }
     }
 }
