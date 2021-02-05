@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 using MeEngine.Events;
+using HexasphereGrid;
 
 public enum HexDirection {
     NorthEast = 0,
@@ -13,24 +13,72 @@ public enum HexDirection {
     NorthWest = 5
 }
 
+public struct TileCoords {
+    public int index;
+
+    public bool Equals(TileCoords other)
+    {
+        return Equals(other, this);
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (obj == null || GetType() != obj.GetType())
+        {
+            return false;
+        }
+
+        var objectToCompareWith = (TileCoords) obj;
+
+        return index == objectToCompareWith.index;
+    }
+
+    public override int GetHashCode()
+    {
+        return index.GetHashCode();
+    }
+
+    public static bool operator ==(TileCoords o1, TileCoords o2) 
+    {
+        return o1.Equals(o2);
+    }
+
+    public static bool operator !=(TileCoords o1, TileCoords o2) 
+    {
+        return !o1.Equals(o2);
+    }
+}
+
 public class HexMapHelper : MonoBehaviour
 {
     private static HexMapHelper instance;
 
-    public Tilemap baseTilemap;
+    public const float gridFirstAltitudeOffset = 0.25f;
+    public const float gridAltitudeOffsets = 0.5f;
 
-    public const float HexWidth = 1.0f;
+    public Hexasphere baseHexasphere;
+
+    public const float HexWidth = 1.0f; //The incircle diameter of a hexagon
 
     void Awake(){
         instance = this;
     }
 
-    public static Vector3Int GetTileFromWorldPoint(Vector3 worldPos){
-        return instance.baseTilemap.WorldToCell(worldPos);
+    public static TileCoords GetTileFromWorldPoint(Vector3 worldPos){
+        return new TileCoords(){ index = instance.baseHexasphere.GetTileAtPos(worldPos) };
     }
 
-    public static Vector3 GetWorldPointFromTile(Vector3Int tilePos, int level = 0){
-        return instance.baseTilemap.CellToWorld(tilePos) + new Vector3(0, GetAltitudeFromLevel(level), 0);
+    public static Vector3 GetTileNormal(TileCoords tileCoords){
+        return (instance.baseHexasphere.tiles[tileCoords.index].center - instance.baseHexasphere.transform.position).normalized;
+    }
+
+    public static Vector3 GetWorldPointFromTile(TileCoords tileCoords, int level = 0){
+        Tile tile = instance.baseHexasphere.tiles[tileCoords.index];
+        if(level == 0){
+            return tile.center;
+        }else{
+            return tile.center + GetTileNormal(tileCoords) * GetAltitudeFromLevel(level);
+        }
     }
 
     public static float GetAngleFromDirection(HexDirection direction) {
@@ -57,11 +105,11 @@ public class HexMapHelper : MonoBehaviour
     }
 
     public static int GetLevelFromAltitude(float altitude){
-        return Mathf.Clamp(Mathf.RoundToInt((altitude + 0.25f) / 0.5f), 0, 6);
+        return Mathf.Clamp(Mathf.RoundToInt((altitude + gridFirstAltitudeOffset) / gridAltitudeOffsets), 0, 6);
     }
 
     public static float GetAltitudeFromLevel(int level) {
-        return Mathf.Max(0, 0.25f + ((level - 1) * 0.5f));
+        return Mathf.Max(0, gridFirstAltitudeOffset + ((level - 1) * gridAltitudeOffsets));
     }
 
     public static Color GetLevelColor(int level) {
@@ -92,7 +140,7 @@ public class HexMapHelper : MonoBehaviour
         }
     }
 
-    public static float CrowFlyDistance(Vector3Int hex1Tile, int hex1Height, Vector3Int hex2Tile, int hex2Height){
+    public static float CrowFlyDistance(TileCoords hex1Tile, int hex1Height, TileCoords hex2Tile, int hex2Height){
         Vector3 pos1 = GetWorldPointFromTile(hex1Tile, hex1Height);
         Vector3 pos2 = GetWorldPointFromTile(hex2Tile, hex2Height);
         return Vector3.Distance(pos1, pos2);

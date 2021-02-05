@@ -22,10 +22,11 @@ public class EnemyShipBrain : BaseBrain<ShipGamePiece>
     [EventListener]
     void OnNewTurn(GameControllerFsm.Events.NewTurnEvent @event){
         FindTarget();
-        Vector3Int missileOkayZone = myGamePiece.currentTile.Traverse(myGamePiece.currentDirection, myGamePiece.shipTemplete.missileTemplate.TopSpeed);
+        /*Vector3Int missileOkayZone = myGamePiece.currentTile.Traverse(myGamePiece.currentDirection, myGamePiece.shipTemplete.missileTemplate.TopSpeed);
         if(HexMapHelper.CrowFlyDistance(missileOkayZone, myGamePiece.currentLevel, currentTarget.currentTile, currentTarget.currentLevel) < 4f){
             myGamePiece.QueueMissile(true);
         }
+        */
     }
 
     [EventListener]

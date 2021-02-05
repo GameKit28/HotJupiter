@@ -6,18 +6,18 @@ using BansheeGz.BGSpline.Components;
 using MeEngine.Events;
 public class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveHexDirection
 {
-    public Vector3Int currentTile;
+    public TileCoords currentTile;
     public HexDirection currentDirection;
     public int currentLevel;
 
-    private Vector3Int destinationTile;
+    private TileCoords destinationTile;
     private HexDirection destinationDirection;
     private int destinationLevel;
 
 
     public GameObject gamePieceModel;
 
-    public Vector3Int GetTilePosition(){
+    public TileCoords GetTilePosition(){
         return currentTile;
     }
 
@@ -46,13 +46,13 @@ public class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveHexDirection
 
     }
 
-    public void SetDestination(Vector3Int destinationTile, HexDirection destinationDirection, int destinationLevel) {
+    public void SetDestination(TileCoords destinationTile, HexDirection destinationDirection, int destinationLevel) {
         this.destinationTile = destinationTile;
         this.destinationDirection = destinationDirection;
         this.destinationLevel = destinationLevel;
     }
 
-    public Vector3Int GetDestinationTile(){
+    public TileCoords GetDestinationTile(){
         //Used by missiles to intercept
         return this.destinationTile;
     }

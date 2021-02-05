@@ -19,7 +19,7 @@ public class Cursor : MonoBehaviour
     void Update()
     {
         Vector3 cursorWorldPos = GetPlaneIntersection();
-        Vector3Int selectedTile = HexMapHelper.GetTileFromWorldPoint(cursorWorldPos);
+        TileCoords selectedTile = HexMapHelper.GetTileFromWorldPoint(cursorWorldPos);
         //Debug.Log("SelectedTile = " + selectedTile);
         transform.position = HexMapHelper.GetWorldPointFromTile(selectedTile, HexMapUI.currentUIMapLevel);
     }

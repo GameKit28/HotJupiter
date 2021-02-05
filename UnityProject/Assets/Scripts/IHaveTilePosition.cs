@@ -1,6 +1,6 @@
 using UnityEngine;
 
 public interface IHaveTilePosition{
-    Vector3Int GetTilePosition();
+    TileCoords GetTilePosition();
     int GetLevel();
 }

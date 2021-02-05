@@ -7,7 +7,7 @@ using BansheeGz.BGSpline.Components;
 using MeEngine.Events;
 public partial class CommandPointFsm : MeFsm
 {
-    public Vector3Int destinationTile;
+    public TileCoords destinationTile;
     public HexDirection destinationDirection;
     public int destinationLevel;
 
@@ -39,13 +39,13 @@ public partial class CommandPointFsm : MeFsm
         this.sourceHeading = HexMapHelper.GetVectorFromDirection(sourceDirection);
     }
 
-    public void SetDestination(Vector3Int tile, HexDirection direction, int level) {
-        destinationTile = tile;
+    public void SetDestination(TileCoords tileCoords, HexDirection direction, int level) {
+        destinationTile = tileCoords;
         destinationDirection = direction;
         destinationLevel = level;
 
         //Position the sprite within the Hex
-        sprite.transform.position = HexMapHelper.GetWorldPointFromTile(tile, level) + (HexMapHelper.GetVectorFromDirection(direction) * HexMapHelper.HexWidth * 0.3f);
+        sprite.transform.position = HexMapHelper.GetWorldPointFromTile(tileCoords, level) + (HexMapHelper.GetVectorFromDirection(direction) * HexMapHelper.HexWidth * 0.3f);
 
         //Face the sprite the correct direction
         sprite.transform.eulerAngles = new Vector3(90, HexMapHelper.GetAngleFromDirection(direction), 0);
@@ -54,7 +54,7 @@ public partial class CommandPointFsm : MeFsm
         sprite.GetComponent<SpriteRenderer>().color = HexMapHelper.GetLevelColor(level);
 
         SetSpline(sourcePosition, sourceHeading,
-            HexMapHelper.GetWorldPointFromTile(tile) + new Vector3(0, HexMapHelper.GetAltitudeFromLevel(level), 0), HexMapHelper.GetVectorFromDirection(direction));
+            HexMapHelper.GetWorldPointFromTile(tileCoords) + new Vector3(0, HexMapHelper.GetAltitudeFromLevel(level), 0), HexMapHelper.GetVectorFromDirection(direction));
     }
 
     public void SetEndVelocity(int velocity) {

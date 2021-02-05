@@ -22,7 +22,7 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveHexDirecti
     private BGCurve activeWorldPath;
 
 
-    public Vector3Int GetTilePosition(){
+    public TileCoords GetTilePosition(){
         return gamePiece.currentTile;
     }
 

@@ -4,17 +4,22 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    float cameraSpeedX = 5f;
-    float cameraSpeedZ = 3f;
+    float cameraSpeedX = 15f;
+    float cameraSpeedZ = 15f;
 
-    const float planetRadius = 19.92694f;
-    const float level1Altitude = 0.25f;
-    const float focalPointRadius = planetRadius + level1Altitude;
+    public PlanetSizer focalPlanet;
+    public GameObject cameraFocalPoint;
+
+    private float focalPointRadius {
+        get {
+            return focalPlanet.planetRadius + HexMapHelper.gridFirstAltitudeOffset;
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        cameraFocalPoint.transform.position = Vector3.up * focalPointRadius;
     }
 
     // Update is called once per frame
@@ -24,15 +29,15 @@ public class CameraController : MonoBehaviour
 
 
         if(Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) {
-            this.transform.Translate(Vector3.left * cameraSpeedX * TimeManager.UIDeltaTime);
+            this.transform.Rotate(transform.forward, cameraSpeedX * TimeManager.UIDeltaTime);
         }else if(Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) {
-            this.transform.Translate(Vector3.right * cameraSpeedX * TimeManager.UIDeltaTime);
+            this.transform.Rotate(transform.forward, -cameraSpeedX * TimeManager.UIDeltaTime);
         }
 
         if(Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) {
-            this.transform.Translate(Vector3.forward * cameraSpeedZ * TimeManager.UIDeltaTime);
+            this.transform.Rotate(transform.right, cameraSpeedZ * TimeManager.UIDeltaTime);
         }else if(Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) {
-            this.transform.Translate(Vector3.back * cameraSpeedZ * TimeManager.UIDeltaTime);
+            this.transform.Rotate(transform.right, -cameraSpeedZ * TimeManager.UIDeltaTime);
         }
     }
 }

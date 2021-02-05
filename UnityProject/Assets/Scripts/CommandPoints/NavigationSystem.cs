@@ -23,7 +23,7 @@ public class NavigationSystem: MonoBehaviour
 
         //Forward Facing (current speed)
         //This is the default selected command point for players
-        var defalutSelectedPoint = InstantiateCommandPoint(
+        /*var defalutSelectedPoint = InstantiateCommandPoint(
             pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity),
             pieceController.GetHexDirection(),
             pieceController.GetLevel(),
@@ -125,8 +125,10 @@ public class NavigationSystem: MonoBehaviour
                 pieceController.GetLevel() - 1,
                 pieceController.gamePiece.currentVelocity);
         }
+        
 
         if(pieceController.isPlayerControlled) defalutSelectedPoint.SelectPoint(true);
+        */
 
         hasGeneratedThisTurn = true;
     }
@@ -147,12 +149,12 @@ public class NavigationSystem: MonoBehaviour
         GenerateCommandPoints();
     }
 
-    private CommandPointFsm InstantiateCommandPoint(Vector3Int tile, HexDirection direction, int level, int endVelocity){
+    private CommandPointFsm InstantiateCommandPoint(TileCoords tileCoords, HexDirection direction, int level, int endVelocity){
         CommandPointFsm commandPoint = GameObject.Instantiate(commandPointPrefab, Vector3.zero, Quaternion.identity, transform).GetComponent<CommandPointFsm>();
         commandPoint.SetNavigationSystem(this);
 
         commandPoint.SetSource(pieceController.worldModel.transform.position, pieceController.GetHexDirection());
-        commandPoint.SetDestination(tile, direction, level);
+        commandPoint.SetDestination(tileCoords, direction, level);
         commandPoint.SetEndVelocity(endVelocity);
         if(!pieceController.isPlayerControlled) commandPoint.gameObject.SetActive(false);
 

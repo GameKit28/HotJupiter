@@ -14,7 +14,7 @@ public class MissileBrain : BaseBrain<MissileGamePiece>
         List<ShipGamePiece> allShips = ShipManager.GetAllShips();
 
         //Next Turn Hex
-        Vector3Int headingTile = myGamePiece.currentTile.Traverse(myGamePiece.currentDirection, myGamePiece.currentVelocity);
+        /*Vector3Int headingTile = myGamePiece.currentTile.Traverse(myGamePiece.currentDirection, myGamePiece.currentVelocity);
 
         //Find the ship closest to where I will be if I move forward. Exclude the ship that fired me.
         ShipGamePiece closestShip = null;
@@ -31,6 +31,7 @@ public class MissileBrain : BaseBrain<MissileGamePiece>
         }
 
         currentTarget = closestShip;
+        */
         return currentTarget;
     }
 
@@ -40,7 +41,7 @@ public class MissileBrain : BaseBrain<MissileGamePiece>
 
         if(currentTarget != null){
             // Missile know where their target will be
-            Vector3Int targetDestinationTile = currentTarget.GetDestinationTile();
+            TileCoords targetDestinationTile = currentTarget.GetDestinationTile();
             int targetDestinationLevel = currentTarget.GetDestinationLevel();
             Vector3 targetDestinationWorldSpace = HexMapHelper.GetWorldPointFromTile(targetDestinationTile, targetDestinationLevel);
 
