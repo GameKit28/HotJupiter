@@ -65,11 +65,11 @@ public class HexMapUI : MonoBehaviour
 
     private void HideAllButCurrentUILevel(){
         //The base sphere (the planet) behaves a little differently
-        tilemaps[0].style = currentUIMapLevel == 0 ? STYLE.ShadedWireframe : STYLE.Shaded;
-        tilemaps[0].GetComponent<SphereCollider>().enabled = currentUIMapLevel == 0;
+        //tilemaps[0].style = currentUIMapLevel == 0 ? STYLE.ShadedWireframe : STYLE.Shaded;
+        //tilemaps[0].GetComponent<SphereCollider>().enabled = currentUIMapLevel == 0;
 
         //The grids can be simply enabled or disabled
-        for(int levelIndex = 1; levelIndex < tilemaps.Count; levelIndex++){
+        for(int levelIndex = 0; levelIndex < tilemaps.Count; levelIndex++){
             tilemaps[levelIndex].gameObject.SetActive(levelIndex == currentUIMapLevel);
         }
     }

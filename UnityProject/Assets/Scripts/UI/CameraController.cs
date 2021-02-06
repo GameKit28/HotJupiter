@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    float cameraSpeedX = 15f;
+    float cameraSpeedX = 5f;
     float cameraSpeedZ = 15f;
 
     public PlanetSizer focalPlanet;
@@ -25,19 +25,41 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Kit. Try RotateAround
+        Vector3 newFocalPointPos = cameraFocalPoint.transform.position;
 
+        if(Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) {
+            newFocalPointPos += Camera.main.transform.forward * cameraSpeedZ * TimeManager.UIDeltaTime;
+        }else if(Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) {
+            newFocalPointPos += Camera.main.transform.forward * -cameraSpeedZ * TimeManager.UIDeltaTime;
+        }
 
         if(Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) {
-            this.transform.Rotate(transform.forward, cameraSpeedX * TimeManager.UIDeltaTime);
+            newFocalPointPos += cameraFocalPoint.transform.right * -cameraSpeedX * TimeManager.UIDeltaTime;
         }else if(Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) {
-            this.transform.Rotate(transform.forward, -cameraSpeedX * TimeManager.UIDeltaTime);
+            newFocalPointPos += cameraFocalPoint.transform.right * cameraSpeedX * TimeManager.UIDeltaTime;
+        }
+
+        Vector3 normal = (newFocalPointPos - this.transform.position).normalized;
+        Vector3 lookAtNormal = ((newFocalPointPos + Camera.main.transform.forward) - this.transform.position).normalized;
+   
+        cameraFocalPoint.transform.position = this.transform.position + (normal * focalPointRadius);
+        Vector3 lookAtPos = this.transform.position + (lookAtNormal * focalPointRadius);
+
+        cameraFocalPoint.transform.LookAt(lookAtNormal, normal);
+        //cameraFocalPoint.transform.l
+
+
+        /*if(Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) {
+            this.transform.Rotate(Camera.main.transform.forward, cameraSpeedX * TimeManager.UIDeltaTime);
+        }else if(Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) {
+            this.transform.Rotate(Camera.main.transform.forward, -cameraSpeedX * TimeManager.UIDeltaTime);
         }
 
         if(Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) {
-            this.transform.Rotate(transform.right, cameraSpeedZ * TimeManager.UIDeltaTime);
+            this.transform.Rotate(Camera.main.transform.right, cameraSpeedZ * TimeManager.UIDeltaTime);
         }else if(Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) {
-            this.transform.Rotate(transform.right, -cameraSpeedZ * TimeManager.UIDeltaTime);
+            this.transform.Rotate(Camera.main.transform.right, -cameraSpeedZ * TimeManager.UIDeltaTime);
         }
+        */
     }
 }
