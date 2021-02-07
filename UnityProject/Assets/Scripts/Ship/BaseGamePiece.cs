@@ -4,14 +4,14 @@ using UnityEngine;
 using BansheeGz.BGSpline.Curve;
 using BansheeGz.BGSpline.Components;
 using MeEngine.Events;
-public class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveHexDirection
+public class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
 {
     public TileCoords currentTile;
-    public HexDirection currentDirection;
+    public TileCoords currentTileFacing;
     public int currentLevel;
 
     private TileCoords destinationTile;
-    private HexDirection destinationDirection;
+    private TileCoords destinationTileFacing;
     private int destinationLevel;
 
 
@@ -25,8 +25,8 @@ public class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveHexDirection
         return currentLevel;
     }
 
-    public HexDirection GetHexDirection(){
-        return currentDirection;
+    public TileCoords GetTileFacing(){
+        return currentTileFacing;
     }
 
     protected virtual void Awake() {
@@ -46,9 +46,9 @@ public class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveHexDirection
 
     }
 
-    public void SetDestination(TileCoords destinationTile, HexDirection destinationDirection, int destinationLevel) {
+    public void SetDestination(TileCoords destinationTile, TileCoords destinationTileFacing, int destinationLevel) {
         this.destinationTile = destinationTile;
-        this.destinationDirection = destinationDirection;
+        this.destinationTileFacing = destinationTileFacing;
         this.destinationLevel = destinationLevel;
     }
 
@@ -64,7 +64,7 @@ public class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveHexDirection
 
     public void PositionAndOrientPiece(){
         transform.position = HexMapHelper.GetWorldPointFromTile(currentTile, currentLevel);
-        gamePieceModel.transform.localEulerAngles = new Vector3(0, HexMapHelper.GetAngleFromDirection(currentDirection), 0);
+        gamePieceModel.transform.rotation = HexMapHelper.GetRotationFromFacing(currentTile, currentTileFacing);
     }
 
     [EventListener]
@@ -75,7 +75,7 @@ public class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveHexDirection
     [EventListener]
     protected virtual void OnEndPlayingPhase(GameControllerFsm.Events.EndPlayingOutTurnEvent @event){
         currentTile = destinationTile;
-        currentDirection = destinationDirection;
+        currentTileFacing = destinationTileFacing;
         currentLevel = destinationLevel;
 
         PositionAndOrientPiece();

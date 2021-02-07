@@ -4,7 +4,7 @@ using UnityEngine;
 using BansheeGz.BGSpline.Curve;
 using BansheeGz.BGSpline.Components;
 using MeEngine.Events;
-public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveHexDirection
+public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
 {
     public bool isPlayerControlled = false;
 
@@ -30,8 +30,8 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveHexDirecti
         return gamePiece.currentLevel;
     }
 
-    public HexDirection GetHexDirection(){
-        return gamePiece.currentDirection;
+    public TileCoords GetTileFacing(){
+        return gamePiece.currentTileFacing;
     }
 
     void Awake() {
@@ -48,10 +48,10 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveHexDirecti
     {
         //Kit - Potential race condition here as the gamePiece is setting up it's position in Start as well
         var assumedTile = HexMapHelper.GetTileFromWorldPoint(transform.position);
-        var assumedHeight = HexMapHelper.GetLevelFromAltitude(transform.position.y);
+        var assumedHeight = 1; //HexMapHelper.GetLevelFromAltitude(transform.position.y);
 
         worldBase.transform.position = HexMapHelper.GetWorldPointFromTile(assumedTile, assumedHeight);
-        worldModel.transform.localEulerAngles = new Vector3(0, HexMapHelper.GetAngleFromDirection(GetHexDirection()), 0);
+        worldModel.transform.localRotation = Quaternion.identity; //To fix. We don't know the facing at this point
     }
 
     public void SetSelectedCommandPoint(CommandPointFsm point){
@@ -101,7 +101,7 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveHexDirecti
     [EventListener]
     void OnStartPlayingTurn(GameControllerFsm.Events.BeginPlayingOutTurnEvent @event){
         SetActivePath(selectedCommandPoint.spline);
-        gamePiece.SetDestination(selectedCommandPoint.destinationTile, selectedCommandPoint.destinationDirection, selectedCommandPoint.destinationLevel);
+        gamePiece.SetDestination(selectedCommandPoint.destinationTile, selectedCommandPoint.destinationFacingTile, selectedCommandPoint.destinationLevel);
         gamePiece.currentVelocity = selectedCommandPoint.endVelocity;
     }
 }

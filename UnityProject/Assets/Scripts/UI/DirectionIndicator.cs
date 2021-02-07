@@ -11,13 +11,13 @@ public class DirectionIndicator : MonoBehaviour
     public GameObject attachedObject; // Must derive from IHaveHexDirection and IHaveTilePosition
     public SpriteRenderer triangle;
 
-    private IHaveHexDirection hexDirectionObject;
+    private IHaveTileFacing hexDirectionObject;
     private IHaveTilePosition tilePositionObject;
 
     void Awake()
     {
         if (attachedObject != null){
-            hexDirectionObject = attachedObject.GetComponent<IHaveHexDirection>();
+            hexDirectionObject = attachedObject.GetComponent<IHaveTileFacing>();
             tilePositionObject = attachedObject.GetComponent<IHaveTilePosition>();
         }
     }
@@ -27,9 +27,9 @@ public class DirectionIndicator : MonoBehaviour
     {
         triangle.transform.position = HexMapHelper.GetWorldPointFromTile(
             tilePositionObject.GetTilePosition(), tilePositionObject.GetLevel())
-            + (HexMapHelper.GetVectorFromDirection(hexDirectionObject.GetHexDirection()) * centerOffset);
+            + (HexMapHelper.GetFacingVector(tilePositionObject.GetTilePosition(), hexDirectionObject.GetTileFacing()) * centerOffset);
         triangle.color = HexMapHelper.GetLevelColor(tilePositionObject.GetLevel());
-        triangle.transform.eulerAngles = new Vector3(90, HexMapHelper.GetAngleFromDirection(hexDirectionObject.GetHexDirection()),0);
+        triangle.transform.rotation = HexMapHelper.GetRotationFromFacing(tilePositionObject.GetTilePosition(), hexDirectionObject.GetTileFacing());
     }
 
     //[EventListener]

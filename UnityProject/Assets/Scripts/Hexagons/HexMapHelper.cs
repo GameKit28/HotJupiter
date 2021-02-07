@@ -5,12 +5,20 @@ using MeEngine.Events;
 using HexasphereGrid;
 
 public enum HexDirection {
-    NorthEast = 0,
-    East = 1,
-    SouthEast = 2,
-    SouthWest = 3,
-    West = 4,
-    NorthWest = 5
+    Backward = 0,
+    BackwardLeft = 1,
+    ForwardLeft = 2,
+    Forward = 3,
+    ForwardRight = 4,
+    BackwardRight = 5
+}
+
+public enum PentaDirection {
+    Backward = 0,
+    BackwardLeft = 1,
+    ForwardLeft = 2,
+    ForwardRight = 3,
+    BackwardRight = 4
 }
 
 public struct TileCoords {
@@ -57,6 +65,7 @@ public class HexMapHelper : MonoBehaviour
     public const float gridAltitudeOffsets = 0.5f;
 
     public Hexasphere baseHexasphere;
+    public PlanetSizer planetSizer;
 
     public const float HexWidth = 1.0f; //The incircle diameter of a hexagon
 
@@ -66,6 +75,25 @@ public class HexMapHelper : MonoBehaviour
 
     public static TileCoords GetTileFromWorldPoint(Vector3 worldPos){
         return new TileCoords(){ index = instance.baseHexasphere.GetTileAtPos(worldPos) };
+    }
+
+    public static List<TileCoords> GetNeighborTiles(TileCoords tile){
+        List<TileCoords> neighbors = new List<TileCoords>();
+        foreach(var neighbor in instance.baseHexasphere.tiles[tile.index].neighbours){
+            neighbors.Add(new TileCoords() {index = neighbor.index });
+        }
+        return neighbors;
+    }
+
+    public static TileCoords GetTileInDirection(TileCoords startTile, Vector3 forwardVector, HexDirection direction){
+        Tile tile = instance.baseHexasphere.tiles[startTile.index];
+        Vector3 upVector = GetTileNormal(startTile);
+        foreach(var tileNeighbor in instance.baseHexasphere.tiles[startTile.index].neighbours){
+            Vector3 neighborVector = tileNeighbor.center - tile.center;
+            if(GetHexDirectionFromNeighborVector(forwardVector, upVector, neighborVector) == direction)
+                return new TileCoords { index = tileNeighbor.index };
+        }
+        return new TileCoords { index = tile.index };
     }
 
     public static Vector3 GetTileNormal(TileCoords tileCoords){
@@ -81,11 +109,63 @@ public class HexMapHelper : MonoBehaviour
         }
     }
 
-    public static float GetAngleFromDirection(HexDirection direction) {
-        return 30f + ((int)direction) * 60f;
+    public static Quaternion GetRotationFromFacing(TileCoords startingTile, TileCoords tileFacing){
+        return Quaternion.LookRotation(GetFacingVector(startingTile, tileFacing), GetTileNormal(startingTile));
     }
 
-    public static Vector3 GetVectorFromDirection(HexDirection direction){
+    public static Vector3 GetFacingVector(TileCoords startTile, TileCoords tileFacing){
+        return (GetWorldPointFromTile(tileFacing) - GetWorldPointFromTile(startTile)).normalized;
+    }
+
+    public static List<Vector3> NeighborVectors(TileCoords startTile) {
+        Vector3 startPos = GetWorldPointFromTile(startTile);
+        List<Vector3> neighborVectors = new List<Vector3>();
+        foreach(var tile in instance.baseHexasphere.tiles[startTile.index].neighbours){
+            neighborVectors.Add((tile.center - startPos).normalized);
+        }
+        return neighborVectors;
+    }
+
+    public static TileCoords FindTileInDirection(TileCoords startingTile, TileCoords currentTileFacing, HexDirection direction){
+        Vector3 facingVector = GetFacingVector(startingTile, currentTileFacing);
+        if(direction == HexDirection.Forward) return currentTileFacing;
+        foreach(var neighbor in instance.baseHexasphere.tiles[startingTile.index].neighbours) {
+            Vector3 neighborVector = (GetWorldPointFromTile(startingTile)) - neighbor.center;
+            if(direction == GetHexDirectionFromNeighborVector(facingVector, GetTileNormal(startingTile), neighborVector)) {
+                return new TileCoords() {index = neighbor.index};
+            }
+        }
+        return currentTileFacing;//Should not encounter this
+    }
+
+    public static HexDirection GetHexDirectionFromNeighborVector(Vector3 forwardVector, Vector3 upVector, Vector3 neighborVector){
+        float forwardAngle = Vector3.Dot(forwardVector, neighborVector);
+        
+        if(forwardAngle >= 150){
+            return HexDirection.Forward;
+        }else if(forwardAngle >= 30 && forwardAngle < 150){
+            Vector3 rightVector = Vector3.Cross(forwardVector, upVector);
+            float rightAngle = Vector3.Dot(rightVector, neighborVector);
+
+            if(rightAngle >= 90) {
+                if(forwardAngle >= 90){
+                    return HexDirection.ForwardLeft;
+                }else{
+                    return HexDirection.BackwardLeft;
+                }
+            }else{
+                if(forwardAngle >= 90){
+                    return HexDirection.ForwardRight;
+                }else{
+                    return HexDirection.BackwardRight;
+                }
+            }
+        }else{
+            return HexDirection.Backward;
+        }
+    }
+
+    /*public static Vector3 GetVectorFromDirection(HexDirection direction){
         switch(direction){
             case HexDirection.NorthEast:
                 return new Vector3(0.5f, 0, 0.87f);
@@ -102,7 +182,7 @@ public class HexMapHelper : MonoBehaviour
             default:
                 return Vector3.up;
         }
-    }
+    }*/
 
     public static int GetLevelFromAltitude(float altitude){
         return Mathf.Clamp(Mathf.RoundToInt((altitude + gridFirstAltitudeOffset) / gridAltitudeOffsets), 0, 6);
@@ -110,6 +190,10 @@ public class HexMapHelper : MonoBehaviour
 
     public static float GetAltitudeFromLevel(int level) {
         return Mathf.Max(0, gridFirstAltitudeOffset + ((level - 1) * gridAltitudeOffsets));
+    }
+
+    public static float GetRadialOffsetFromLevel(int level){
+        return instance.planetSizer.planetRadius + GetAltitudeFromLevel(level);
     }
 
     public static Color GetLevelColor(int level) {

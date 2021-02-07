@@ -8,7 +8,7 @@ using MeEngine.Events;
 public partial class CommandPointFsm : MeFsm
 {
     public TileCoords destinationTile;
-    public HexDirection destinationDirection;
+    public TileCoords destinationFacingTile;
     public int destinationLevel;
 
     public int endVelocity;
@@ -34,27 +34,27 @@ public partial class CommandPointFsm : MeFsm
         myNavigationSystem = navigationSystem;
     }
 
-    public void SetSource(Vector3 sourcePosition, HexDirection sourceDirection) {
+    public void SetSource(Vector3 sourcePosition, Vector3 forwardVector) {
         this.sourcePosition = sourcePosition;
-        this.sourceHeading = HexMapHelper.GetVectorFromDirection(sourceDirection);
+        this.sourceHeading = forwardVector;
     }
 
-    public void SetDestination(TileCoords tileCoords, HexDirection direction, int level) {
+    public void SetDestination(TileCoords tileCoords, TileCoords facingTile, int level) {
         destinationTile = tileCoords;
-        destinationDirection = direction;
+        destinationFacingTile = facingTile;
         destinationLevel = level;
 
         //Position the sprite within the Hex
-        sprite.transform.position = HexMapHelper.GetWorldPointFromTile(tileCoords, level) + (HexMapHelper.GetVectorFromDirection(direction) * HexMapHelper.HexWidth * 0.3f);
+        sprite.transform.position = HexMapHelper.GetWorldPointFromTile(tileCoords, level) + (HexMapHelper.GetFacingVector(tileCoords, facingTile) * HexMapHelper.HexWidth * 0.3f);
 
         //Face the sprite the correct direction
-        sprite.transform.eulerAngles = new Vector3(90, HexMapHelper.GetAngleFromDirection(direction), 0);
+        sprite.transform.eulerAngles = HexMapHelper.GetFacingVector(tileCoords, facingTile);
 
         //Color the sprite based on height
         sprite.GetComponent<SpriteRenderer>().color = HexMapHelper.GetLevelColor(level);
 
         SetSpline(sourcePosition, sourceHeading,
-            HexMapHelper.GetWorldPointFromTile(tileCoords) + new Vector3(0, HexMapHelper.GetAltitudeFromLevel(level), 0), HexMapHelper.GetVectorFromDirection(direction));
+            HexMapHelper.GetWorldPointFromTile(tileCoords, level), HexMapHelper.GetFacingVector(tileCoords, facingTile));
     }
 
     public void SetEndVelocity(int velocity) {

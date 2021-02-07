@@ -1,56 +1,14 @@
 using UnityEngine;
 
 public static class HexExtensions {
-    public static Vector3Int Traverse(this Vector3Int startTile, HexDirection direction, int steps = 1) {
+    public static TileCoords Traverse(this TileCoords startTile, ref Vector3 forwardVector, HexDirection direction, int steps = 1) {
         
-        Vector3Int currentTile = startTile;
+        TileCoords currentTile = startTile;
         for(int step = 0; step < steps; step++) 
         {
-            if(currentTile.y % 2 == 0) {
-                switch(direction){
-                    case HexDirection.NorthEast:
-                        currentTile += new Vector3Int(0,1,0);
-                        break;
-                    case HexDirection.East:
-                        currentTile +=  new Vector3Int(1,0,0);
-                        break;
-                    case HexDirection.SouthEast:
-                        currentTile +=  new Vector3Int(0,-1,0);
-                        break;
-                    case HexDirection.SouthWest:
-                        currentTile +=  new Vector3Int(-1,-1,0);
-                        break;
-                    case HexDirection.West:
-                        currentTile +=  new Vector3Int(-1,0,0);
-                        break;
-                    case HexDirection.NorthWest:
-                        currentTile +=  new Vector3Int(-1,1,0);
-                        break;
-                    default: break;
-                }
-            }else{
-                switch(direction){
-                    case HexDirection.NorthEast:
-                        currentTile +=  new Vector3Int(1,1,0);
-                        break;
-                    case HexDirection.East:
-                        currentTile +=  new Vector3Int(1,0,0);
-                        break;
-                    case HexDirection.SouthEast:
-                        currentTile +=  new Vector3Int(1,-1,0);
-                        break;
-                    case HexDirection.SouthWest:
-                        currentTile +=  new Vector3Int(0,-1,0);
-                        break;
-                    case HexDirection.West:
-                        currentTile +=  new Vector3Int(-1,0,0);
-                        break;
-                    case HexDirection.NorthWest:
-                        currentTile +=  new Vector3Int(0,1,0);
-                        break;
-                    default: break;
-                }
-            }
+            TileCoords newTile = HexMapHelper.GetTileInDirection(startTile, forwardVector, direction);
+            forwardVector = HexMapHelper.GetFacingVector(currentTile, newTile);
+            currentTile = newTile;
         }
         return currentTile;
     }
