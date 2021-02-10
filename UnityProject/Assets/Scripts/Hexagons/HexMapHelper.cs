@@ -64,6 +64,11 @@ public struct TileCoords {
     }
 }
 
+public struct TileWithFacing {
+    public TileCoords position;
+    public TileCoords facing;
+}
+
 public class HexMapHelper : MonoBehaviour
 {
     private static HexMapHelper instance;
@@ -165,20 +170,20 @@ public class HexMapHelper : MonoBehaviour
         if(forwardAngle >= DotAngle30){
             return HexDirection.Forward;
         }else if(forwardAngle < DotAngle30 && forwardAngle >= DotAngle150){
-            Vector3 rightVector = Vector3.Cross(forwardVector, upVector);
-            float rightAngle = Vector3.Dot(rightVector, neighborVector);
+            Vector3 leftVector = Vector3.Cross(forwardVector, upVector);
+            float leftAngle = Vector3.Dot(leftVector, neighborVector);
 
-            if(rightAngle >= DotAngle90) {
-                if(forwardAngle >= DotAngle90){
-                    return HexDirection.ForwardRight;
-                }else{
-                    return HexDirection.BackwardRight;
-                }
-            }else{
+            if(leftAngle >= DotAngle90) {
                 if(forwardAngle >= DotAngle90){
                     return HexDirection.ForwardLeft;
                 }else{
                     return HexDirection.BackwardLeft;
+                }
+            }else{
+                if(forwardAngle >= DotAngle90){
+                    return HexDirection.ForwardRight;
+                }else{
+                    return HexDirection.BackwardRight;
                 }
             }
         }else{

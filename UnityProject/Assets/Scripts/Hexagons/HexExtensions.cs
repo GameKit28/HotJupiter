@@ -1,10 +1,10 @@
 using UnityEngine;
 
 public static class HexExtensions {
-    public static TileCoords Traverse(this TileCoords startTile, TileCoords startTileFacing, HexDirection direction, out TileCoords endFacing, int steps = 1) {
+    public static TileWithFacing Traverse(this TileWithFacing startVec, HexDirection direction, int steps = 1) {
         
-        TileCoords currentTile = startTile;
-        TileCoords currentFacing = startTileFacing;
+        TileCoords currentTile = startVec.position;
+        TileCoords currentFacing = startVec.facing;
         for(int step = 0; step < steps; step++) 
         {
             TileCoords newTile = HexMapHelper.GetTileInDirection(currentTile, HexMapHelper.GetFacingVector(currentTile, currentFacing), direction);
@@ -13,8 +13,12 @@ public static class HexExtensions {
             Debug.DrawRay(HexMapHelper.GetWorldPointFromTile(currentTile), HexMapHelper.GetFacingVector(currentTile, currentFacing), Color.cyan, 100);
             Debug.Log("Pathing to " + newTile);
         }
-        endFacing = currentFacing;
-        return currentTile;
+        return new TileWithFacing() { position = currentTile, facing = currentFacing };
+    }
+
+    public static TileWithFacing Face(this TileWithFacing startVec, HexDirection direction){
+        TileCoords newFacing = HexMapHelper.GetTileInDirection(startVec.position, HexMapHelper.GetFacingVector(startVec.position, startVec.facing), direction);
+        return new TileWithFacing() { position = startVec.position, facing = newFacing };
     }
 
     public static HexDirection RotateClockwise(this HexDirection startingDirection, int steps = 1) {
