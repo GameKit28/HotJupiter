@@ -79,3 +79,4 @@ UnityProject/ProjectSettings/ProjectVersion.txt
 #ignore specific folders
 #MeEngine is SysLinked
 UnityProject/Assets/MeEngine
+UnityProject/Assets/Hexasphere/Resources/Materials/HexaTileHighlightMat.mat

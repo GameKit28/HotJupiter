@@ -56,9 +56,9 @@ public class HexMapUI : MonoBehaviour
     }
 
     void Update(){
-        if(Input.mouseScrollDelta.y > scrollThreshold && _UIMapLevel < instance.tilemaps.Count - 1){
+        if((Input.mouseScrollDelta.y > scrollThreshold || Input.GetKeyDown(KeyCode.KeypadPlus)) && _UIMapLevel < instance.tilemaps.Count - 1){
             SetUIMapLevel(_UIMapLevel + 1);
-        }else if(Input.mouseScrollDelta.y < -scrollThreshold && _UIMapLevel > 0) {
+        }else if((Input.mouseScrollDelta.y < -scrollThreshold  || Input.GetKeyDown(KeyCode.KeypadMinus)) && _UIMapLevel > 0) {
             SetUIMapLevel(_UIMapLevel - 1);
         }
     }

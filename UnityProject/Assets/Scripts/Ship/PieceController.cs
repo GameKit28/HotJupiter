@@ -21,6 +21,8 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
 
     private BGCurve activeWorldPath;
 
+    bool toResetToGamePiecePos = true;
+
 
     public TileCoords GetTilePosition(){
         return gamePiece.currentTile;
@@ -41,17 +43,6 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
         worldObject.transform.localPosition = Vector3.zero;
         worldObject.transform.localScale = Vector3.one;
         worldObject.transform.localRotation = Quaternion.identity;
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        //Kit - Potential race condition here as the gamePiece is setting up it's position in Start as well
-        var assumedTile = HexMapHelper.GetTileFromWorldPoint(transform.position);
-        var assumedHeight = 1; //HexMapHelper.GetLevelFromAltitude(transform.position.y);
-
-        worldBase.transform.position = HexMapHelper.GetWorldPointFromTile(assumedTile, assumedHeight);
-        worldModel.transform.localRotation = Quaternion.identity; //To fix. We don't know the facing at this point
     }
 
     public void SetSelectedCommandPoint(CommandPointFsm point){
@@ -96,6 +87,19 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
                 }
             }
         }*/
+    }
+
+    void ResetToGamePiecePosition(){
+        worldBase.transform.position = HexMapHelper.GetWorldPointFromTile(gamePiece.currentTile, gamePiece.currentLevel);
+        worldModel.transform.rotation = HexMapHelper.GetRotationFromFacing(gamePiece.currentTile, gamePiece.currentTileFacing);
+    }
+
+    [EventListener]
+    void OnStartGame(GameControllerFsm.Events.NewTurnEvent @event){
+        if(toResetToGamePiecePos){
+            ResetToGamePiecePosition();
+            toResetToGamePiecePos = false;
+        }
     }
 
     [EventListener]

@@ -16,7 +16,6 @@ GameObject:
   - component: {fileID: 6833982719512332557}
   - component: {fileID: 6833982719512332558}
   - component: {fileID: 6833982719512332559}
-  - component: {fileID: 6833982719512332567}
   - component: {fileID: 6833982719512332566}
   m_Layer: 0
   m_Name: BGCurve
@@ -387,18 +386,6 @@ MonoBehaviour:
   revolutionsClockwiseField: {fileID: 0}
   handlesScale: 1.006
   handlesColor: {r: 1, g: 1, b: 1, a: 1}
---- !u!114 &6833982719512332567
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6833982719512332552}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f4a2440e3f1db04f8b8de0843098c40, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &6833982719512332566
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -460,10 +447,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   StartingState:
     _typeRef: CommandPointFsm+WaitingState, Assembly-CSharp
-  destinationTile: {x: 0, y: 0, z: 0}
-  destinationDirection: 0
+  destinationTile:
+    index: 0
+  destinationFacingTile:
+    index: 0
   destinationLevel: 0
-  sprite: {fileID: 6833982719837389981}
+  endVelocity: 0
+  sprite: {fileID: 8262216288714135669}
   spline: {fileID: 6833982719512332561}
 --- !u!54 &2407753840796367116
 Rigidbody:
@@ -506,13 +496,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6833982719837389981}
-  m_LocalRotation: {x: 0.6830127, y: -0.18301266, z: 0.18301266, w: 0.6830127}
-  m_LocalPosition: {x: 0.589, y: 0, z: 0.664}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 5520069841561039277}
+  m_Father: {fileID: 536754306598032310}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 90, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!212 &6833982719837389986
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -604,9 +594,40 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 6833982719837389980}
   - {fileID: 8338088202133581296}
+  - {fileID: 536754306598032310}
   m_Father: {fileID: 6833982719639373736}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8262216288714135669
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 536754306598032310}
+  m_Layer: 0
+  m_Name: SpritePivot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &536754306598032310
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8262216288714135669}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.589, y: 0, z: 0.664}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 6833982719837389980}
+  m_Father: {fileID: 5520069841561039277}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &5184594330563136241
@@ -620,11 +641,11 @@ PrefabInstance:
         type: 3}
       propertyPath: attachedObject
       value: 
-      objectReference: {fileID: 6833982719837389980}
+      objectReference: {fileID: 536754306598032310}
     - target: {fileID: 3766616885675976449, guid: 1880ffe21821edc49a537083122ab000,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3766616885675976449, guid: 1880ffe21821edc49a537083122ab000,
         type: 3}

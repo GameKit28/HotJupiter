@@ -21,16 +21,17 @@ public class NavigationSystem: MonoBehaviour
 
         //Standard Destinations
 
+        TileCoords endFacing;
         //Forward Facing (current speed)
         //This is the default selected command point for players
-        /*var defalutSelectedPoint = InstantiateCommandPoint(
-            pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity),
-            pieceController.GetHexDirection(),
+        var defalutSelectedPoint = InstantiateCommandPoint(
+            pieceController.GetTilePosition().Traverse(pieceController.GetTileFacing(), HexDirection.Forward, out endFacing, pieceController.gamePiece.currentVelocity),
+            endFacing,
             pieceController.GetLevel(),
             pieceController.gamePiece.currentVelocity);
 
         //Forward Facing (speed up)
-        if(pieceController.gamePiece.currentVelocity < pieceController.pieceTemplate.TopSpeed && pieceController.pieceTemplate.canAccelerate) {
+        /*if(pieceController.gamePiece.currentVelocity < pieceController.pieceTemplate.TopSpeed && pieceController.pieceTemplate.canAccelerate) {
             InstantiateCommandPoint(
                 pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity + 1),
                 pieceController.GetHexDirection(),
@@ -125,10 +126,9 @@ public class NavigationSystem: MonoBehaviour
                 pieceController.GetLevel() - 1,
                 pieceController.gamePiece.currentVelocity);
         }
-        
-
-        if(pieceController.isPlayerControlled) defalutSelectedPoint.SelectPoint(true);
         */
+        
+        if(pieceController.isPlayerControlled) defalutSelectedPoint.SelectPoint(true);
 
         hasGeneratedThisTurn = true;
     }
@@ -149,7 +149,7 @@ public class NavigationSystem: MonoBehaviour
         GenerateCommandPoints();
     }
 
-    private CommandPointFsm InstantiateCommandPoint(TileCoords tileCoords, TileCoords facingTile, HexDirection direction, int level, int endVelocity){
+    private CommandPointFsm InstantiateCommandPoint(TileCoords tileCoords, TileCoords facingTile, int level, int endVelocity){
         CommandPointFsm commandPoint = GameObject.Instantiate(commandPointPrefab, Vector3.zero, Quaternion.identity, transform).GetComponent<CommandPointFsm>();
         commandPoint.SetNavigationSystem(this);
 

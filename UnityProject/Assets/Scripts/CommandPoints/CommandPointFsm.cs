@@ -45,13 +45,13 @@ public partial class CommandPointFsm : MeFsm
         destinationLevel = level;
 
         //Position the sprite within the Hex
-        sprite.transform.position = HexMapHelper.GetWorldPointFromTile(tileCoords, level) + (HexMapHelper.GetFacingVector(tileCoords, facingTile) * HexMapHelper.HexWidth * 0.3f);
+        sprite.transform.position = HexMapHelper.GetWorldPointFromTile(tileCoords, level) + ((HexMapHelper.GetFacingVector(tileCoords, facingTile) * HexMapHelper.HexWidth * 0.3f));
 
         //Face the sprite the correct direction
-        sprite.transform.eulerAngles = HexMapHelper.GetFacingVector(tileCoords, facingTile);
+        sprite.transform.rotation = HexMapHelper.GetRotationFromFacing(tileCoords, facingTile);
 
         //Color the sprite based on height
-        sprite.GetComponent<SpriteRenderer>().color = HexMapHelper.GetLevelColor(level);
+        sprite.GetComponentInChildren<SpriteRenderer>().color = HexMapHelper.GetLevelColor(level);
 
         SetSpline(sourcePosition, sourceHeading,
             HexMapHelper.GetWorldPointFromTile(tileCoords, level), HexMapHelper.GetFacingVector(tileCoords, facingTile));

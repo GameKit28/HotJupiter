@@ -21,6 +21,7 @@ public class PositionIndicator : MonoBehaviour
     void Update()
     {
         hexagon.transform.position = HexMapHelper.GetWorldPointFromTile(tilePositionObject.GetTilePosition(), tilePositionObject.GetLevel());
+        hexagon.transform.rotation = Quaternion.LookRotation(HexMapHelper.GetTileNormal(tilePositionObject.GetTilePosition()));
         hexagon.color = HexMapHelper.GetLevelColor(tilePositionObject.GetLevel());
     }
 

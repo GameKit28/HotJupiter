@@ -37,7 +37,7 @@ public class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
     protected virtual void Start()
     {
         currentTile = HexMapHelper.GetTileFromWorldPoint(transform.position);
-        currentLevel = HexMapHelper.GetLevelFromAltitude(transform.position.y);
+        currentTileFacing = HexMapHelper.GetNeighborTiles(currentTile)[0];
 
         PositionAndOrientPiece();
     }

@@ -25,11 +25,11 @@ public class DirectionIndicator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        triangle.transform.position = HexMapHelper.GetWorldPointFromTile(
+        transform.position = HexMapHelper.GetWorldPointFromTile(
             tilePositionObject.GetTilePosition(), tilePositionObject.GetLevel())
             + (HexMapHelper.GetFacingVector(tilePositionObject.GetTilePosition(), hexDirectionObject.GetTileFacing()) * centerOffset);
         triangle.color = HexMapHelper.GetLevelColor(tilePositionObject.GetLevel());
-        triangle.transform.rotation = HexMapHelper.GetRotationFromFacing(tilePositionObject.GetTilePosition(), hexDirectionObject.GetTileFacing());
+        transform.rotation = HexMapHelper.GetRotationFromFacing(tilePositionObject.GetTilePosition(), hexDirectionObject.GetTileFacing());
     }
 
     //[EventListener]
