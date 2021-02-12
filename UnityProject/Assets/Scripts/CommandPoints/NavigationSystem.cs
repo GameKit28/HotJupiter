@@ -31,10 +31,9 @@ public class NavigationSystem: MonoBehaviour
             pieceController.gamePiece.currentVelocity);
 
         //Forward Facing (speed up)
-        /*if(pieceController.gamePiece.currentVelocity < pieceController.pieceTemplate.TopSpeed && pieceController.pieceTemplate.canAccelerate) {
+        if(pieceController.gamePiece.currentVelocity < pieceController.pieceTemplate.TopSpeed && pieceController.pieceTemplate.canAccelerate) {
             InstantiateCommandPoint(
-                pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity + 1),
-                pieceController.GetHexDirection(),
+                startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity + 1),
                 pieceController.GetLevel(),
                 pieceController.gamePiece.currentVelocity + 1);
         }
@@ -42,11 +41,10 @@ public class NavigationSystem: MonoBehaviour
         //Forward Facing (slow down)
         if(pieceController.gamePiece.currentVelocity > 2 && pieceController.pieceTemplate.canDecelerate) {
             InstantiateCommandPoint(
-                pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity - 1),
-                pieceController.GetHexDirection(),
+                startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity - 1),
                 pieceController.GetLevel(),
                 pieceController.gamePiece.currentVelocity - 1);
-        }*/
+        }
 
         //Turn Left (straight bank)
         InstantiateCommandPoint(
@@ -54,17 +52,10 @@ public class NavigationSystem: MonoBehaviour
             pieceController.GetLevel(),
             pieceController.gamePiece.currentVelocity);
 
-        //Temp Turn Left
-        InstantiateCommandPoint(
-            startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity - 1).Traverse(HexDirection.ForwardLeft),
-            pieceController.GetLevel(),
-            pieceController.gamePiece.currentVelocity);
 
-/*
         //Turn Right (straight bank)
         InstantiateCommandPoint(
-            pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity),
-            pieceController.GetHexDirection().RotateClockwise(),
+            startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity).Face(HexDirection.ForwardRight),
             pieceController.GetLevel(),
             pieceController.gamePiece.currentVelocity);
 
@@ -73,30 +64,26 @@ public class NavigationSystem: MonoBehaviour
                 if(pieceController.pieceTemplate.canStrafe){
                     //Strafe Left
                     InstantiateCommandPoint(
-                        pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity - manu).Traverse(pieceController.GetHexDirection().RotateCounterClockwise(), manu),
-                        pieceController.GetHexDirection(),
+                        startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity - manu).Traverse(HexDirection.ForwardLeft, manu).Face(HexDirection.ForwardRight),
                         pieceController.GetLevel(),
                         pieceController.gamePiece.currentVelocity);
 
-                    //Strafe Right (straight bank)
+                    //Strafe Right
                     InstantiateCommandPoint(
-                        pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity - manu).Traverse(pieceController.GetHexDirection().RotateClockwise(), manu),
-                        pieceController.GetHexDirection(),
+                        startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity - manu).Traverse(HexDirection.ForwardRight, manu).Face(HexDirection.ForwardLeft),
                         pieceController.GetLevel(),
                         pieceController.gamePiece.currentVelocity);
                 }
 
                 //Turn Left
                 InstantiateCommandPoint(
-                    pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity - manu).Traverse(pieceController.GetHexDirection().RotateCounterClockwise(), manu),
-                    pieceController.GetHexDirection().RotateCounterClockwise(),
+                    startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity - manu).Traverse(HexDirection.ForwardLeft, manu),
                     pieceController.GetLevel(),
                     pieceController.gamePiece.currentVelocity);
 
                 //Turn Right
                 InstantiateCommandPoint(
-                    pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity - manu).Traverse(pieceController.GetHexDirection().RotateClockwise(), manu),
-                    pieceController.GetHexDirection().RotateClockwise(),
+                    startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity - manu).Traverse(HexDirection.ForwardRight, manu),
                     pieceController.GetLevel(),
                     pieceController.gamePiece.currentVelocity);
             }
@@ -108,8 +95,7 @@ public class NavigationSystem: MonoBehaviour
         if(pieceController.pieceTemplate.effortlessClimb){
             if(pieceController.GetLevel() < 6){
                 InstantiateCommandPoint(
-                    pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity),
-                    pieceController.GetHexDirection(),
+                    startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity),
                     pieceController.GetLevel() + 1,
                     pieceController.gamePiece.currentVelocity);
                 }
@@ -117,8 +103,7 @@ public class NavigationSystem: MonoBehaviour
         }else{
             if(pieceController.GetLevel() < 6 && pieceController.gamePiece.currentVelocity >= 2){
                 InstantiateCommandPoint(
-                    pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity - 1),
-                    pieceController.GetHexDirection(),
+                    startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity - 1),
                     pieceController.GetLevel() + 1,
                     pieceController.gamePiece.currentVelocity);
             }
@@ -127,12 +112,10 @@ public class NavigationSystem: MonoBehaviour
         //Descend Altitude
         if(pieceController.GetLevel() > 1){
             InstantiateCommandPoint(
-                pieceController.GetTilePosition().Traverse(pieceController.GetHexDirection(), pieceController.gamePiece.currentVelocity),
-                pieceController.GetHexDirection(),
-                pieceController.GetLevel() - 1,
-                pieceController.gamePiece.currentVelocity);
+                    startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity),
+                    pieceController.GetLevel() - 1,
+                    pieceController.gamePiece.currentVelocity);
         }
-        */
         
         if(pieceController.isPlayerControlled) defalutSelectedPoint.SelectPoint(true);
 

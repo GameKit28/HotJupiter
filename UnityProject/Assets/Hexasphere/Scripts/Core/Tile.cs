@@ -230,8 +230,10 @@ namespace HexasphereGrid {
 			}
 		}
 
-		static List<int> tempInt = new List<int>(6);
-		static List<Tile> temp = new List<Tile>(6);
+		static SortedList<float, Tile> temp = new SortedList<float, Tile>(6);
+		static SortedList<float, int> tempInt = new SortedList<float, int>(6);
+		static Vector3 firstNeighborVector;
+		static float neighborAngle;
 
 		void ComputeNeighbours() {
 			tempInt.Clear();
@@ -240,14 +242,23 @@ namespace HexasphereGrid {
 				Triangle other = centerPoint.triangles[k];
 				for (int j = 0; j < 3; j++) {
 					Tile tile = other.points[j].tile;
-					if (tile != null && other.points[j] != centerPoint && !tempInt.Contains(tile.index)) {
-						temp.Add(tile);
-						tempInt.Add(tile.index);
+					if (tile != null && other.points[j] != centerPoint && !tempInt.ContainsValue(tile.index)) {
+						if(temp.Count == 0){
+							firstNeighborVector = tile.center - this.center;
+							temp.Add(0, tile);
+							tempInt.Add(0, tile.index);
+						}else{
+							neighborAngle = Vector3.SignedAngle(firstNeighborVector, tile.center - this.center, this.center);
+							temp.Add(neighborAngle, tile);
+							tempInt.Add(neighborAngle, tile.index);
+						}
 					}
 				}
 			}
-			_neighbours = temp.ToArray();
-			_neighboursIndices = tempInt.ToArray();
+			_neighbours = new Tile[temp.Count];
+			_neighboursIndices = new int[tempInt.Count];
+			temp.Values.CopyTo(_neighbours, 0);
+			tempInt.Values.CopyTo(_neighboursIndices, 0);
 			_neighboursComputed = true;
 		}
 
