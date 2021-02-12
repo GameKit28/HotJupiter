@@ -5,7 +5,7 @@ using UnityEngine;
 using MeEngine.Events;
 using HexasphereGrid;
 
-public enum HexDirection {
+public enum HexDirection { //Relative to current facing
     
     Forward = 0,
     ForwardRight = 1,
@@ -16,12 +16,13 @@ public enum HexDirection {
     
 }
 
-public enum PentaDirection {
-    Backward = 0,
-    BackwardLeft = 1,
-    ForwardLeft = 2,
-    ForwardRight = 3,
-    BackwardRight = 4
+public enum PentaDirection { //Relative to current facing
+    Forward = 0,
+    ForwardRight = 1,
+    BackwardRight = 2,
+    BackwardLeft = 3,
+    ForwardLeft = 4,
+    
 }
 
 [Serializable]
@@ -124,36 +125,15 @@ public class HexMapHelper : MonoBehaviour
         }
     }
 
-    /*public static TileCoords GetTileInHexDirection(TileCoords startTile, Vector3 forwardVector, HexDirection direction){
-        Tile tile = instance.baseHexasphere.tiles[startTile.index];
-        if(tile.neighbours.Length == 6){
-            Vector3 startTileCenter = instance.baseHexasphere.GetTileCenter(tile.index, true);
-            Vector3 upVector = GetTileNormal(startTile);
-            int neighborIndex = -1;
-            foreach(Tile tileNeighbor in instance.baseHexasphere.tiles[startTile.index].neighbours) {
-                neighborIndex++;
-                Vector3 neighborVector = instance.baseHexasphere.GetTileCenter(tileNeighbor.index, true) - startTileCenter;
-                HexDirection neighborDirection = GetHexDirectionFromNeighborVector(forwardVector, upVector, neighborVector);
-                Debug.DrawRay(startTileCenter, neighborVector, Color.Lerp(Color.red, Color.green, neighborIndex / 5f), 10f);
-                if(neighborDirection == direction)
-                    return new TileCoords { index = tileNeighbor.index };
-            }
-            throw new Exception("Failed to Find Neighbor");
-        }else{
-            throw new Exception("The startTile is not a Hexagon. Use GetTileInPentaDirection instead.");
-        }
-    }*/
-
-    public static TileCoords GetTileInPentaDirection(TileCoords startTile, Vector3 forwardVector, PentaDirection direction){
+    public static TileCoords GetTileInPentaDirection(TileCoords startTile, TileCoords startFacing, PentaDirection direction){
         Tile tile = instance.baseHexasphere.tiles[startTile.index];
         if(tile.neighbours.Length == 5){
-            Vector3 startTileCenter = instance.baseHexasphere.GetTileCenter(tile.index, true);
-            Vector3 upVector = GetTileNormal(startTile);
-            foreach(Tile tileNeighbor in instance.baseHexasphere.tiles[startTile.index].neighbours) {
-                Vector3 neighborVector = instance.baseHexasphere.GetTileCenter(tileNeighbor.index, true) - startTileCenter;
-                PentaDirection neighborDirection = GetPentaDirectionFromNeighborVector(forwardVector, upVector, neighborVector);
-                if(neighborDirection == direction)
-                    return new TileCoords { index = tileNeighbor.index };
+            //count tiles until we find the current facing
+            for(int neighborIndex = 0; neighborIndex < tile.neighbours.Length; neighborIndex++){
+                Tile neighborTile = tile.neighbours[neighborIndex];
+                if (neighborTile.index == startFacing.index) {
+                    return new TileCoords { index = tile.neighbours[(neighborIndex + (int)direction) % 5].index};
+                }
             }
             throw new Exception("Failed to Find Neighbor");
         }else{
@@ -201,7 +181,7 @@ public class HexMapHelper : MonoBehaviour
 
     
 
-    public static HexDirection GetHexDirectionFromNeighborVector(Vector3 forwardVector, Vector3 upVector, Vector3 neighborVector){
+    /*public static HexDirection GetHexDirectionFromNeighborVector(Vector3 forwardVector, Vector3 upVector, Vector3 neighborVector){
         //project both vectors onto flat plane
         forwardVector = Vector3.ProjectOnPlane(forwardVector, upVector);
         neighborVector = Vector3.ProjectOnPlane(neighborVector, upVector);
@@ -255,7 +235,7 @@ public class HexMapHelper : MonoBehaviour
                 }
             }
         }
-    }
+    }*/
 
     public static int GetLevelFromAltitude(float altitude){
         return Mathf.Clamp(Mathf.RoundToInt((altitude + gridFirstAltitudeOffset) / gridAltitudeOffsets), 0, 6);
