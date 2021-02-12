@@ -37,6 +37,9 @@ public partial class CommandPointFsm : MeFsm
     public void SetSource(Vector3 sourcePosition, Vector3 forwardVector) {
         this.sourcePosition = sourcePosition;
         this.sourceHeading = forwardVector;
+
+        //Rotate for proper spline up
+        //this.transform.rotation = Quaternion.LookRotation(forwardVector, HexMapHelper.GetTileNormal(HexMapHelper.GetTileFromWorldPoint(sourcePosition)));
     }
 
     public void SetDestination(TileCoords tileCoords, TileCoords facingTile, int level) {

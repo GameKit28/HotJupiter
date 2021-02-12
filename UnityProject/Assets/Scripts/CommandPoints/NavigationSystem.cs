@@ -142,7 +142,7 @@ public class NavigationSystem: MonoBehaviour
         CommandPointFsm commandPoint = GameObject.Instantiate(commandPointPrefab, Vector3.zero, Quaternion.identity, transform).GetComponent<CommandPointFsm>();
         commandPoint.SetNavigationSystem(this);
 
-        commandPoint.SetSource(pieceController.worldModel.transform.position, HexMapHelper.GetFacingVector(tileVec.position, tileVec.facing));
+        commandPoint.SetSource(pieceController.worldModel.transform.position, HexMapHelper.GetFacingVector(pieceController.gamePiece.currentTile, pieceController.gamePiece.currentTileFacing));
         commandPoint.SetDestination(tileVec.position, tileVec.facing, level);
         commandPoint.SetEndVelocity(endVelocity);
         if(!pieceController.isPlayerControlled) commandPoint.gameObject.SetActive(false);

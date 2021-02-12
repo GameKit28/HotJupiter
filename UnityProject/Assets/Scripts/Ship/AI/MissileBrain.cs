@@ -14,7 +14,8 @@ public class MissileBrain : BaseBrain<MissileGamePiece>
         List<ShipGamePiece> allShips = ShipManager.GetAllShips();
 
         //Next Turn Hex
-        /*Vector3Int headingTile = myGamePiece.currentTile.Traverse(myGamePiece.currentDirection, myGamePiece.currentVelocity);
+        TileWithFacing startVec = new TileWithFacing() {position = myGamePiece.currentTile, facing = myGamePiece.currentTileFacing};
+        TileWithFacing headingTile = startVec.Traverse(HexDirection.Forward, myGamePiece.currentVelocity);
 
         //Find the ship closest to where I will be if I move forward. Exclude the ship that fired me.
         ShipGamePiece closestShip = null;
@@ -23,7 +24,7 @@ public class MissileBrain : BaseBrain<MissileGamePiece>
         foreach(ShipGamePiece ship in allShips){
             if(ship == myGamePiece.motherGamePiece) continue;
             
-            float distance = HexMapHelper.CrowFlyDistance(headingTile, myGamePiece.currentLevel, ship.currentTile, ship.currentLevel);
+            float distance = HexMapHelper.CrowFlyDistance(headingTile.position, myGamePiece.currentLevel, ship.currentTile, ship.currentLevel);
             if (distance < closestShipDistance) {
                 closestShipDistance = distance;
                 closestShip = ship;
@@ -31,7 +32,7 @@ public class MissileBrain : BaseBrain<MissileGamePiece>
         }
 
         currentTarget = closestShip;
-        */
+        
         return currentTarget;
     }
 

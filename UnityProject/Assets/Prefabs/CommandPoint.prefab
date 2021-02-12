@@ -377,8 +377,8 @@ MonoBehaviour:
   lerpSpeed: 5
   slerpSpeed: 5
   offsetAngle: {x: 0, y: 0, z: 0}
-  upMode: 0
-  upCustom: {x: -13.44, y: 1, z: 0}
+  upMode: 2
+  upCustom: {x: 0, y: 1, z: 0}
   rotationField: {fileID: 0}
   revolutionsAroundTangent: 0
   revolutionsAroundTangentField: {fileID: 0}
