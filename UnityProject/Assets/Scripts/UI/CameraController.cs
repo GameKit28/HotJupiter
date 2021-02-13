@@ -9,6 +9,7 @@ public class CameraController : MonoBehaviour
 
     public PlanetSizer focalPlanet;
     public GameObject cameraFocalPoint;
+    public Transform focalTargetTransform;
 
     private float focalPointRadius {
         get {
@@ -19,7 +20,9 @@ public class CameraController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        cameraFocalPoint.transform.position = Vector3.up * focalPointRadius;
+        Vector3 targetNormal = Vector3.Normalize(focalTargetTransform.position - focalPlanet.transform.position);
+        cameraFocalPoint.transform.position = targetNormal * focalPointRadius;
+        cameraFocalPoint.transform.rotation = Quaternion.LookRotation(focalTargetTransform.forward, targetNormal);
     }
 
     // Update is called once per frame
@@ -46,20 +49,5 @@ public class CameraController : MonoBehaviour
         Vector3 lookAtPos = this.transform.position + (lookAtNormal * focalPointRadius);
 
         cameraFocalPoint.transform.LookAt(lookAtNormal, normal);
-        //cameraFocalPoint.transform.l
-
-
-        /*if(Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) {
-            this.transform.Rotate(Camera.main.transform.forward, cameraSpeedX * TimeManager.UIDeltaTime);
-        }else if(Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) {
-            this.transform.Rotate(Camera.main.transform.forward, -cameraSpeedX * TimeManager.UIDeltaTime);
-        }
-
-        if(Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) {
-            this.transform.Rotate(Camera.main.transform.right, cameraSpeedZ * TimeManager.UIDeltaTime);
-        }else if(Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) {
-            this.transform.Rotate(Camera.main.transform.right, -cameraSpeedZ * TimeManager.UIDeltaTime);
-        }
-        */
     }
 }
