@@ -6,6 +6,11 @@ using BansheeGz.BGSpline.Components;
 using MeEngine.Events;
 public class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
 {
+    public static class Events {
+        public struct CompletedSetup : IEvent {}
+    }
+    public EventPublisher eventPublisher {get; private set;} = new EventPublisher();
+
     public TileCoords currentTile;
     public TileCoords currentTileFacing;
     public int currentLevel;
@@ -40,6 +45,7 @@ public class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
         currentTileFacing = HexMapHelper.GetNeighborTiles(currentTile)[0];
 
         PositionAndOrientPiece();
+        eventPublisher.Publish(new Events.CompletedSetup());
     }
 
     protected virtual void Update(){

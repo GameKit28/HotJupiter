@@ -21,9 +21,6 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
 
     private BGCurve activeWorldPath;
 
-    bool toResetToGamePiecePos = true;
-
-
     public TileCoords GetTilePosition(){
         return gamePiece.currentTile;
     }
@@ -38,6 +35,7 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
 
     void Awake() {
         GameControllerFsm.eventPublisher.SubscribeAll(this);
+        gamePiece.eventPublisher.SubscribeAll(this);
 
         GameObject worldObject = GameObject.Instantiate(pieceTemplate.model, worldModel.transform, false);
         worldObject.transform.localPosition = Vector3.zero;
@@ -61,32 +59,8 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
 
             Vector3 tangent;
             worldBase.transform.position = math.CalcPositionAndTangentByDistanceRatio(TimeManager.TurnRatio, out tangent);
-            worldModel.transform.rotation = Quaternion.LookRotation(tangent);
+            worldModel.transform.rotation = Quaternion.LookRotation(tangent, worldBase.transform.position);
         }
-
-        //Hacky Missile Detonation
-        /*if(TimeManager.TurnDeltaTime != 0){
-            MissileGamePiece missile = transform.GetComponentInChildren<MissileGamePiece>();
-            if(missile != null){
-                var allShips = ShipManager.GetAllShips();
-                foreach(ShipGamePiece ship in allShips){
-                    if(ship == missile.motherGamePiece) continue;
-                    
-                    PieceController shipController = ship.transform.GetComponentInParent<PieceController>();
-                    if(shipController != null) {
-                        GameObject shipWorld = shipController.worldModel;
-                        Vector3 shipWorldPos = shipWorld.transform.position;
-
-                        float distance = Vector3.Distance(worldModel.transform.position, shipWorldPos);
-                        if(distance < 2f){
-                            Debug.Log("KABOOM!");
-                            activeWorldPath.Delete(1);
-                            activeWorldPath.AddPoint(new BGCurvePoint(activeWorldPath, shipWorldPos, true));
-                        }
-                    }
-                }
-            }
-        }*/
     }
 
     void ResetToGamePiecePosition(){
@@ -95,11 +69,13 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
     }
 
     [EventListener]
-    void OnStartGame(GameControllerFsm.Events.NewTurnEvent @event){
-        if(toResetToGamePiecePos){
-            ResetToGamePiecePosition();
-            toResetToGamePiecePos = false;
-        }
+    void OnGamePieceCompletedSetup(BaseGamePiece.Events.CompletedSetup @event){
+        ResetToGamePiecePosition();
+    }
+
+    [EventListener]
+    void OnStartTurn(GameControllerFsm.Events.NewTurnEvent @event){
+        ResetToGamePiecePosition();
     }
 
     [EventListener]
