@@ -31,7 +31,7 @@ public class TimeManager : MeFsm
     public static float ElapsedGameTime {get; private set;} = 0;
 
     protected override void Start(){
-        EventManager.SubscribeAll(this);
+        GameControllerFsm.eventPublisher.SubscribeAll(this);
     }
 
     void Update()

@@ -14,7 +14,7 @@ public partial class GameControllerFsm : MeFsm
             base.EnterState();
             Debug.Log("Entering ProcessingCommandsState");
 
-            EventManager.Publish(new Events.ProcessEndTurnEvent());
+            GameControllerFsm.eventPublisher.Publish(new Events.ProcessEndTurnEvent());
 
             SwapState<CalculatingInterceptsState>();
         }

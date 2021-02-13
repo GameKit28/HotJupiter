@@ -12,7 +12,7 @@ public class NavigationSystem: MonoBehaviour
     bool hasGeneratedThisTurn = false;
 
     void Awake(){
-        EventManager.SubscribeAll(this);
+        GameControllerFsm.eventPublisher.SubscribeAll(this);
     }
 
     public void GenerateCommandPoints()

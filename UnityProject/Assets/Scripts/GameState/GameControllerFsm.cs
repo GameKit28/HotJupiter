@@ -14,6 +14,8 @@ public partial class GameControllerFsm : MeFsm
         public struct ProcessEndTurnEvent : IEvent {}
     }
 
+    public static EventPublisher eventPublisher { get; private set; } = new EventPublisher();
+
     void Update(){
         if(Input.GetKeyDown(KeyCode.Escape)){
             Application.Quit();

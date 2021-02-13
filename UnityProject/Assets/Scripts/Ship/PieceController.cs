@@ -37,7 +37,7 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
     }
 
     void Awake() {
-        EventManager.SubscribeAll(this);
+        GameControllerFsm.eventPublisher.SubscribeAll(this);
 
         GameObject worldObject = GameObject.Instantiate(pieceTemplate.model, worldModel.transform, false);
         worldObject.transform.localPosition = Vector3.zero;

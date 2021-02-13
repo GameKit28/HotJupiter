@@ -5,7 +5,7 @@ using MeEngine.Events;
 public class EnemyShipBrain : BaseBrain<ShipGamePiece>
 {
     void Awake() {
-        EventManager.SubscribeAll(this);
+        GameControllerFsm.eventPublisher.SubscribeAll(this);
     }
 
     public override BaseGamePiece FindTarget()

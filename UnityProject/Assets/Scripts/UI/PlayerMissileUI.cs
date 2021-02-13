@@ -12,7 +12,7 @@ public class PlayerMissileUI : MonoBehaviour
     public Text missileCountText;
 
     void Awake(){
-        EventManager.SubscribeAll(this);
+        GameControllerFsm.eventPublisher.SubscribeAll(this);
     }
 
     // Start is called before the first frame update

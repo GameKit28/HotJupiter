@@ -30,7 +30,7 @@ public class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
     }
 
     protected virtual void Awake() {
-        EventManager.SubscribeAll(this);
+        GameControllerFsm.eventPublisher.SubscribeAll(this);
     }
 
     // Start is called before the first frame update

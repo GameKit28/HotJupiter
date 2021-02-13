@@ -6,7 +6,7 @@ using MeEngine.Events;
 public class MissileBrain : BaseBrain<MissileGamePiece>
 {   
     void Awake() {
-        EventManager.SubscribeAll(this);
+        GameControllerFsm.eventPublisher.SubscribeAll(this);
     }
 
     public override BaseGamePiece FindTarget()

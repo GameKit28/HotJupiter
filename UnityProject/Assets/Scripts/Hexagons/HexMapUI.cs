@@ -11,6 +11,8 @@ public class HexMapUI : MonoBehaviour
         public struct UIMapLevelChanged : IEvent { public int previousMapLevel; public int newMapLevel; }
     }
 
+    public static EventPublisher eventPublisher { get; private set; } = new EventPublisher();
+
     public List<Hexasphere> tilemaps = new List<Hexasphere>();
     static HexMapUI instance;
 
@@ -43,7 +45,7 @@ public class HexMapUI : MonoBehaviour
         instance._UIMapLevel = Mathf.Clamp(newLevel, 0, instance.tilemaps.Count);
 
         instance.HideAllButCurrentUILevel();
-        EventManager.Publish(new Events.UIMapLevelChanged() { previousMapLevel = previousLevel, newMapLevel = newLevel });
+        eventPublisher.Publish(new Events.UIMapLevelChanged() { previousMapLevel = previousLevel, newMapLevel = newLevel });
     }
 
     void Awake(){
