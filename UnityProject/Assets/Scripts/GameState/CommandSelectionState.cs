@@ -14,8 +14,8 @@ public partial class GameControllerFsm : MeFsm
             base.EnterState();
             Debug.Log("Entering CommandSelectionState");
 
-            GameControllerFsm.eventPublisher.Publish(new Events.NewTurnEvent());
-            GameControllerFsm.eventPublisher.Publish(new Events.NewTurnEventPost()); //Some systems need to do their thing after others have
+            GameControllerFsm.eventPublisher.Publish(new Events.BeginCommandSelectionState());
+            GameControllerFsm.eventPublisher.Publish(new Events.BeginCommandSelectionStatePost()); //Some systems need to do their thing after others have
         }
 
         // Update is called once per frame

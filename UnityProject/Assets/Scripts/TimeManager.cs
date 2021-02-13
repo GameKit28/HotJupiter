@@ -44,12 +44,12 @@ public class TimeManager : MeFsm
     }
 
     [EventListener]
-    void OnPlaymodeStart(GameControllerFsm.Events.BeginPlayingOutTurnEvent @event) {
+    void OnPlaymodeStart(GameControllerFsm.Events.BeginPlayingOutTurnState @event) {
         SwapState<PlayingState>();
     }
 
     [EventListener]
-    void OnPlanModeStart(GameControllerFsm.Events.NewTurnEvent @event){
+    void OnPlanModeStart(GameControllerFsm.Events.BeginCommandSelectionState @event){
         SwapState<SimulatingState>();
     }
 

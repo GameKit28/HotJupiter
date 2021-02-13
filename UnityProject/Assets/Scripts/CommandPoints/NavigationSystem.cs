@@ -127,7 +127,7 @@ public class NavigationSystem: MonoBehaviour
     }
 
     [EventListener]
-    void OnStartNewTurn(GameControllerFsm.Events.NewTurnEvent @event)
+    void OnStartNewTurn(GameControllerFsm.Events.BeginCommandSelectionState @event)
     {
         foreach(CommandPointFsm point in availableCommandPoints) {
             GameObject.Destroy(point.gameObject);

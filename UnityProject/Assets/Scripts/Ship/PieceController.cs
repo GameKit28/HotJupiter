@@ -45,6 +45,9 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
 
     public void SetSelectedCommandPoint(CommandPointFsm point){
         selectedCommandPoint = point;
+        gamePiece.SetDestination(selectedCommandPoint.destinationTile, selectedCommandPoint.destinationFacingTile, selectedCommandPoint.destinationLevel);
+        gamePiece.currentVelocity = selectedCommandPoint.endVelocity;
+        Debug.DrawLine(HexMapHelper.GetWorldPointFromTile(gamePiece.currentTile), HexMapHelper.GetWorldPointFromTile(selectedCommandPoint.destinationTile), Color.cyan, 5f);
     }
     public void SetActivePath(BGCurve path) {
         activeWorldPath = path;
@@ -74,14 +77,12 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
     }
 
     [EventListener]
-    void OnStartTurn(GameControllerFsm.Events.NewTurnEvent @event){
+    void OnStartTurn(GameControllerFsm.Events.BeginCommandSelectionState @event){
         ResetToGamePiecePosition();
     }
 
     [EventListener]
-    void OnStartPlayingTurn(GameControllerFsm.Events.BeginPlayingOutTurnEvent @event){
+    void OnStartPlayingTurn(GameControllerFsm.Events.BeginPlayingOutTurnState @event){
         SetActivePath(selectedCommandPoint.spline);
-        gamePiece.SetDestination(selectedCommandPoint.destinationTile, selectedCommandPoint.destinationFacingTile, selectedCommandPoint.destinationLevel);
-        gamePiece.currentVelocity = selectedCommandPoint.endVelocity;
     }
 }

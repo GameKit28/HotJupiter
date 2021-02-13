@@ -32,7 +32,7 @@ public class MissileBrain : BaseBrain<MissileGamePiece>
         }
 
         currentTarget = closestShip;
-        
+        Debug.DrawLine(HexMapHelper.GetWorldPointFromTile(myGamePiece.currentTile), HexMapHelper.GetWorldPointFromTile(currentTarget.currentTile), Color.yellow, 5f);
         return currentTarget;
     }
 
@@ -68,12 +68,12 @@ public class MissileBrain : BaseBrain<MissileGamePiece>
  
  
     [EventListener]
-    void OnNewTurn(GameControllerFsm.Events.NewTurnEvent @event){
+    void OnNewTurn(GameControllerFsm.Events.BeginCommandSelectionState @event){
         FindTarget();
     }
 
     [EventListener]
-    void OnEndOfTurn(GameControllerFsm.Events.ProcessEndTurnEvent @event){
+    void OnEndOfTurn(GameControllerFsm.Events.BeginProcessingCommandsState @event){
         Debug.Log("Missile Selecing Command");
         pieceController.SetSelectedCommandPoint(SelectCommand());
     }

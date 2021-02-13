@@ -64,7 +64,7 @@ public class ShipGamePiece : NavigatingGamePiece
     }
 
     [EventListener]
-    public void OnProcessEndTurn(GameControllerFsm.Events.ProcessEndTurnEvent @event) {
+    public void OnProcessEndTurn(GameControllerFsm.Events.BeginProcessingCommandsState @event) {
         Debug.Log("On Process End Turn");
         if(willFireMissileThisTurn){
             FireMissile();
@@ -74,7 +74,7 @@ public class ShipGamePiece : NavigatingGamePiece
 
 
     [EventListener]
-    protected override void OnEndPlayingPhase(GameControllerFsm.Events.EndPlayingOutTurnEvent @event){
+    protected override void OnEndPlayingPhase(GameControllerFsm.Events.EndPlayingOutTurnState @event){
         base.OnEndPlayingPhase(@event);
 
         missileCooldown = Mathf.Max(0, missileCooldown - 1);

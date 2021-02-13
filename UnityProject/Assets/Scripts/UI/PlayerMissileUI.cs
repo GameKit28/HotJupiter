@@ -30,7 +30,7 @@ public class PlayerMissileUI : MonoBehaviour
     }
 
     [EventListener]
-    void OnNewTurn(GameControllerFsm.Events.NewTurnEvent @event){
+    void OnNewTurn(GameControllerFsm.Events.BeginCommandSelectionState @event){
         toggleButton.isOn = false;
         UpdateMissileCountText();
         if(playerGamePiece.CanFireMissile()){

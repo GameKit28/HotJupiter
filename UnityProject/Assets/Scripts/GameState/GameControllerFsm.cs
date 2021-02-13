@@ -6,12 +6,12 @@ using MeEngine.Events;
 public partial class GameControllerFsm : MeFsm
 {
     public static class Events{
-        public struct NewTurnEvent : IEvent {}
-        public struct NewTurnEventPost : IEvent {} //Hacky, but some systems need to do their thing after others.
-        public struct BeginPlayingOutTurnEvent : IEvent {}
-        public struct EndPlayingOutTurnEvent : IEvent {}
+        public struct BeginCommandSelectionState : IEvent {}
+        public struct BeginCommandSelectionStatePost : IEvent {} //Hacky, but some systems need to do their thing after others.
+        public struct BeginPlayingOutTurnState : IEvent {}
+        public struct EndPlayingOutTurnState : IEvent {}
 
-        public struct ProcessEndTurnEvent : IEvent {}
+        public struct BeginProcessingCommandsState : IEvent {}
     }
 
     public static EventPublisher eventPublisher { get; private set; } = new EventPublisher();

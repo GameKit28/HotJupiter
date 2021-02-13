@@ -74,12 +74,12 @@ public class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
     }
 
     [EventListener]
-    protected virtual void OnBeginPlayingPhase(GameControllerFsm.Events.BeginPlayingOutTurnEvent @event) {
+    protected virtual void OnBeginPlayingPhase(GameControllerFsm.Events.BeginPlayingOutTurnState @event) {
         gameObject.SetActive(false);
     }
 
     [EventListener]
-    protected virtual void OnEndPlayingPhase(GameControllerFsm.Events.EndPlayingOutTurnEvent @event){
+    protected virtual void OnEndPlayingPhase(GameControllerFsm.Events.EndPlayingOutTurnState @event){
         currentTile = destinationTile;
         currentTileFacing = destinationTileFacing;
         currentLevel = destinationLevel;
