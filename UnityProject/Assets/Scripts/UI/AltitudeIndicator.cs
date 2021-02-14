@@ -36,6 +36,6 @@ public class AltitudeIndicator : MonoBehaviour
         //Set the little target sprite to grid height
         baseSprite.transform.position = gridIntercectPoint;
         baseSprite.transform.rotation = Quaternion.LookRotation(normal);
-        baseSprite.GetComponent<SpriteRenderer>().color = HexMapHelper.GetLevelColor(HexMapUI.currentUIMapLevel);
+        baseSprite.GetComponent<SpriteRenderer>().color = HexMapUI.GetLevelColor(HexMapUI.currentUIMapLevel);
     }
 }

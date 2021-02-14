@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using HexasphereGrid;
 
-[ExecuteAlways]
 public class PlanetSizer : MonoBehaviour
 {
     public Hexasphere basePlanetSphere;
@@ -14,30 +13,10 @@ public class PlanetSizer : MonoBehaviour
     const float fourPI = 4 * Mathf.PI;
     const float spherePrimitiveRadiusMultiplier = 2f; //A Unity sphere with a scale one has a radius of 1/2;
 
-    private int lastTileCount = 0;
-
     [SerializeField]
-    public float planetRadius = 20f;
+    public float planetRadius;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        //Size the sphere to give us hexagons of the desired size.
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if(!Application.isPlaying){
-            if(basePlanetSphere.tiles.Length != lastTileCount)
-            {
-                SetPlanetSize();
-                lastTileCount = basePlanetSphere.tiles.Length;
-            }
-        }
-    }
-
+    [ContextMenu("SetPlanetSize")]
     private void SetPlanetSize()
     {
         //Desired Size of Hexagon Tile = 1 Unit Height (DH = 1.0)
@@ -62,5 +41,6 @@ public class PlanetSizer : MonoBehaviour
         for(int tileIndex = 0; tileIndex < tileCount; tileIndex++){
             basePlanetSphere.SetTileExtrudeAmount(tileIndex, Random.Range(0, sphereHexGrids.Count) * (sphereHexGrids.Count - 1));
         }
+        Debug.Log($"Planet Sized To: {planetRadius}");
     }
 }

@@ -28,7 +28,7 @@ public class DirectionIndicator : MonoBehaviour
         transform.position = HexMapHelper.GetWorldPointFromTile(
             tilePositionObject.GetTilePosition(), tilePositionObject.GetLevel())
             + (HexMapHelper.GetFacingVector(tilePositionObject.GetTilePosition(), hexDirectionObject.GetTileFacing()) * centerOffset);
-        triangle.color = HexMapHelper.GetLevelColor(tilePositionObject.GetLevel());
+        triangle.color = HexMapUI.GetLevelColor(tilePositionObject.GetLevel());
         transform.rotation = HexMapHelper.GetRotationFromFacing(tilePositionObject.GetTilePosition(), hexDirectionObject.GetTileFacing());
     }
 

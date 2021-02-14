@@ -81,8 +81,8 @@ public class HexMapHelper : MonoBehaviour
 {
     private static HexMapHelper instance;
 
-    public const float gridFirstAltitudeOffset = 0.25f;
-    public const float gridAltitudeOffsets = 0.5f;
+    public const float gridFirstAltitudeOffset = 0.2f;
+    public const float gridAltitudeOffsets = 0.4f;
 
     public Hexasphere baseHexasphere;
     public PlanetSizer planetSizer;
@@ -247,34 +247,6 @@ public class HexMapHelper : MonoBehaviour
 
     public static float GetRadialOffsetFromLevel(int level){
         return instance.planetSizer.planetRadius + GetAltitudeFromLevel(level);
-    }
-
-    public static Color GetLevelColor(int level) {
-        switch(level) {
-            case 0: 
-                return Color.white;
-            
-            case 1:
-                return Color.red;
-
-            case 2:
-                return new Color(1, 0.5f, 0, 1); //Orange
-
-            case 3:
-                return Color.yellow;
-
-            case 4:
-                return Color.green;
-
-            case 5:
-                return Color.blue;
-
-            case 6:
-                return new Color(1, 0, 1, 1); //Purple
-
-            default:
-                return Color.white;
-        }
     }
 
     public static float CrowFlyDistance(TileCoords hex1Tile, int hex1Height, TileCoords hex2Tile, int hex2Height){

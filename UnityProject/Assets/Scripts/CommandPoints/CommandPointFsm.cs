@@ -54,7 +54,7 @@ public partial class CommandPointFsm : MeFsm
         sprite.transform.rotation = HexMapHelper.GetRotationFromFacing(tileCoords, facingTile);
 
         //Color the sprite based on height
-        sprite.GetComponentInChildren<SpriteRenderer>().color = HexMapHelper.GetLevelColor(level);
+        sprite.GetComponentInChildren<SpriteRenderer>().color = HexMapUI.GetLevelColor(level);
 
         SetSpline(sourcePosition, sourceHeading,
             HexMapHelper.GetWorldPointFromTile(tileCoords, level), HexMapHelper.GetFacingVector(tileCoords, facingTile));

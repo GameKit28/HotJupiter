@@ -13,7 +13,7 @@ public class HexMapUI : MonoBehaviour
 
     public static EventPublisher eventPublisher { get; private set; } = new EventPublisher();
 
-    public List<Hexasphere> tilemaps = new List<Hexasphere>();
+    public List<Hexasphere> tileSpheres = new List<Hexasphere>();
     static HexMapUI instance;
 
     public float scrollThreshold = 0.1f;
@@ -29,7 +29,7 @@ public class HexMapUI : MonoBehaviour
 
     public static Hexasphere currentTilemap {
         get {
-            return instance.tilemaps[instance._UIMapLevel];
+            return instance.tileSpheres[instance._UIMapLevel];
         }
     }
 
@@ -42,7 +42,7 @@ public class HexMapUI : MonoBehaviour
     public static void SetUIMapLevel(int newLevel){
 
         int previousLevel = instance._UIMapLevel;
-        instance._UIMapLevel = Mathf.Clamp(newLevel, 0, instance.tilemaps.Count);
+        instance._UIMapLevel = Mathf.Clamp(newLevel, 0, instance.tileSpheres.Count);
 
         instance.HideAllButCurrentUILevel();
         eventPublisher.Publish(new Events.UIMapLevelChanged() { previousMapLevel = previousLevel, newMapLevel = newLevel });
@@ -58,7 +58,7 @@ public class HexMapUI : MonoBehaviour
     }
 
     void Update(){
-        if((Input.mouseScrollDelta.y > scrollThreshold || Input.GetKeyDown(KeyCode.KeypadPlus)) && _UIMapLevel < instance.tilemaps.Count - 1){
+        if((Input.mouseScrollDelta.y > scrollThreshold || Input.GetKeyDown(KeyCode.KeypadPlus)) && _UIMapLevel < instance.tileSpheres.Count - 1){
             SetUIMapLevel(_UIMapLevel + 1);
         }else if((Input.mouseScrollDelta.y < -scrollThreshold  || Input.GetKeyDown(KeyCode.KeypadMinus)) && _UIMapLevel > 0) {
             SetUIMapLevel(_UIMapLevel - 1);
@@ -66,13 +66,21 @@ public class HexMapUI : MonoBehaviour
     }
 
     private void HideAllButCurrentUILevel(){
-        //The base sphere (the planet) behaves a little differently
-        //tilemaps[0].style = currentUIMapLevel == 0 ? STYLE.ShadedWireframe : STYLE.Shaded;
-        //tilemaps[0].GetComponent<SphereCollider>().enabled = currentUIMapLevel == 0;
-
         //The grids can be simply enabled or disabled
-        for(int levelIndex = 0; levelIndex < tilemaps.Count; levelIndex++){
-            tilemaps[levelIndex].gameObject.SetActive(levelIndex == currentUIMapLevel);
+        for(int levelIndex = 0; levelIndex < tileSpheres.Count; levelIndex++){
+            tileSpheres[levelIndex].gameObject.SetActive(levelIndex == currentUIMapLevel);
+        }
+    }
+    public static Color GetLevelColor(int level) {
+        return instance.tileSpheres[Mathf.Clamp(level, 0, instance.tileSpheres.Count - 1)].wireframeColor;
+    }
+
+    public static Tile GetHexasphereTile(TileCoords tilePosition, int level){
+        Hexasphere hexasphere = instance.tileSpheres[Mathf.Clamp(level, 0, instance.tileSpheres.Count - 1)];
+        if(hexasphere.tiles != null){ 
+            return hexasphere.tiles[tilePosition.index];
+        }else{
+            return null;
         }
     }
 }

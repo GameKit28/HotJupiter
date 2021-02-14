@@ -21,7 +21,7 @@ public partial class CommandPointFsm {
         {
             base.ExitState();
 
-            ParentFsm.sprite.GetComponentInChildren<SpriteRenderer>().color = HexMapHelper.GetLevelColor(ParentFsm.destinationLevel);
+            ParentFsm.sprite.GetComponentInChildren<SpriteRenderer>().color = HexMapUI.GetLevelColor(ParentFsm.destinationLevel);
         }
 
         // Update is called once per frame
@@ -30,7 +30,7 @@ public partial class CommandPointFsm {
             //Swap Color between (Cyan selected color and level color)
             swapCountdown -= TimeManager.UIDeltaTime;
             if(swapCountdown < 0) {
-                ParentFsm.sprite.GetComponentInChildren<SpriteRenderer>().color = isBaseColor ? Color.cyan : HexMapHelper.GetLevelColor(ParentFsm.destinationLevel);
+                ParentFsm.sprite.GetComponentInChildren<SpriteRenderer>().color = isBaseColor ? Color.cyan : HexMapUI.GetLevelColor(ParentFsm.destinationLevel);
                 swapCountdown += colorSwapRate;
                 isBaseColor = !isBaseColor;
             }
