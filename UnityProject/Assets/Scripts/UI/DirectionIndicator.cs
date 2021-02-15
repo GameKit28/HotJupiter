@@ -12,13 +12,13 @@ public class DirectionIndicator : MonoBehaviour
     public SpriteRenderer triangle;
 
     private IHaveTileFacing hexDirectionObject;
-    private IHaveTilePosition tilePositionObject;
+    private IHaveTileFootprint tilePositionObject;
 
     void Awake()
     {
         if (attachedObject != null){
             hexDirectionObject = attachedObject.GetComponent<IHaveTileFacing>();
-            tilePositionObject = attachedObject.GetComponent<IHaveTilePosition>();
+            tilePositionObject = attachedObject.GetComponent<IHaveTileFootprint>();
         }
     }
 
@@ -26,10 +26,10 @@ public class DirectionIndicator : MonoBehaviour
     void Update()
     {
         transform.position = HexMapHelper.GetWorldPointFromTile(
-            tilePositionObject.GetTilePosition(), tilePositionObject.GetLevel())
-            + (HexMapHelper.GetFacingVector(tilePositionObject.GetTilePosition(), hexDirectionObject.GetTileFacing()) * centerOffset);
-        triangle.color = HexMapUI.GetLevelColor(tilePositionObject.GetLevel());
-        transform.rotation = HexMapHelper.GetRotationFromFacing(tilePositionObject.GetTilePosition(), hexDirectionObject.GetTileFacing());
+            tilePositionObject.GetPivotTilePosition(), tilePositionObject.GetPivotTileLevel())
+            + (HexMapHelper.GetFacingVector(tilePositionObject.GetPivotTilePosition(), hexDirectionObject.GetTileFacing()) * centerOffset);
+        triangle.color = HexMapUI.GetLevelColor(tilePositionObject.GetPivotTileLevel());
+        transform.rotation = HexMapHelper.GetRotationFromFacing(tilePositionObject.GetPivotTilePosition(), hexDirectionObject.GetTileFacing());
     }
 
     //[EventListener]

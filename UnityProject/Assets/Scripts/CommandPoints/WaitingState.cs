@@ -17,11 +17,5 @@ public partial class CommandPointFsm {
             Debug.Log("Mouse Entered");
             SwapState<HoverState>();
         }
-
-        // Update is called once per frame
-        void Update()
-        {
-            
-        }
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 using BansheeGz.BGSpline.Curve;
 using BansheeGz.BGSpline.Components;
 using MeEngine.Events;
-public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
+public class PieceController : MonoBehaviour, IHaveTileFootprint, IHaveTileFacing
 {
     public bool isPlayerControlled = false;
 
@@ -21,11 +21,15 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
 
     private BGCurve activeWorldPath;
 
-    public TileCoords GetTilePosition(){
+    public TileCoords GetPivotTilePosition(){
         return gamePiece.currentTile;
     }
 
-    public int GetLevel(){
+    public Footprint GetFootprint(){
+        return pieceTemplate.footprint;
+    }
+
+    public int GetPivotTileLevel(){
         return gamePiece.currentLevel;
     }
 

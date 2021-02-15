@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BaseManuStats : ScriptableObject
 {
+    public Footprint footprint;
     public int numThrusters = 3;
     public int numVectorThrusters = 2;
 

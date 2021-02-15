@@ -23,18 +23,18 @@ public class NavigationSystem: MonoBehaviour
 
         //Forward Facing (current speed)
         //This is the default selected command point for players
-        TileWithFacing startingVec = new TileWithFacing { position = pieceController.GetTilePosition(), facing = pieceController.GetTileFacing() };
+        TileWithFacing startingVec = new TileWithFacing { position = pieceController.GetPivotTilePosition(), facing = pieceController.GetTileFacing() };
 
         var defalutSelectedPoint = InstantiateCommandPoint(
             startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity),
-            pieceController.GetLevel(),
+            pieceController.GetPivotTileLevel(),
             pieceController.gamePiece.currentVelocity);
 
         //Forward Facing (speed up)
         if(pieceController.gamePiece.currentVelocity < pieceController.pieceTemplate.TopSpeed && pieceController.pieceTemplate.canAccelerate) {
             InstantiateCommandPoint(
                 startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity + 1),
-                pieceController.GetLevel(),
+                pieceController.GetPivotTileLevel(),
                 pieceController.gamePiece.currentVelocity + 1);
         }
 
@@ -42,21 +42,21 @@ public class NavigationSystem: MonoBehaviour
         if(pieceController.gamePiece.currentVelocity > 2 && pieceController.pieceTemplate.canDecelerate) {
             InstantiateCommandPoint(
                 startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity - 1),
-                pieceController.GetLevel(),
+                pieceController.GetPivotTileLevel(),
                 pieceController.gamePiece.currentVelocity - 1);
         }
 
         //Turn Left (straight bank)
         InstantiateCommandPoint(
             startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity).Face(HexDirection.ForwardLeft),
-            pieceController.GetLevel(),
+            pieceController.GetPivotTileLevel(),
             pieceController.gamePiece.currentVelocity);
 
 
         //Turn Right (straight bank)
         InstantiateCommandPoint(
             startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity).Face(HexDirection.ForwardRight),
-            pieceController.GetLevel(),
+            pieceController.GetPivotTileLevel(),
             pieceController.gamePiece.currentVelocity);
 
         for(int manu = 1; manu <= pieceController.pieceTemplate.Maneuverability; manu++){
@@ -65,26 +65,26 @@ public class NavigationSystem: MonoBehaviour
                     //Strafe Left
                     InstantiateCommandPoint(
                         startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity - manu).Traverse(HexDirection.ForwardLeft, manu).Face(HexDirection.ForwardRight),
-                        pieceController.GetLevel(),
+                        pieceController.GetPivotTileLevel(),
                         pieceController.gamePiece.currentVelocity);
 
                     //Strafe Right
                     InstantiateCommandPoint(
                         startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity - manu).Traverse(HexDirection.ForwardRight, manu).Face(HexDirection.ForwardLeft),
-                        pieceController.GetLevel(),
+                        pieceController.GetPivotTileLevel(),
                         pieceController.gamePiece.currentVelocity);
                 }
 
                 //Turn Left
                 InstantiateCommandPoint(
                     startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity - manu).Traverse(HexDirection.ForwardLeft, manu),
-                    pieceController.GetLevel(),
+                    pieceController.GetPivotTileLevel(),
                     pieceController.gamePiece.currentVelocity);
 
                 //Turn Right
                 InstantiateCommandPoint(
                     startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity - manu).Traverse(HexDirection.ForwardRight, manu),
-                    pieceController.GetLevel(),
+                    pieceController.GetPivotTileLevel(),
                     pieceController.gamePiece.currentVelocity);
             }
         }
@@ -93,27 +93,27 @@ public class NavigationSystem: MonoBehaviour
 
         //Climb Altitude
         if(pieceController.pieceTemplate.effortlessClimb){
-            if(pieceController.GetLevel() < 6){
+            if(pieceController.GetPivotTileLevel() < 6){
                 InstantiateCommandPoint(
                     startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity),
-                    pieceController.GetLevel() + 1,
+                    pieceController.GetPivotTileLevel() + 1,
                     pieceController.gamePiece.currentVelocity);
                 }
 
         }else{
-            if(pieceController.GetLevel() < 6 && pieceController.gamePiece.currentVelocity >= 2){
+            if(pieceController.GetPivotTileLevel() < 6 && pieceController.gamePiece.currentVelocity >= 2){
                 InstantiateCommandPoint(
                     startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity - 1),
-                    pieceController.GetLevel() + 1,
+                    pieceController.GetPivotTileLevel() + 1,
                     pieceController.gamePiece.currentVelocity);
             }
         }
 
         //Descend Altitude
-        if(pieceController.GetLevel() > 1){
+        if(pieceController.GetPivotTileLevel() > 1){
             InstantiateCommandPoint(
                     startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity),
-                    pieceController.GetLevel() - 1,
+                    pieceController.GetPivotTileLevel() - 1,
                     pieceController.gamePiece.currentVelocity);
         }
         
@@ -139,7 +139,7 @@ public class NavigationSystem: MonoBehaviour
     }
 
     private CommandPointFsm InstantiateCommandPoint(TileWithFacing tileVec, int level, int endVelocity){
-        CommandPointFsm commandPoint = GameObject.Instantiate(commandPointPrefab, Vector3.zero, Quaternion.identity, transform).GetComponent<CommandPointFsm>();
+        CommandPointFsm commandPoint = GameObject.Instantiate(commandPointPrefab, transform.position, transform.rotation, transform).GetComponent<CommandPointFsm>();
         commandPoint.SetNavigationSystem(this);
 
         commandPoint.SetSource(pieceController.worldModel.transform.position, HexMapHelper.GetFacingVector(pieceController.gamePiece.currentTile, pieceController.gamePiece.currentTileFacing));

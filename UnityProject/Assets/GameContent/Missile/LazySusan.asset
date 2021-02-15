@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e7fc490dceb9e74b9f567c0400cd033, type: 3}
   m_Name: LazySusan
   m_EditorClassIdentifier: 
+  footprint: {fileID: 11400000, guid: b029ce270fd76924396a0f8a6138b9ac, type: 2}
   numThrusters: 8
   numVectorThrusters: 3
   canAccelerate: 1

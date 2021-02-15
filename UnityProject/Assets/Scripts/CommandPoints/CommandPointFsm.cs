@@ -25,10 +25,11 @@ public partial class CommandPointFsm : MeFsm
     protected override void Start()
     {
         base.Start();
-
-        //sprite = transform.Find("Sprite").gameObject;
-
     }
+
+    /*private void OnEnable() {
+        SwapState<WaitingState>();
+    }*/
 
     public void SetNavigationSystem(NavigationSystem navigationSystem){
         myNavigationSystem = navigationSystem;
@@ -37,9 +38,6 @@ public partial class CommandPointFsm : MeFsm
     public void SetSource(Vector3 sourcePosition, Vector3 forwardVector) {
         this.sourcePosition = sourcePosition;
         this.sourceHeading = forwardVector;
-
-        //Rotate for proper spline up
-        //this.transform.rotation = Quaternion.LookRotation(forwardVector, HexMapHelper.GetTileNormal(HexMapHelper.GetTileFromWorldPoint(sourcePosition)));
     }
 
     public void SetDestination(TileCoords tileCoords, TileCoords facingTile, int level) {

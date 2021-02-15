@@ -57,6 +57,7 @@ public static class HexExtensions {
                 //We're stepping out of a Pentagon using HexDirection. What do we do?
                 newTile = GetNewTileWhenLeavingPentagon(currentTile, currentFacing, direction, strategy);
             }
+            direction = HexDirection.Forward;
 
             if(HexMapHelper.GetTileShape(newTile) == TileShape.Hexagon){
                 currentFacing = HexMapHelper.GetTileInHexDirection(newTile, currentTile, HexDirection.Backward);

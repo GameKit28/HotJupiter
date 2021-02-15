@@ -15,6 +15,12 @@ public class ShipGamePiece : NavigatingGamePiece
 
     bool willFireMissileThisTurn = false;
 
+    public override Footprint GetFootprint()
+    {
+        Debug.Log("Getting Footprint");
+        return shipTemplete.footprint;
+    }
+
     protected override void Awake() {
         base.Awake();
 

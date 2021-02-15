@@ -4,7 +4,7 @@ using UnityEngine;
 using BansheeGz.BGSpline.Curve;
 using BansheeGz.BGSpline.Components;
 using MeEngine.Events;
-public class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
+public abstract class BaseGamePiece : MonoBehaviour, IHaveTileFootprint, IHaveTileFacing
 {
     public static class Events {
         public struct CompletedSetup : IEvent {}
@@ -22,13 +22,15 @@ public class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
 
     public GameObject gamePieceModel;
 
-    public TileCoords GetTilePosition(){
+    public TileCoords GetPivotTilePosition(){
         return currentTile;
     }
 
-    public int GetLevel(){
+    public int GetPivotTileLevel(){
         return currentLevel;
     }
+
+    public abstract Footprint GetFootprint();
 
     public TileCoords GetTileFacing(){
         return currentTileFacing;

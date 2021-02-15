@@ -10,6 +10,11 @@ public class MissileGamePiece : NavigatingGamePiece
 
     public BaseGamePiece motherGamePiece;
 
+    public override Footprint GetFootprint()
+    {
+        return missileTemplate.footprint;
+    }
+
     protected override void Awake() {
         base.Awake();
 

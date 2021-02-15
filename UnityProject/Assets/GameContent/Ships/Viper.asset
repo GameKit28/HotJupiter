@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca0e8b03c4e3bb8459fcc5805772b616, type: 3}
   m_Name: Viper
   m_EditorClassIdentifier: 
+  footprint: {fileID: 11400000, guid: 635c642254e983c49a0eb87d8351cec1, type: 2}
   numThrusters: 4
   numVectorThrusters: 1
   canAccelerate: 1

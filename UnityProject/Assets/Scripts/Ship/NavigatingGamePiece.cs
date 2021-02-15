@@ -4,7 +4,7 @@ using UnityEngine;
 using BansheeGz.BGSpline.Curve;
 using BansheeGz.BGSpline.Components;
 using MeEngine.Events;
-public class NavigatingGamePiece : BaseGamePiece
+public abstract class NavigatingGamePiece : BaseGamePiece
 {
     public int currentVelocity;
 }

@@ -14,8 +14,6 @@ GameObject:
   - component: {fileID: 6833982719512332563}
   - component: {fileID: 6833982719512332556}
   - component: {fileID: 6833982719512332557}
-  - component: {fileID: 6833982719512332558}
-  - component: {fileID: 6833982719512332559}
   - component: {fileID: 6833982719512332566}
   m_Layer: 0
   m_Name: BGCurve
@@ -336,55 +334,8 @@ MonoBehaviour:
   hidden: 0
   parent: {fileID: 6833982719512332562}
   ccName: 
-  distance: 1.8516384
+  distance: 1.4356014
   handlesScale: 1
-  handlesColor: {r: 1, g: 1, b: 1, a: 1}
---- !u!114 &6833982719512332558
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6833982719512332552}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d916ef28168e544d9dc5bb790f67ba0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  showHandles: 1
-  hidden: 0
-  parent: {fileID: 6833982719512332557}
-  ccName: 
-  objectToManipulate: {fileID: 0}
---- !u!114 &6833982719512332559
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6833982719512332552}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23f6c63f13e40be449a87a9114fb11ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  showHandles: 0
-  hidden: 0
-  parent: {fileID: 6833982719512332557}
-  ccName: 
-  objectToManipulate: {fileID: 0}
-  rotationInterpolation: 0
-  lerpSpeed: 5
-  slerpSpeed: 5
-  offsetAngle: {x: 0, y: 0, z: 0}
-  upMode: 2
-  upCustom: {x: 0, y: 1, z: 0}
-  rotationField: {fileID: 0}
-  revolutionsAroundTangent: 0
-  revolutionsAroundTangentField: {fileID: 0}
-  revolutionsClockwise: 0
-  revolutionsClockwiseField: {fileID: 0}
-  handlesScale: 1.006
   handlesColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &6833982719512332566
 MonoBehaviour:
