@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlanetRing : MonoBehaviour
+public class PlanetRing : MonoBehaviour, IHaveTileFootprint
 {
     public LineRenderer line;
     public int level;
@@ -10,16 +10,19 @@ public class PlanetRing : MonoBehaviour
 
     public int maxLength = 20;
 
-    TileWithFacing startVec;
+    StaticFootprint footprint;
 
     // Start is called before the first frame update
     void Start()
     {
         TileCoords startTile = HexMapHelper.GetTileFromWorldPoint(transform.position);
-        startVec = new TileWithFacing() {
+        TileWithFacing startVec = new TileWithFacing() {
             position = startTile,
             facing = HexMapHelper.GetNeighborTiles(startTile)[facingIndex]
             };
+
+        List<TileWithLevel> footprintParts = new List<TileWithLevel>();
+        footprintParts.Add(new TileWithLevel() {position = startVec.position, level = level});
 
         List<Vector3> lineNodes = new List<Vector3>();
         TileWithFacing currentVec = startVec;
@@ -29,14 +32,16 @@ public class PlanetRing : MonoBehaviour
                 break;
             }
             lineNodes.Add(HexMapHelper.GetWorldPointFromTile(currentVec.position, level));
+            footprintParts.Add(new TileWithLevel(){position = currentVec.position, level = level});
         }
         line.positionCount = lineNodes.Count;
         line.SetPositions(lineNodes.ToArray());
-    }
 
-    // Update is called once per frame
-    void Update()
+        footprint = new StaticFootprint(footprintParts);
+    }
+    
+    public FootprintBase GetFootprint()
     {
-        
+        return footprint;
     }
 }

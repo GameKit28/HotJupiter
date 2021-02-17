@@ -4,7 +4,7 @@ using UnityEngine;
 using BansheeGz.BGSpline.Curve;
 using BansheeGz.BGSpline.Components;
 using MeEngine.Events;
-public abstract class BaseGamePiece : MonoBehaviour, IHaveTileFootprint, IHaveTileFacing
+public abstract class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveTileFacing, IHaveTileFootprint
 {
     public static class Events {
         public struct CompletedSetup : IEvent {}
@@ -30,7 +30,12 @@ public abstract class BaseGamePiece : MonoBehaviour, IHaveTileFootprint, IHaveTi
         return currentLevel;
     }
 
-    public abstract Footprint GetFootprint();
+    protected DynamicFootprint footprint;
+
+    public FootprintBase GetFootprint(){
+        footprint.SetPivotTile(new TileWithFacing() {position = currentTile, facing = currentTileFacing}, currentLevel);
+        return footprint;
+    }
 
     public TileCoords GetTileFacing(){
         return currentTileFacing;

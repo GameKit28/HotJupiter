@@ -20,18 +20,4 @@ MonoBehaviour:
     relativePosStep2:
       direction: 0
       step: 0
-  - relativeLevel: 0
-    relativePosStep1:
-      direction: 3
-      step: 1
-    relativePosStep2:
-      direction: 0
-      step: 0
-  - relativeLevel: 0
-    relativePosStep1:
-      direction: 3
-      step: 2
-    relativePosStep2:
-      direction: 0
-      step: 0
   obstacleType: 1

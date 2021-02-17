@@ -4,15 +4,14 @@ using UnityEngine;
 using MeEngine.Events;
 using HexasphereGrid;
 
-public class PositionIndicator : MonoBehaviour
+public class FootprintIndicator : MonoBehaviour
 {
     [SerializeReference]
     public GameObject attachedObject; // Must derive from IHaveTilePosition
     private List<Mesh> polygons = new List<Mesh>();
     private Mesh combinedMesh;
 
-    private IHaveTileFootprint tilePositionObject;
-    private IHaveTileFacing tileFacingObject;
+    private IHaveTileFootprint tileFootprintObject;
 
     private int[] trianglesHex = new int[18]; //6 * 3
     private int[] trianglesPenta = new int[18]; // 6 * 3
@@ -21,8 +20,7 @@ public class PositionIndicator : MonoBehaviour
 
     CombineInstance[] combineInstances;
 
-    private TileCoords lastTilePos;
-    private int lastLevel;
+    private bool isDirty = true;
 
     void Awake()
     {
@@ -55,8 +53,8 @@ public class PositionIndicator : MonoBehaviour
 
     private void Start() {
         if (attachedObject != null) {
-            tilePositionObject = attachedObject.GetComponent<IHaveTileFootprint>();
-            tileFacingObject = attachedObject.GetComponent<IHaveTileFacing>();
+            tileFootprintObject = attachedObject.GetComponent<IHaveTileFootprint>();
+            if(tileFootprintObject.GetFootprint() != null) tileFootprintObject.GetFootprint().FootprintUpdatedEvent += OnFootprintUpdated;
         }
     }
 
@@ -72,23 +70,23 @@ public class PositionIndicator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(lastTilePos != tilePositionObject.GetPivotTilePosition() || lastLevel != tilePositionObject.GetPivotTileLevel()){
-            Tile pivotTile = HexMapUI.GetHexasphereTile(tilePositionObject.GetPivotTilePosition(), tilePositionObject.GetPivotTileLevel());
-
-            if(pivotTile != null) {
-                TileWithFacing pivotVec = new TileWithFacing(){ position = tilePositionObject.GetPivotTilePosition(), facing = tileFacingObject.GetTileFacing() };
-                List<TileWithLevel> footParts = tilePositionObject.GetFootprint().GetAllTilesInFootprint(pivotVec, tilePositionObject.GetPivotTileLevel());
-                
-                if(polygons.Count == 0) Initialize(footParts.Count);
-                
-                for(int footPartIndex = 0; footPartIndex < footParts.Count; footPartIndex++){
-                    TileWithLevel footPart = footParts[footPartIndex];
-                    Tile footTile = HexMapUI.GetHexasphereTile(footPart.position, footPart.level);
+        if(isDirty && tileFootprintObject.GetFootprint() != null){        
+            List<TileWithLevel> footParts = tileFootprintObject.GetFootprint().GetAllTilesInFootprint();
+            
+            if(polygons.Count == 0) Initialize(footParts.Count);
+            Color meshColor = Color.white;
+            
+            for(int footPartIndex = 0; footPartIndex < footParts.Count; footPartIndex++){
+                TileWithLevel footPart = footParts[footPartIndex];
+                Tile footTile = HexMapUI.GetHexasphereTile(footPart.position, footPart.level);
+                if(footTile != null) {
                     Vector3[] vertices = new Vector3[7];
                     vertices[0] = transform.InverseTransformPoint(footTile.center * 2f * HexMapHelper.GetRadialOffsetFromLevel(footPart.level));
                     for(int i = 0; i < footTile.vertices.Length; i++){
                         vertices[i + 1] = transform.InverseTransformPoint(footTile.vertices[i] * 2f * HexMapHelper.GetRadialOffsetFromLevel(footPart.level));
                     }
+
+                    meshColor = HexMapUI.GetLevelColor(footPart.level);
 
                     polygons[footPartIndex].SetVertices(vertices);
                     polygons[footPartIndex].SetTriangles(
@@ -96,21 +94,23 @@ public class PositionIndicator : MonoBehaviour
                         0);
                     polygons[footPartIndex].SetNormals(normals);
                     polygons[footPartIndex].SetUVs(0, uvs);
-                    //polygon.RecalculateBounds();
 
                     combineInstances[footPartIndex].mesh = polygons[footPartIndex];
                 }
-
-                combinedMesh.CombineMeshes(combineInstances, true, false);
-                combinedMesh.RecalculateBounds();
-
-                transform.localPosition = Vector3.zero;
-                transform.localRotation = Quaternion.identity;
-                GetComponent<MeshRenderer>().material.color = HexMapUI.GetLevelColor(tilePositionObject.GetPivotTileLevel());
             }
 
-            lastLevel = tilePositionObject.GetPivotTileLevel();
-            lastTilePos = tilePositionObject.GetPivotTilePosition();
+            combinedMesh.CombineMeshes(combineInstances, true, false);
+            combinedMesh.RecalculateBounds();
+
+            transform.localPosition = Vector3.zero;
+            transform.localRotation = Quaternion.identity;
+            GetComponent<MeshRenderer>().material.color = meshColor;
+        
+            isDirty = false;
         }
+    }
+
+    void OnFootprintUpdated(){
+        isDirty = true;
     }
 }

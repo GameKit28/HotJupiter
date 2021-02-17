@@ -5368,7 +5368,7 @@ PrefabInstance:
     - target: {fileID: 1079789735477339042, guid: ca813a61a4e20a44f9c5bbb54eb216fe,
         type: 3}
       propertyPath: m_Name
-      value: PositionIndicator
+      value: FootprintIndicator
       objectReference: {fileID: 0}
     - target: {fileID: 1079789735477339045, guid: ca813a61a4e20a44f9c5bbb54eb216fe,
         type: 3}
@@ -5426,6 +5426,11 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1261317481991112433, guid: ca813a61a4e20a44f9c5bbb54eb216fe,
+        type: 3}
+      propertyPath: attachedObject
+      value: 
+      objectReference: {fileID: 123629963477168360}
+    - target: {fileID: 8106711434453587117, guid: ca813a61a4e20a44f9c5bbb54eb216fe,
         type: 3}
       propertyPath: attachedObject
       value: 

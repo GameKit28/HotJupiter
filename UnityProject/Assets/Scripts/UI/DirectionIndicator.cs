@@ -12,13 +12,13 @@ public class DirectionIndicator : MonoBehaviour
     public SpriteRenderer triangle;
 
     private IHaveTileFacing hexDirectionObject;
-    private IHaveTileFootprint tilePositionObject;
+    private IHaveTilePosition tilePositionObject;
 
     void Awake()
     {
         if (attachedObject != null){
             hexDirectionObject = attachedObject.GetComponent<IHaveTileFacing>();
-            tilePositionObject = attachedObject.GetComponent<IHaveTileFootprint>();
+            tilePositionObject = attachedObject.GetComponent<IHaveTilePosition>();
         }
     }
 

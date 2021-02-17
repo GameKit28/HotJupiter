@@ -15,12 +15,6 @@ public class ShipGamePiece : NavigatingGamePiece
 
     bool willFireMissileThisTurn = false;
 
-    public override Footprint GetFootprint()
-    {
-        Debug.Log("Getting Footprint");
-        return shipTemplete.footprint;
-    }
-
     protected override void Awake() {
         base.Awake();
 
@@ -33,6 +27,8 @@ public class ShipGamePiece : NavigatingGamePiece
 
         missileCount = shipTemplete.missileCount;
         missileCooldown = 0;
+
+        footprint = new DynamicFootprint(shipTemplete.footprint);
     }
 
     protected override void Update()

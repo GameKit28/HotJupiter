@@ -4,7 +4,7 @@ using UnityEngine;
 using BansheeGz.BGSpline.Curve;
 using BansheeGz.BGSpline.Components;
 using MeEngine.Events;
-public class PieceController : MonoBehaviour, IHaveTileFootprint, IHaveTileFacing
+public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
 {
     public bool isPlayerControlled = false;
 
@@ -25,7 +25,7 @@ public class PieceController : MonoBehaviour, IHaveTileFootprint, IHaveTileFacin
         return gamePiece.currentTile;
     }
 
-    public Footprint GetFootprint(){
+    public RelativeFootprintTemplate GetFootprint(){
         return pieceTemplate.footprint;
     }
 
