@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d67f734cdba7a940bc0fd197242b7bd, type: 3}
+  m_Name: SmallAsteroid
+  m_EditorClassIdentifier: 
+  footprint: {fileID: 11400000, guid: 28b7e17f77044b149be199e48d3aa9c2, type: 2}
+  modelPrefabs:
+  - {fileID: 102630, guid: 678bc45fa6df37043b80d12daa3a9d51, type: 3}
+  - {fileID: 152982, guid: 75204aeb0b1f4194e8dd78998abb7652, type: 3}
+  - {fileID: 111306, guid: 7255e26f7d2981d4ea7ed83351d2d805, type: 3}
+  - {fileID: 114474, guid: 6f6b913233923554eb49f4cb7bd23ff4, type: 3}
+  - {fileID: 156152, guid: 93a05d93f0fd810439cd9267453b0865, type: 3}
+  - {fileID: 112560, guid: fdba5130b4369c4418d13375cbd4f27c, type: 3}
+  - {fileID: 159232, guid: be0c5bb5e87aa724389ad73a7f8e9788, type: 3}
+  - {fileID: 175342, guid: 3277d8aafcb068342a9f3d43a8b75b8c, type: 3}
+  - {fileID: 115850, guid: 2bca82b9337d12545a5f3238ab55612b, type: 3}
+  - {fileID: 158218, guid: ea3b1b7de8e530346b335abce83beb31, type: 3}
+  - {fileID: 141786, guid: 53626206312a0e34c8b9d69f0cde2452, type: 3}
+  - {fileID: 112054, guid: 66384f19d8d3cc042a4841bb312b05e4, type: 3}
+  - {fileID: 110516, guid: c3ae58415e58c4c4db86b24da5468761, type: 3}
+  - {fileID: 186512, guid: dd3c1c678387e4e48ab9e711f4a22844, type: 3}
+  - {fileID: 108406, guid: 00684c1d8314c3a4f8d58f4988233356, type: 3}
+  - {fileID: 102898, guid: 6352ac70b184ad14f97f439232978d61, type: 3}
+  - {fileID: 153758, guid: abad2f0b359f8a445a4c199a05691f84, type: 3}
+  - {fileID: 184638, guid: 440691a435237c841a7b16830d776dd3, type: 3}
+  - {fileID: 199658, guid: dc134c807fe86f04aacd9559cad52091, type: 3}
+  - {fileID: 155636, guid: 51db1e0f8a2ffb841a9e47380df0fc62, type: 3}
+  - {fileID: 193304, guid: 197689c139fb671489c4faec41b5fb80, type: 3}
