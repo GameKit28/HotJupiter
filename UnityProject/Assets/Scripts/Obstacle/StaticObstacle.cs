@@ -14,28 +14,20 @@ public class StaticObstacle : MonoBehaviour, IHaveTilePosition, IHaveTileFootpri
 
     StaticFootprint footprint;
 
-    private void Awake() {
-
-    }
-
     void Start()
     {
         //Randomly Generate Model
         GameObject prefab = template.modelPrefabs.RandomItem();
         GameObject.Instantiate(prefab, Vector3.zero, Quaternion.identity, modelHolder);
 
-        pivotPosition = HexMapHelper.GetTileFromWorldPoint(transform.position);
+        if(pivotPosition.index == 0){
+            pivotPosition = HexMapHelper.GetTileFromWorldPoint(transform.position);
+        }
         TileCoords pivotFacing = HexMapHelper.GetNeighborTiles(pivotPosition).RandomItem();
         transform.position = HexMapHelper.GetWorldPointFromTile(pivotPosition, pivotLevel);
         modelHolder.transform.rotation = HexMapHelper.GetRotationFromFacing(pivotPosition, pivotFacing);
 
         footprint = new StaticFootprint(template.footprint, pivotPosition, pivotFacing, pivotLevel);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public FootprintBase GetFootprint(){

@@ -81,8 +81,8 @@ public class HexMapHelper : MonoBehaviour
 {
     private static HexMapHelper instance;
 
-    public const float gridFirstAltitudeOffset = 0.2f;
-    public const float gridAltitudeOffsets = 0.4f;
+    public const float gridFirstAltitudeOffset = 0.225f;
+    public const float gridAltitudeOffsets = 0.45f;
 
     public Hexasphere baseHexasphere;
     public PlanetSizer planetSizer;
