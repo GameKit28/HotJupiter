@@ -33,7 +33,6 @@ public abstract class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveTil
     protected DynamicFootprint footprint;
 
     public FootprintBase GetFootprint(){
-        footprint.SetPivotTile(new TileWithFacing() {position = currentTile, facing = currentTileFacing}, currentLevel);
         return footprint;
     }
 
@@ -78,6 +77,8 @@ public abstract class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveTil
     public void PositionAndOrientPiece(){
         transform.position = HexMapHelper.GetWorldPointFromTile(currentTile, currentLevel);
         gamePieceModel.transform.rotation = HexMapHelper.GetRotationFromFacing(currentTile, currentTileFacing);
+
+        footprint.SetPivotTile(new TileWithFacing() {position = currentTile, facing = currentTileFacing}, currentLevel);
     }
 
     [EventListener]

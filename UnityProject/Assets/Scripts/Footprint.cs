@@ -27,7 +27,7 @@ public abstract class FootprintBase {
 
     protected List<TileWithLevel> footprintParts = new List<TileWithLevel>();
 
-    public event FootprintUpdatedEvent FootprintUpdatedEvent;
+    public event FootprintUpdatedDel FootprintUpdatedEvent;
 
     public List<TileWithLevel> GetAllTilesInFootprint(){
         return footprintParts;
@@ -54,4 +54,4 @@ public abstract class FootprintBase {
     }
 }
 
-public delegate void FootprintUpdatedEvent();
+public delegate void FootprintUpdatedDel();

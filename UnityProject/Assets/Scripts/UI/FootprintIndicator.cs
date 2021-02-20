@@ -54,7 +54,6 @@ public class FootprintIndicator : MonoBehaviour
     private void Start() {
         if (attachedObject != null) {
             tileFootprintObject = attachedObject.GetComponent<IHaveTileFootprint>();
-            if(tileFootprintObject.GetFootprint() != null) tileFootprintObject.GetFootprint().FootprintUpdatedEvent += OnFootprintUpdated;
         }
     }
 
@@ -65,6 +64,8 @@ public class FootprintIndicator : MonoBehaviour
             polygons.Add(polygon);
         }
         combineInstances = new CombineInstance[size];
+
+        tileFootprintObject.GetFootprint().FootprintUpdatedEvent += OnFootprintUpdated;
     }
 
     // Update is called once per frame
