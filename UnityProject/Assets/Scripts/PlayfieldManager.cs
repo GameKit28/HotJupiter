@@ -85,6 +85,7 @@ public class PlayfieldManager : MonoBehaviour
         }else{
             claimSets = new HashSet<HashSet<TileClaim>>();
             claimSets.Add(tileClaims);
+            instance.claimMap.Add(claimant, claimSets);
         }
 
         return true;

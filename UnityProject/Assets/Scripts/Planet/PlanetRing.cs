@@ -37,7 +37,7 @@ public class PlanetRing : MonoBehaviour, IHaveTileFootprint
         line.positionCount = lineNodes.Count;
         line.SetPositions(lineNodes.ToArray());
 
-        footprint = new StaticFootprint(footprintParts);
+        footprint = new StaticFootprint(this, footprintParts);
     }
     
     public FootprintBase GetFootprint()

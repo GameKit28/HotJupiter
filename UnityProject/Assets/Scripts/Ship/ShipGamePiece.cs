@@ -28,7 +28,7 @@ public class ShipGamePiece : NavigatingGamePiece
         missileCount = shipTemplete.missileCount;
         missileCooldown = 0;
 
-        footprint = new DynamicFootprint(shipTemplete.footprint);
+        footprint = new DynamicFootprint(this, shipTemplete.footprint);
     }
 
     protected override void Update()

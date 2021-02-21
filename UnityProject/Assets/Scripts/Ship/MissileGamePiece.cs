@@ -20,6 +20,6 @@ public class MissileGamePiece : NavigatingGamePiece
         newModel.transform.localScale = Vector3.one;
         newModel.transform.rotation = Quaternion.identity;
 
-        footprint = new DynamicFootprint(missileTemplate.footprint);
+        footprint = new DynamicFootprint(this, missileTemplate.footprint);
     }
 }
