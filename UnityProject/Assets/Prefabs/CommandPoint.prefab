@@ -404,6 +404,8 @@ MonoBehaviour:
     index: 0
   destinationLevel: 0
   endVelocity: 0
+  pathingMaterialScheme: {fileID: 11400000, guid: 47d6fb80c7d14d348843afdc73e3db82,
+    type: 2}
   sprite: {fileID: 8262216288714135669}
   spline: {fileID: 6833982719512332561}
 --- !u!54 &2407753840796367116

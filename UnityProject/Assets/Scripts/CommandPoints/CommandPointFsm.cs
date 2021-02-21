@@ -7,12 +7,15 @@ using BansheeGz.BGSpline.Components;
 using MeEngine.Events;
 public partial class CommandPointFsm : MeFsm
 {
+
+
     public TileCoords destinationTile;
     public TileCoords destinationFacingTile;
     public int destinationLevel;
 
     public int endVelocity;
 
+    public PathingMaterialScheme pathingMaterialScheme;
 
     public GameObject sprite;
     public BGCurve spline;
@@ -53,6 +56,13 @@ public partial class CommandPointFsm : MeFsm
 
         //Color the sprite based on height
         sprite.GetComponentInChildren<SpriteRenderer>().color = HexMapUI.GetLevelColor(level);
+
+        //Set line material
+        if(PlayfieldManager.GetTileObstacleType(new TileWithLevel() {position = tileCoords, level = level}) == TileObstacleType.Solid){
+            spline.GetComponent<LineRenderer>().material = pathingMaterialScheme.GetMaterialFromIndicator(PathIndicatorType.Collision);
+        }else{
+            spline.GetComponent<LineRenderer>().material = pathingMaterialScheme.GetMaterialFromIndicator(PathIndicatorType.Selected);
+        }
 
         SetSpline(sourcePosition, sourceHeading,
             HexMapHelper.GetWorldPointFromTile(tileCoords, level), HexMapHelper.GetFacingVector(tileCoords, facingTile));

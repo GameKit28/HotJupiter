@@ -76,6 +76,7 @@ public class PlayfieldManager : MonoBehaviour
             }
         }else{
             tileClaims = new HashSet<TileClaim>();
+            instance.tileContents.Add(tile, tileClaims);
         }
         tileClaims.Add(new TileClaim() {claimHolder = claimant, obstacleType = claimType});
         
