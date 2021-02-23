@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using MeEngine.FsmManagement;
 
-public partial class CommandPointFsm {
-    public class HoverState : MeFsmState<CommandPointFsm>
+public partial class CommandPointViewFsm {
+    public class HoverState : MeFsmState<CommandPointViewFsm>
     {
         protected override void EnterState()
         {
             base.EnterState();
 
-            ParentFsm.spline.gameObject.SetActive(true);
+            ParentFsm.model.spline.gameObject.SetActive(true);
         }
 
         void OnMouseExit(){
@@ -23,8 +23,7 @@ public partial class CommandPointFsm {
         {
             if(Input.GetMouseButtonDown(0)){
                 //The player selected this command point
-                Debug.Log("Command Selected");
-                SwapState<SelectedState>();
+                ParentFsm.controller.SelectPoint(true);
             }
         }
     }

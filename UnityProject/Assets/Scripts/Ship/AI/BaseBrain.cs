@@ -13,7 +13,7 @@ public abstract class BaseBrain<TGamePiece> : MonoBehaviour
         return null;
     }
 
-    public virtual CommandPointFsm SelectCommand(){
+    public virtual CommandPointController SelectCommand(){
         return null;
     }
 }

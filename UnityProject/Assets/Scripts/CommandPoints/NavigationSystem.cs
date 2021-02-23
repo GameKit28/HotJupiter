@@ -7,7 +7,7 @@ public class NavigationSystem: MonoBehaviour
     public GameObject commandPointPrefab;
     public PieceController pieceController;
 
-    private List<CommandPointFsm> availableCommandPoints = new List<CommandPointFsm>();
+    private List<CommandPointController> availableCommandPoints = new List<CommandPointController>();
 
     bool hasGeneratedThisTurn = false;
 
@@ -59,6 +59,7 @@ public class NavigationSystem: MonoBehaviour
             pieceController.GetPivotTileLevel(),
             pieceController.gamePiece.currentVelocity);
 
+        //Turn Radius
         for(int manu = 1; manu <= pieceController.pieceTemplate.Maneuverability; manu++){
             if(pieceController.gamePiece.currentVelocity - manu >= 1) {
                 if(pieceController.pieceTemplate.canStrafe){
@@ -89,8 +90,6 @@ public class NavigationSystem: MonoBehaviour
             }
         }
 
-        
-
         //Climb Altitude
         if(pieceController.pieceTemplate.effortlessClimb){
             if(pieceController.GetPivotTileLevel() < 6){
@@ -117,19 +116,19 @@ public class NavigationSystem: MonoBehaviour
                     pieceController.gamePiece.currentVelocity);
         }
         
-        if(pieceController.isPlayerControlled) defalutSelectedPoint.SelectPoint(true);
+        defalutSelectedPoint.SelectPoint(true);
 
         hasGeneratedThisTurn = true;
     }
 
-    public List<CommandPointFsm> GetAvailableCommandPoints(){
+    public List<CommandPointController> GetAvailableCommandPoints(){
         return availableCommandPoints;
     }
 
     [EventListener]
     void OnStartNewTurn(GameControllerFsm.Events.BeginCommandSelectionState @event)
     {
-        foreach(CommandPointFsm point in availableCommandPoints) {
+        foreach(CommandPointController point in availableCommandPoints) {
             GameObject.Destroy(point.gameObject);
         }
         availableCommandPoints.Clear();
@@ -138,20 +137,19 @@ public class NavigationSystem: MonoBehaviour
         GenerateCommandPoints();
     }
 
-    private CommandPointFsm InstantiateCommandPoint(TileWithFacing tileVec, int level, int endVelocity){
-        CommandPointFsm commandPoint = GameObject.Instantiate(commandPointPrefab, transform.position, transform.rotation, transform).GetComponent<CommandPointFsm>();
+    private CommandPointController InstantiateCommandPoint(TileWithFacing tileVec, int level, int endVelocity){
+        CommandPointController commandPoint = GameObject.Instantiate(commandPointPrefab, transform.position, transform.rotation, transform).GetComponent<CommandPointController>();
         commandPoint.SetNavigationSystem(this);
 
         commandPoint.SetSource(pieceController.worldModel.transform.position, HexMapHelper.GetFacingVector(pieceController.gamePiece.currentTile, pieceController.gamePiece.currentTileFacing));
         commandPoint.SetDestination(tileVec.position, tileVec.facing, level);
         commandPoint.SetEndVelocity(endVelocity);
-        if(!pieceController.isPlayerControlled) commandPoint.gameObject.SetActive(false);
 
         availableCommandPoints.Add(commandPoint);
         return commandPoint;
     }
 
-    public void NewPointSelected(CommandPointFsm selectedPoint){
+    public void NewPointSelected(CommandPointController selectedPoint){
         Debug.Log("Selecting Command Point: " + selectedPoint);
         foreach (var point in availableCommandPoints)
         {
@@ -159,5 +157,4 @@ public class NavigationSystem: MonoBehaviour
         }
         pieceController.SetSelectedCommandPoint(selectedPoint);
     }
-
 }

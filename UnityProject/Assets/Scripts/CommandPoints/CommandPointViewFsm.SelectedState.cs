@@ -4,8 +4,8 @@ using UnityEngine;
 using MeEngine.FsmManagement;
 using MeEngine.Events;
 
-public partial class CommandPointFsm {
-    public class SelectedState : MeFsmState<CommandPointFsm>
+public partial class CommandPointViewFsm {
+    public class SelectedState : MeFsmState<CommandPointViewFsm>
     {
         private const float colorSwapRate = 0.5f; // seconds
 
@@ -14,14 +14,15 @@ public partial class CommandPointFsm {
 
         protected override void EnterState()
         {
-            ParentFsm.myNavigationSystem.NewPointSelected(ParentFsm);
+            ParentFsm.model.spline.gameObject.SetActive(true);
+            ParentFsm.controller.myNavigationSystem.NewPointSelected(ParentFsm.controller);
         }
 
         protected override void ExitState()
         {
             base.ExitState();
 
-            ParentFsm.sprite.GetComponentInChildren<SpriteRenderer>().color = HexMapUI.GetLevelColor(ParentFsm.destinationLevel);
+            ParentFsm.spriteRenderer.color = HexMapUI.GetLevelColor(ParentFsm.model.destinationLevel);
         }
 
         // Update is called once per frame
@@ -30,7 +31,7 @@ public partial class CommandPointFsm {
             //Swap Color between (Cyan selected color and level color)
             swapCountdown -= TimeManager.UIDeltaTime;
             if(swapCountdown < 0) {
-                ParentFsm.sprite.GetComponentInChildren<SpriteRenderer>().color = isBaseColor ? Color.cyan : HexMapUI.GetLevelColor(ParentFsm.destinationLevel);
+                ParentFsm.spriteRenderer.color = isBaseColor ? Color.cyan : HexMapUI.GetLevelColor(ParentFsm.model.destinationLevel);
                 swapCountdown += colorSwapRate;
                 isBaseColor = !isBaseColor;
             }

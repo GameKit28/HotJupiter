@@ -361,8 +361,10 @@ GameObject:
   - component: {fileID: 6833982719639373736}
   - component: {fileID: 7019884071448738380}
   - component: {fileID: 2407753840796367116}
+  - component: {fileID: 2147708147616572302}
+  - component: {fileID: 3825747881660399445}
   m_Layer: 0
-  m_Name: CommandPoint
+  m_Name: CommandPointVisible
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -396,18 +398,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4009e1cc0a3453e4db082322cd52ee75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StartingState:
-    _typeRef: CommandPointFsm+WaitingState, Assembly-CSharp
-  destinationTile:
-    index: 0
-  destinationFacingTile:
-    index: 0
-  destinationLevel: 0
-  endVelocity: 0
+  isSelected: 0
+  model: {fileID: 2147708147616572302}
+  view: {fileID: 3825747881660399445}
   pathingMaterialScheme: {fileID: 11400000, guid: 47d6fb80c7d14d348843afdc73e3db82,
     type: 2}
-  sprite: {fileID: 8262216288714135669}
-  spline: {fileID: 6833982719512332561}
+  myNavigationSystem: {fileID: 0}
 --- !u!54 &2407753840796367116
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -424,6 +420,46 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &2147708147616572302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6833982719639373737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d38c15ed64819ba46bdcea6a4666c05c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  destinationTile:
+    index: 0
+  destinationFacingTile:
+    index: 0
+  destinationLevel: 0
+  endVelocity: 0
+  sourcePosition: {x: 0, y: 0, z: 0}
+  sourceHeading: {x: 0, y: 0, z: 0}
+  spline: {fileID: 6833982719512332561}
+--- !u!114 &3825747881660399445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6833982719639373737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8873d4dfb3c993f4abb56bb4d8bd602a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StartingState:
+    _typeRef: CommandPointViewFsm+WaitingState, Assembly-CSharp
+  spriteHolder: {fileID: 7470570508327965070}
+  spriteRenderer: {fileID: 6833982719837389986}
+  model: {fileID: 2147708147616572302}
+  controller: {fileID: 7019884071448738380}
+  materialScheme: {fileID: 11400000, guid: 47d6fb80c7d14d348843afdc73e3db82, type: 2}
 --- !u!1 &6833982719837389981
 GameObject:
   m_ObjectHideFlags: 0
@@ -576,7 +612,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8262216288714135669}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.589, y: 0, z: 0.664}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 6833982719837389980}

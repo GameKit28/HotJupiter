@@ -36,7 +36,7 @@ public class MissileBrain : BaseBrain<MissileGamePiece>
         return currentTarget;
     }
 
-    public override CommandPointFsm SelectCommand()
+    public override CommandPointController SelectCommand()
     {
         var availableCommands = pieceController.navigationSystem.GetAvailableCommandPoints();
 
@@ -46,13 +46,13 @@ public class MissileBrain : BaseBrain<MissileGamePiece>
             int targetDestinationLevel = currentTarget.GetDestinationLevel();
             Vector3 targetDestinationWorldSpace = HexMapHelper.GetWorldPointFromTile(targetDestinationTile, targetDestinationLevel);
 
-            CommandPointFsm closestPoint = null;
+            CommandPointController closestPoint = null;
             float closestPointDist = float.MaxValue;
 
-            foreach(CommandPointFsm point in availableCommands){
-                if(point.destinationTile == targetDestinationTile && point.destinationLevel == targetDestinationLevel) return point;
+            foreach(CommandPointController point in availableCommands){
+                if(point.model.destinationTile == targetDestinationTile && point.model.destinationLevel == targetDestinationLevel) return point;
 
-                float distance = Vector3.Distance(targetDestinationWorldSpace, HexMapHelper.GetWorldPointFromTile(point.destinationTile, point.destinationLevel));
+                float distance = Vector3.Distance(targetDestinationWorldSpace, HexMapHelper.GetWorldPointFromTile(point.model.destinationTile, point.model.destinationLevel));
                 if(distance < closestPointDist){
                     closestPoint = point;
                     closestPointDist = distance;

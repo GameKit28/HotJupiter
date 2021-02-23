@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using MeEngine.FsmManagement;
 
-public partial class CommandPointFsm {
-    public class WaitingState : MeFsmState<CommandPointFsm>
+public partial class CommandPointViewFsm {
+    public class WaitingState : MeFsmState<CommandPointViewFsm>
     {
         protected override void EnterState()
         {
             base.EnterState();
 
-            ParentFsm.spline.gameObject.SetActive(false);
+            ParentFsm.model.spline.gameObject.SetActive(false);
         }
 
         void OnMouseEnter(){

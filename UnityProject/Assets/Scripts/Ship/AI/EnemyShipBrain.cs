@@ -15,7 +15,7 @@ public class EnemyShipBrain : BaseBrain<ShipGamePiece>
         return currentTarget;
     }
 
-    public override CommandPointFsm SelectCommand(){
+    public override CommandPointController SelectCommand(){
         var availableCommandPoints = pieceController.navigationSystem.GetAvailableCommandPoints();
         var chosenCommandPoint = availableCommandPoints[Random.Range(0, availableCommandPoints.Count)];
         return chosenCommandPoint;
