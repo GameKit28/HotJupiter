@@ -13,7 +13,7 @@ public class MissileFactory : MonoBehaviour
         instance = this;
     }
 
-    public static void SpawnMissile(TileCoords tileCoords, TileCoords tileFacing, int level, BaseGamePiece spawningPiece, MissileStats template) {
+    public static void SpawnMissile(TileCoords tileCoords, TileCoords tileFacing, TileLevel level, BaseGamePiece spawningPiece, MissileStats template) {
         GameObject newMissile = SimplePool.Spawn(
             instance.missilePrefab, 
             Vector3.zero, 

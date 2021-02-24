@@ -6,7 +6,7 @@ public class CommandPointModel : MonoBehaviour{
 
     public TileCoords destinationTile;
     public TileCoords destinationFacingTile;
-    public int destinationLevel;
+    public TileLevel destinationLevel;
     public int endVelocity;
     public Vector3 sourcePosition;
     public Vector3 sourceHeading;

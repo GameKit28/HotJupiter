@@ -10,27 +10,6 @@ public class RelativeFootprintTemplate : ScriptableObject
 }
 
 [System.Serializable]
-public struct TileWithLevel {
-    public TileCoords position;
-    public int level;
-
-    public override bool Equals(object obj)
-    {
-        if (!(obj is TileWithLevel))
-          return false;
-
-        TileWithLevel otherStruct = (TileWithLevel)obj;
-
-        return this.level == otherStruct.level && this.position == otherStruct.position;
-    }
-
-    public override int GetHashCode()
-    {
-        return position.GetHashCode().WrapShift(2) ^ level.GetHashCode();
-    }
-}
-
-[System.Serializable]
 public struct DirectionStep
 {
     public HexDirection direction;

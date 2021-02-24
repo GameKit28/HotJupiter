@@ -27,7 +27,7 @@ public class CommandPointController : MonoBehaviour
         model.sourceHeading = forwardVector;
     }
 
-    public void SetDestination(TileCoords tileCoords, TileCoords facingTile, int level) {
+    public void SetDestination(TileCoords tileCoords, TileCoords facingTile, TileLevel level) {
         model.destinationTile = tileCoords;
         model.destinationFacingTile = facingTile;
         model.destinationLevel = level;

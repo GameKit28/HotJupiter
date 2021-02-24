@@ -26,7 +26,7 @@ public class EnemyShipBrain : BaseBrain<ShipGamePiece>
         FindTarget();
         TileWithFacing startVec = new TileWithFacing() {position = myGamePiece.currentTile, facing = myGamePiece.currentTileFacing};
         TileCoords missileOkayZone = startVec.Traverse(HexDirection.Forward, myGamePiece.shipTemplete.missileTemplate.TopSpeed).position;
-        if(HexMapHelper.CrowFlyDistance(missileOkayZone, myGamePiece.currentLevel, currentTarget.currentTile, currentTarget.currentLevel) < 4f){
+        if(HexMapHelper.CrowFlyDistance(new Tile(missileOkayZone, myGamePiece.currentLevel), new Tile(currentTarget.currentTile, currentTarget.currentLevel)) < 4f){
             myGamePiece.QueueMissile(true);
         }
     }

@@ -29,7 +29,7 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
         return pieceTemplate.footprint;
     }
 
-    public int GetPivotTileLevel(){
+    public TileLevel GetPivotTileLevel(){
         return gamePiece.currentLevel;
     }
 

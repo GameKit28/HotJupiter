@@ -8,7 +8,7 @@ using HexasphereGrid;
 public class HexMapUI : MonoBehaviour
 {
     public static class Events {
-        public struct UIMapLevelChanged : IEvent { public int previousMapLevel; public int newMapLevel; }
+        public struct UIMapLevelChanged : IEvent { public TileLevel previousMapLevel; public TileLevel newMapLevel; }
     }
 
     public static EventPublisher eventPublisher { get; private set; } = new EventPublisher();
@@ -18,18 +18,18 @@ public class HexMapUI : MonoBehaviour
 
     public float scrollThreshold = 0.1f;
 
-    public int startingUIMapLevel = 2;
+    public TileLevel startingUIMapLevel = 2;
 
-    public static int currentUIMapLevel {
+    public static TileLevel currentUIMapLevel {
         get {
             return instance._UIMapLevel;
         }
     }
-    private int _UIMapLevel;
+    private TileLevel _UIMapLevel;
 
     public static Hexasphere currentTilemap {
         get {
-            return instance.tileSpheres[instance._UIMapLevel];
+            return instance.tileSpheres[(int)instance._UIMapLevel];
         }
     }
 
@@ -39,9 +39,9 @@ public class HexMapUI : MonoBehaviour
         }
     }
 
-    public static void SetUIMapLevel(int newLevel){
+    public static void SetUIMapLevel(TileLevel newLevel){
 
-        int previousLevel = instance._UIMapLevel;
+        TileLevel previousLevel = instance._UIMapLevel;
         instance._UIMapLevel = Mathf.Clamp(newLevel, 0, instance.tileSpheres.Count);
 
         instance.HideAllButCurrentUILevel();
@@ -71,14 +71,14 @@ public class HexMapUI : MonoBehaviour
             tileSpheres[levelIndex].gameObject.SetActive(levelIndex == currentUIMapLevel);
         }
     }
-    public static Color GetLevelColor(int level) {
+    public static Color GetLevelColor(TileLevel level) {
         return instance.tileSpheres[Mathf.Clamp(level, 0, instance.tileSpheres.Count - 1)].wireframeColor;
     }
 
-    public static Tile GetHexasphereTile(TileCoords tilePosition, int level){
-        Hexasphere hexasphere = instance.tileSpheres[Mathf.Clamp(level, 0, instance.tileSpheres.Count - 1)];
+    public static HexasphereGrid.Tile GetHexasphereTile(Tile tile){
+        Hexasphere hexasphere = instance.tileSpheres[Mathf.Clamp(tile.level, 0, instance.tileSpheres.Count - 1)];
         if(hexasphere.tiles != null){ 
-            return hexasphere.tiles[tilePosition.index];
+            return hexasphere.tiles[tile.position.index];
         }else{
             return null;
         }

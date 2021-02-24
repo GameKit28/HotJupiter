@@ -32,7 +32,7 @@ public partial class CommandPointViewFsm : MeFsm {
         //Color the sprite based on height
         spriteRenderer.color = HexMapUI.GetLevelColor(model.destinationLevel);
 
-        if(PlayfieldManager.GetTileObstacleType(new TileWithLevel() {position = model.destinationTile, level = model.destinationLevel}) == TileObstacleType.Solid){
+        if(PlayfieldManager.GetTileObstacleType(new Tile() {position = model.destinationTile, level = model.destinationLevel}) == TileObstacleType.Solid){
             model.spline.GetComponent<LineRenderer>().material = materialScheme.GetMaterialFromIndicator(PathIndicatorType.Collision);
         }else{
             model.spline.GetComponent<LineRenderer>().material = materialScheme.GetMaterialFromIndicator(PathIndicatorType.Selected);

@@ -32,14 +32,14 @@ public class PlayfieldManager : MonoBehaviour
 
     public static PlayfieldManager instance;
 
-    private Dictionary<TileWithLevel, HashSet<TileClaim>> tileContents = new Dictionary<TileWithLevel, HashSet<TileClaim>>();
+    private Dictionary<Tile, HashSet<TileClaim>> tileContents = new Dictionary<Tile, HashSet<TileClaim>>();
     private Dictionary<IHaveTileFootprint, HashSet<HashSet<TileClaim>>> claimMap = new Dictionary<IHaveTileFootprint, HashSet<HashSet<TileClaim>>>();
 
     private void Awake() {
         instance = this;
     }
 
-    public static TileObstacleType GetTileObstacleType(TileWithLevel tile){
+    public static TileObstacleType GetTileObstacleType(Tile tile){
         HashSet<TileClaim> tileClaims;
         TileObstacleType foundObstacle = TileObstacleType.Empty;
         if(instance.tileContents.TryGetValue(tile, out tileClaims)){
@@ -52,7 +52,7 @@ public class PlayfieldManager : MonoBehaviour
         return foundObstacle;
     }
 
-    public static List<IHaveTileFootprint> GetTileOccupants(TileWithLevel tile){
+    public static List<IHaveTileFootprint> GetTileOccupants(Tile tile){
         HashSet<TileClaim> tileClaims;
         List<IHaveTileFootprint> tileOccupants = new List<IHaveTileFootprint>();
         if(instance.tileContents.TryGetValue(tile, out tileClaims)){
@@ -63,7 +63,7 @@ public class PlayfieldManager : MonoBehaviour
         return tileOccupants;
     }
 
-    public static bool TryStakeTileClaim(TileWithLevel tile, IHaveTileFootprint claimant, TileObstacleType claimType){
+    public static bool TryStakeTileClaim(Tile tile, IHaveTileFootprint claimant, TileObstacleType claimType){
         HashSet<TileClaim> tileClaims;
         if(instance.tileContents.TryGetValue(tile, out tileClaims)){
             if(tileClaims == null) tileClaims = new HashSet<TileClaim>();
@@ -92,7 +92,7 @@ public class PlayfieldManager : MonoBehaviour
         return true;
     }
 
-    public static void RemoveTileClaim(TileWithLevel tile, IHaveTileFootprint claimant){
+    public static void RemoveTileClaim(Tile tile, IHaveTileFootprint claimant){
         HashSet<TileClaim> tileClaims;
         if(instance.tileContents.TryGetValue(tile, out tileClaims)){
             int result = tileClaims.RemoveWhere((x) => x.claimHolder == claimant);

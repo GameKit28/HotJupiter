@@ -72,14 +72,14 @@ public class FootprintIndicator : MonoBehaviour
     void Update()
     {
         if(isDirty && tileFootprintObject.GetFootprint() != null){        
-            List<TileWithLevel> footParts = tileFootprintObject.GetFootprint().GetAllTilesInFootprint();
+            List<Tile> footParts = tileFootprintObject.GetFootprint().GetAllTilesInFootprint();
             
             if(polygons.Count == 0) Initialize(footParts.Count);
             Color meshColor = Color.white;
             
             for(int footPartIndex = 0; footPartIndex < footParts.Count; footPartIndex++){
-                TileWithLevel footPart = footParts[footPartIndex];
-                Tile footTile = HexMapUI.GetHexasphereTile(footPart.position, footPart.level);
+                Tile footPart = footParts[footPartIndex];
+                HexasphereGrid.Tile footTile = HexMapUI.GetHexasphereTile(footPart);
                 if(footTile != null) {
                     Vector3[] vertices = new Vector3[7];
                     vertices[0] = transform.InverseTransformPoint(footTile.center * 2f * HexMapHelper.GetRadialOffsetFromLevel(footPart.level));

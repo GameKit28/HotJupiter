@@ -26,7 +26,7 @@ public abstract class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveTil
         return currentTile;
     }
 
-    public int GetPivotTileLevel(){
+    public TileLevel GetPivotTileLevel(){
         return currentLevel;
     }
 

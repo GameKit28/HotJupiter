@@ -17,7 +17,7 @@ public class DynamicFootprint : FootprintBase {
 }
 
 public class StaticFootprint : FootprintBase {
-    public StaticFootprint(IHaveTileFootprint owner, List<TileWithLevel> footprintParts)
+    public StaticFootprint(IHaveTileFootprint owner, List<Tile> footprintParts)
         : base(owner){
         this.footprintParts = footprintParts;
         if(!TryClaimFootprintTiles()) UnityEngine.Debug.LogWarning("Unable to claim footprint tiles.");
@@ -32,7 +32,7 @@ public class StaticFootprint : FootprintBase {
 
 public abstract class FootprintBase {
 
-    protected List<TileWithLevel> footprintParts = new List<TileWithLevel>();
+    protected List<Tile> footprintParts = new List<Tile>();
 
     protected IHaveTileFootprint footprintOwner;
 
@@ -42,7 +42,7 @@ public abstract class FootprintBase {
         this.footprintOwner = footprintOwner;
     }
 
-    public List<TileWithLevel> GetAllTilesInFootprint(){
+    public List<Tile> GetAllTilesInFootprint(){
         return footprintParts;
     }
 
@@ -50,8 +50,8 @@ public abstract class FootprintBase {
         FootprintUpdatedEvent?.Invoke();
     }
 
-    protected List<TileWithLevel> CalculateTilesFromTemplate(RelativeFootprintTemplate footprint, TileCoords pivotTile, TileCoords pivotFacing, int pivotLevel){
-        List<TileWithLevel> footprintList = new List<TileWithLevel>();
+    protected List<Tile> CalculateTilesFromTemplate(RelativeFootprintTemplate footprint, TileCoords pivotTile, TileCoords pivotFacing, int pivotLevel){
+        List<Tile> footprintList = new List<Tile>();
         foreach (var part in footprint.footprintParts)
         {
             TileWithFacing newVec = new TileWithFacing(){position = pivotTile, facing = pivotFacing};
@@ -61,7 +61,7 @@ public abstract class FootprintBase {
             if(part.relativePosStep2.step > 0){
                 newVec = newVec.Traverse(part.relativePosStep2.direction, part.relativePosStep2.step);
             }
-            footprintList.Add(new TileWithLevel(){position = newVec.position, level = pivotLevel + part.relativeLevel} );
+            footprintList.Add(new Tile(){position = newVec.position, level = pivotLevel + part.relativeLevel} );
         }
         return footprintList;
     }

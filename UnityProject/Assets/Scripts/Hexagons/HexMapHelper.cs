@@ -72,9 +72,109 @@ public enum TileShape {
     Pentagon
 }
 
+[System.Serializable]
 public struct TileWithFacing {
     public TileCoords position;
     public TileCoords facing;
+    public TileLevel level;
+
+    public TileWithFacing(TileCoords position, TileCoords facing, TileLevel level = new TileLevel()){
+        this.position = position;
+        this.facing = facing;
+        this.level = level;
+    }
+
+    public static explicit operator Tile(TileWithFacing tile) {
+        return new Tile(tile.position, tile.level);
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (!(obj is TileWithFacing))
+          return false;
+
+        TileWithFacing otherStruct = (TileWithFacing)obj;
+
+        return this.level == otherStruct.level && this.position == otherStruct.position && this.facing == otherStruct.facing;
+    }
+
+    public override int GetHashCode()
+    {
+        return facing.GetHashCode().WrapShift(4) ^ position.GetHashCode().WrapShift(2) ^ level.GetHashCode();
+    }
+}
+
+[System.Serializable]
+public struct TileLevel {
+    uint level;
+
+    public const int MAX = 5;
+    public const int MIN = 0;
+
+    public TileLevel(int levelIndex = 0){
+        this.level = (uint)levelIndex;
+    }
+
+    public TileLevel(uint levelIndex = 0){
+        this.level = levelIndex;
+    }
+
+    public static implicit operator int(TileLevel tileLevel){
+        return (int)tileLevel.level;
+    }
+
+    public static implicit operator uint(TileLevel tileLevel){
+        return tileLevel.level;
+    }
+
+    public static implicit operator TileLevel(int levelIndex){
+        return new TileLevel(Mathf.Clamp(levelIndex, MIN, MAX));
+    }
+
+    public static implicit operator TileLevel(uint levelIndex){
+        return new TileLevel(Mathf.Clamp((int)levelIndex, MIN, MAX));
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (!(obj is TileLevel))
+          return false;
+
+        TileLevel otherStruct = (TileLevel)obj;
+
+        return this.level == otherStruct.level;
+    }
+
+    public override int GetHashCode()
+    {
+        return level.GetHashCode();
+    }
+}
+
+[System.Serializable]
+public struct Tile {
+    public TileCoords position;
+    public TileLevel level;
+
+    public Tile(TileCoords position, TileLevel level = new TileLevel()) {
+        this.position = position;
+        this.level = level;
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (!(obj is Tile))
+          return false;
+
+        Tile otherStruct = (Tile)obj;
+
+        return this.level == otherStruct.level && this.position == otherStruct.position;
+    }
+
+    public override int GetHashCode()
+    {
+        return position.GetHashCode().WrapShift(2) ^ level.GetHashCode();
+    }
 }
 
 public class HexMapHelper : MonoBehaviour
@@ -110,11 +210,11 @@ public class HexMapHelper : MonoBehaviour
     }
 
     public static TileCoords GetTileInHexDirection(TileCoords startTile, TileCoords startFacing, HexDirection direction){
-        Tile tile = instance.baseHexasphere.tiles[startTile.index];
+        HexasphereGrid.Tile tile = instance.baseHexasphere.tiles[startTile.index];
         if(tile.neighbours.Length == 6){
             //count tiles until we find the current facing
             for(int neighborIndex = 0; neighborIndex < tile.neighbours.Length; neighborIndex++){
-                Tile neighborTile = tile.neighbours[neighborIndex];
+                HexasphereGrid.Tile neighborTile = tile.neighbours[neighborIndex];
                 if (neighborTile.index == startFacing.index) {
                     return new TileCoords { index = tile.neighbours[(neighborIndex + (int)direction) % 6].index};
                 }
@@ -126,11 +226,11 @@ public class HexMapHelper : MonoBehaviour
     }
 
     public static TileCoords GetTileInPentaDirection(TileCoords startTile, TileCoords startFacing, PentaDirection direction){
-        Tile tile = instance.baseHexasphere.tiles[startTile.index];
+        HexasphereGrid.Tile tile = instance.baseHexasphere.tiles[startTile.index];
         if(tile.neighbours.Length == 5){
             //count tiles until we find the current facing
             for(int neighborIndex = 0; neighborIndex < tile.neighbours.Length; neighborIndex++){
-                Tile neighborTile = tile.neighbours[neighborIndex];
+                HexasphereGrid.Tile neighborTile = tile.neighbours[neighborIndex];
                 if (neighborTile.index == startFacing.index) {
                     return new TileCoords { index = tile.neighbours[(neighborIndex + (int)direction) % 5].index};
                 }
@@ -145,13 +245,17 @@ public class HexMapHelper : MonoBehaviour
         return instance.baseHexasphere.GetTileCenter(tileCoords.index).normalized;
     }
 
-    public static Vector3 GetWorldPointFromTile(TileCoords tileCoords, int level = 0){
-        Tile tile = instance.baseHexasphere.tiles[tileCoords.index];
+    public static Vector3 GetWorldPointFromTile(TileCoords tileCoords, TileLevel level = new TileLevel()){
+        HexasphereGrid.Tile tile = instance.baseHexasphere.tiles[tileCoords.index];
         if(level == 0){
             return instance.baseHexasphere.GetTileCenter(tileCoords.index, true);
         }else{
             return instance.baseHexasphere.GetTileCenter(tileCoords.index) + (GetTileNormal(tileCoords) * GetAltitudeFromLevel(level));
         }
+    }
+
+    public static Vector3 GetWorldPointFromTile(Tile tile){
+        return GetWorldPointFromTile(tile.position, tile.level);
     }
 
     public static Quaternion GetRotationFromFacing(TileCoords startingTile, TileCoords tileFacing){
@@ -237,21 +341,21 @@ public class HexMapHelper : MonoBehaviour
         }
     }*/
 
-    public static int GetLevelFromAltitude(float altitude){
-        return Mathf.Clamp(Mathf.RoundToInt((altitude + gridFirstAltitudeOffset) / gridAltitudeOffsets), 0, 6);
+    public static TileLevel GetLevelFromAltitude(float altitude){
+        return Mathf.Clamp(Mathf.RoundToInt((altitude + gridFirstAltitudeOffset) / gridAltitudeOffsets), TileLevel.MIN, TileLevel.MAX);
     }
 
-    public static float GetAltitudeFromLevel(int level) {
+    public static float GetAltitudeFromLevel(TileLevel level) {
         return Mathf.Max(0, gridFirstAltitudeOffset + ((level - 1) * gridAltitudeOffsets));
     }
 
-    public static float GetRadialOffsetFromLevel(int level){
+    public static float GetRadialOffsetFromLevel(TileLevel level){
         return instance.planetSizer.planetRadius + GetAltitudeFromLevel(level);
     }
 
-    public static float CrowFlyDistance(TileCoords hex1Tile, int hex1Height, TileCoords hex2Tile, int hex2Height){
-        Vector3 pos1 = GetWorldPointFromTile(hex1Tile, hex1Height);
-        Vector3 pos2 = GetWorldPointFromTile(hex2Tile, hex2Height);
+    public static float CrowFlyDistance(Tile hex1, Tile hex2){
+        Vector3 pos1 = GetWorldPointFromTile(hex1);
+        Vector3 pos2 = GetWorldPointFromTile(hex2);
         return Vector3.Distance(pos1, pos2);
     }
 }

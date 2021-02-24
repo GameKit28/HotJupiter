@@ -36,7 +36,7 @@ public class StaticObstacle : MonoBehaviour, IHaveTilePosition, IHaveTileFootpri
     public TileCoords GetPivotTilePosition(){
         return pivotPosition;
     }
-    public int GetPivotTileLevel(){
+    public TileLevel GetPivotTileLevel(){
         return pivotLevel;
     }
 }

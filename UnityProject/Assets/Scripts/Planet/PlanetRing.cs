@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlanetRing : MonoBehaviour, IHaveTileFootprint
 {
     public LineRenderer line;
-    public int level;
+    public TileLevel level;
     public int facingIndex = 0;
 
     public int maxLength = 20;
@@ -21,8 +21,8 @@ public class PlanetRing : MonoBehaviour, IHaveTileFootprint
             facing = HexMapHelper.GetNeighborTiles(startTile)[facingIndex]
             };
 
-        List<TileWithLevel> footprintParts = new List<TileWithLevel>();
-        footprintParts.Add(new TileWithLevel() {position = startVec.position, level = level});
+        List<Tile> footprintParts = new List<Tile>();
+        footprintParts.Add(new Tile() {position = startVec.position, level = level});
 
         List<Vector3> lineNodes = new List<Vector3>();
         TileWithFacing currentVec = startVec;
@@ -32,7 +32,7 @@ public class PlanetRing : MonoBehaviour, IHaveTileFootprint
                 break;
             }
             lineNodes.Add(HexMapHelper.GetWorldPointFromTile(currentVec.position, level));
-            footprintParts.Add(new TileWithLevel(){position = currentVec.position, level = level});
+            footprintParts.Add(new Tile(){position = currentVec.position, level = level});
         }
         line.positionCount = lineNodes.Count;
         line.SetPositions(lineNodes.ToArray());

@@ -24,7 +24,7 @@ public class MissileBrain : BaseBrain<MissileGamePiece>
         foreach(ShipGamePiece ship in allShips){
             if(ship == myGamePiece.motherGamePiece) continue;
             
-            float distance = HexMapHelper.CrowFlyDistance(headingTile.position, myGamePiece.currentLevel, ship.currentTile, ship.currentLevel);
+            float distance = HexMapHelper.CrowFlyDistance(new Tile(headingTile.position, myGamePiece.currentLevel), new Tile(ship.currentTile, ship.currentLevel));
             if (distance < closestShipDistance) {
                 closestShipDistance = distance;
                 closestShip = ship;
