@@ -15,13 +15,10 @@ public partial class CommandPointViewFsm {
         protected override void EnterState()
         {
             ParentFsm.model.spline.gameObject.SetActive(true);
-            ParentFsm.controller.myNavigationSystem.NewPointSelected(ParentFsm.controller);
         }
 
         protected override void ExitState()
         {
-            base.ExitState();
-
             ParentFsm.spriteRenderer.color = HexMapUI.GetLevelColor(ParentFsm.model.destinationLevel);
         }
 

@@ -23,7 +23,7 @@ public partial class CommandPointViewFsm {
         {
             if(Input.GetMouseButtonDown(0)){
                 //The player selected this command point
-                ParentFsm.controller.SelectPoint(true);
+                ParentFsm.eventPublisher.Publish(new Events.CommandPointClicked(){ CommandPoint = ParentFsm.controller });
             }
         }
     }

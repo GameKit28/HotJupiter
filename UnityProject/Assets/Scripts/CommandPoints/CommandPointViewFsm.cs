@@ -3,6 +3,11 @@ using MeEngine.Events;
 using MeEngine.FsmManagement;
 
 public partial class CommandPointViewFsm : MeFsm {
+    public static class Events {
+        public struct CommandPointClicked : IEvent { public CommandPointController CommandPoint; }
+    }
+    public EventPublisher eventPublisher = new EventPublisher();
+
     public GameObject spriteHolder;
     public SpriteRenderer spriteRenderer;
     public CommandPointModel model;
@@ -36,8 +41,8 @@ public partial class CommandPointViewFsm : MeFsm {
     }
 
     [EventListener]
-    void OnSelectedSet(CommandPointController.Events.SelectedSet @event){
-        if(@event.isSelected) {
+    void OnNewPointSelected(NavigationSystem.Events.NewPointSelected @event){
+        if(@event.SelectedPoint == controller) {
             SwapState<SelectedState>();
         }else{
             SwapState<WaitingState>();

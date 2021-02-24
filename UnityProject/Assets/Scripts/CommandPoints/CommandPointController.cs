@@ -7,18 +7,13 @@ public class CommandPointController : MonoBehaviour
 {
     public static class Events {
         public struct DestinationSet : IEvent {}
-        public struct SelectedSet : IEvent { public bool isSelected; }
     }
-
     public EventPublisher eventPublisher = new EventPublisher();
-
-    public bool isSelected = false;
 
     public CommandPointModel model;
     public CommandPointViewFsm view;
 
     public PathingMaterialScheme pathingMaterialScheme;
-    public NavigationSystem myNavigationSystem;
 
     void Awake(){
         if(view != null) {
@@ -27,16 +22,6 @@ public class CommandPointController : MonoBehaviour
         model.spline.gameObject.SetActive(false);
     }
 
-    public void SetNavigationSystem(NavigationSystem navigationSystem){
-        myNavigationSystem = navigationSystem;
-    }
-
-    public void SelectPoint(bool selected){
-        if(selected != isSelected){
-            isSelected = selected;
-            eventPublisher.Publish(new Events.SelectedSet() { isSelected = isSelected });
-        }
-    }
     public void SetSource(Vector3 sourcePosition, Vector3 forwardVector) {
         model.sourcePosition = sourcePosition;
         model.sourceHeading = forwardVector;

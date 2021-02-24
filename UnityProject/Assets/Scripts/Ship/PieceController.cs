@@ -39,6 +39,7 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
 
     void Awake() {
         GameControllerFsm.eventPublisher.SubscribeAll(this);
+        navigationSystem.eventPublisher.SubscribeAll(this);
         gamePiece.eventPublisher.SubscribeAll(this);
 
         GameObject worldObject = GameObject.Instantiate(pieceTemplate.model, worldModel.transform, false);
@@ -73,6 +74,11 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
     void ResetToGamePiecePosition(){
         worldBase.transform.position = HexMapHelper.GetWorldPointFromTile(gamePiece.currentTile, gamePiece.currentLevel);
         worldModel.transform.rotation = HexMapHelper.GetRotationFromFacing(gamePiece.currentTile, gamePiece.currentTileFacing);
+    }
+
+    [EventListener]
+    void OnNewPointSelected(NavigationSystem.Events.NewPointSelected @event) {
+        SetSelectedCommandPoint(@event.SelectedPoint);
     }
 
     [EventListener]

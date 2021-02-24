@@ -4,10 +4,16 @@ using UnityEngine;
 using MeEngine.Events;
 public class NavigationSystem: MonoBehaviour
 {
+    public static class Events {
+        public struct NewPointSelected : IEvent {public CommandPointController SelectedPoint; }
+    }
+    public EventPublisher eventPublisher = new EventPublisher();
+
     public GameObject commandPointPrefab;
     public PieceController pieceController;
 
     private List<CommandPointController> availableCommandPoints = new List<CommandPointController>();
+
 
     bool hasGeneratedThisTurn = false;
 
@@ -116,7 +122,7 @@ public class NavigationSystem: MonoBehaviour
                     pieceController.gamePiece.currentVelocity);
         }
         
-        defalutSelectedPoint.SelectPoint(true);
+        eventPublisher.Publish(new Events.NewPointSelected() { SelectedPoint = defalutSelectedPoint });
 
         hasGeneratedThisTurn = true;
     }
@@ -139,22 +145,23 @@ public class NavigationSystem: MonoBehaviour
 
     private CommandPointController InstantiateCommandPoint(TileWithFacing tileVec, int level, int endVelocity){
         CommandPointController commandPoint = GameObject.Instantiate(commandPointPrefab, transform.position, transform.rotation, transform).GetComponent<CommandPointController>();
-        commandPoint.SetNavigationSystem(this);
 
         commandPoint.SetSource(pieceController.worldModel.transform.position, HexMapHelper.GetFacingVector(pieceController.gamePiece.currentTile, pieceController.gamePiece.currentTileFacing));
         commandPoint.SetDestination(tileVec.position, tileVec.facing, level);
         commandPoint.SetEndVelocity(endVelocity);
 
+        if(commandPoint.view != null) {
+            eventPublisher.SubscribeAll(commandPoint.view);
+            commandPoint.view.eventPublisher.SubscribeAll(this);
+        }
+
         availableCommandPoints.Add(commandPoint);
         return commandPoint;
     }
 
-    public void NewPointSelected(CommandPointController selectedPoint){
-        Debug.Log("Selecting Command Point: " + selectedPoint);
-        foreach (var point in availableCommandPoints)
-        {
-            if(point != selectedPoint) point.SelectPoint(false);
-        }
-        pieceController.SetSelectedCommandPoint(selectedPoint);
+    [EventListener]
+    private void OnCommandPointClicked(CommandPointViewFsm.Events.CommandPointClicked @event){
+        Debug.Log("Selecting Command Point: " + @event.CommandPoint);
+        eventPublisher.Publish(new Events.NewPointSelected() { SelectedPoint = @event.CommandPoint });
     }
 }
