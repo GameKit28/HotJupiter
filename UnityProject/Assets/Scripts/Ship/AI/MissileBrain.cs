@@ -14,8 +14,8 @@ public class MissileBrain : BaseBrain<MissileGamePiece>
         List<ShipGamePiece> allShips = ShipManager.GetAllShips();
 
         //Next Turn Hex
-        TileWithFacing startVec = new TileWithFacing() {position = myGamePiece.currentTile, facing = myGamePiece.currentTileFacing};
-        TileWithFacing headingTile = startVec.Traverse(HexDirection.Forward, myGamePiece.currentVelocity);
+        TileWithFacing startVec = myGamePiece.currentTile;
+        TileWithFacing headingTile = startVec.TraversePlanar(HexDirection.Forward, myGamePiece.currentVelocity);
 
         //Find the ship closest to where I will be if I move forward. Exclude the ship that fired me.
         ShipGamePiece closestShip = null;
@@ -24,7 +24,7 @@ public class MissileBrain : BaseBrain<MissileGamePiece>
         foreach(ShipGamePiece ship in allShips){
             if(ship == myGamePiece.motherGamePiece) continue;
             
-            float distance = HexMapHelper.CrowFlyDistance(new Tile(headingTile.position, myGamePiece.currentLevel), new Tile(ship.currentTile, ship.currentLevel));
+            float distance = HexMapHelper.CrowFlyDistance(new Tile(headingTile.position, headingTile.level), new Tile(ship.currentTile.position, ship.currentTile.level));
             if (distance < closestShipDistance) {
                 closestShipDistance = distance;
                 closestShip = ship;
@@ -32,7 +32,7 @@ public class MissileBrain : BaseBrain<MissileGamePiece>
         }
 
         currentTarget = closestShip;
-        Debug.DrawLine(HexMapHelper.GetWorldPointFromTile(myGamePiece.currentTile), HexMapHelper.GetWorldPointFromTile(currentTarget.currentTile), Color.yellow, 5f);
+        Debug.DrawLine(HexMapHelper.GetWorldPointFromTile(myGamePiece.currentTile.position), HexMapHelper.GetWorldPointFromTile(currentTarget.currentTile.position), Color.yellow, 5f);
         return currentTarget;
     }
 
@@ -42,17 +42,16 @@ public class MissileBrain : BaseBrain<MissileGamePiece>
 
         if(currentTarget != null){
             // Missile know where their target will be
-            TileCoords targetDestinationTile = currentTarget.GetDestinationTile();
-            int targetDestinationLevel = currentTarget.GetDestinationLevel();
-            Vector3 targetDestinationWorldSpace = HexMapHelper.GetWorldPointFromTile(targetDestinationTile, targetDestinationLevel);
+            TileWithFacing targetDestinationTile = currentTarget.GetDestinationTile();
+            Vector3 targetDestinationWorldSpace = HexMapHelper.GetWorldPointFromTile(targetDestinationTile.position, targetDestinationTile.level);
 
             CommandPointController closestPoint = null;
             float closestPointDist = float.MaxValue;
 
             foreach(CommandPointController point in availableCommands){
-                if(point.model.destinationTile == targetDestinationTile && point.model.destinationLevel == targetDestinationLevel) return point;
+                if(point.model.destinationTile.position == targetDestinationTile.position && point.model.destinationTile.level == targetDestinationTile.level) return point;
 
-                float distance = Vector3.Distance(targetDestinationWorldSpace, HexMapHelper.GetWorldPointFromTile(point.model.destinationTile, point.model.destinationLevel));
+                float distance = Vector3.Distance(targetDestinationWorldSpace, HexMapHelper.GetWorldPointFromTile(point.model.destinationTile.position, point.model.destinationTile.level));
                 if(distance < closestPointDist){
                     closestPoint = point;
                     closestPointDist = distance;

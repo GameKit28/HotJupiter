@@ -27,7 +27,7 @@ public class StaticObstacle : MonoBehaviour, IHaveTilePosition, IHaveTileFootpri
         transform.position = HexMapHelper.GetWorldPointFromTile(pivotPosition, pivotLevel);
         modelHolder.transform.rotation = HexMapHelper.GetRotationFromFacing(pivotPosition, pivotFacing);
 
-        footprint = new StaticFootprint(this, template.footprint, pivotPosition, pivotFacing, pivotLevel);
+        footprint = new StaticFootprint(this, template.footprint, new TileWithFacing(pivotPosition, pivotFacing, pivotLevel));
     }
 
     public FootprintBase GetFootprint(){

@@ -63,7 +63,7 @@ public struct TileCoords {
 
     public override string ToString()
     {
-        return "Tile: " + index.ToString();
+        return $"TileCoords: {index}";
     }
 }
 
@@ -102,21 +102,22 @@ public struct TileWithFacing {
     {
         return facing.GetHashCode().WrapShift(4) ^ position.GetHashCode().WrapShift(2) ^ level.GetHashCode();
     }
+
+    public override string ToString()
+    {
+        return $"TileWithFacing - Position:{position}, Facing:{facing}, Level:{level}";
+    }
 }
 
 [System.Serializable]
 public struct TileLevel {
-    uint level;
+    public byte level;
 
     public const int MAX = 5;
     public const int MIN = 0;
 
     public TileLevel(int levelIndex = 0){
-        this.level = (uint)levelIndex;
-    }
-
-    public TileLevel(uint levelIndex = 0){
-        this.level = levelIndex;
+        this.level = (byte)levelIndex;
     }
 
     public static implicit operator int(TileLevel tileLevel){
@@ -149,6 +150,11 @@ public struct TileLevel {
     {
         return level.GetHashCode();
     }
+
+    public override string ToString()
+    {
+        return $"TileLevel: {level}";
+    }
 }
 
 [System.Serializable]
@@ -174,6 +180,11 @@ public struct Tile {
     public override int GetHashCode()
     {
         return position.GetHashCode().WrapShift(2) ^ level.GetHashCode();
+    }
+
+    public override string ToString()
+    {
+        return $"Tile - Position:{position}, Level:{level.level}";
     }
 }
 

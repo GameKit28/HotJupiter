@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public static class HexExtensions {
 
@@ -44,41 +45,74 @@ public static class HexExtensions {
         return HexMapHelper.GetTileInPentaDirection(currentPenta, currentFacing, pentaDirection);
     }
 
-    public static TileWithFacing Traverse(this TileWithFacing startVec, HexDirection direction, int steps = 1, PentagonTraversalStrategy strategy = PentagonTraversalStrategy.LeanLeft) {
-        
-        TileCoords currentTile = startVec.position;
-        TileCoords currentFacing = startVec.facing;
+    public static TileWithFacing TraversePlanar(this TileWithFacing startVec, HexDirection direction, int steps = 1, PentagonTraversalStrategy strategy = PentagonTraversalStrategy.LeanLeft) {
+        TilePath path = new TilePath(startVec);
+        return path.TraversePlanar(direction, steps, strategy).GetEndTile();
+    }
+
+    public static TilePath TraversePlanar(this TilePath activePath, HexDirection direction, int steps = 1, PentagonTraversalStrategy strategy = PentagonTraversalStrategy.LeanLeft){
+        TileWithFacing currentTile = activePath.GetEndTile();
         for(int step = 0; step < steps; step++) 
         {
-            TileCoords newTile;
-            if(HexMapHelper.GetTileShape(currentTile) == TileShape.Hexagon) {
-                newTile = HexMapHelper.GetTileInHexDirection(currentTile, currentFacing, direction);
+            TileCoords newTileCoords;
+            if(HexMapHelper.GetTileShape(currentTile.position) == TileShape.Hexagon) {
+                newTileCoords = HexMapHelper.GetTileInHexDirection(currentTile.position, currentTile.facing, direction);
             }else{
                 //We're stepping out of a Pentagon using HexDirection. What do we do?
-                newTile = GetNewTileWhenLeavingPentagon(currentTile, currentFacing, direction, strategy);
+                newTileCoords = GetNewTileWhenLeavingPentagon(currentTile.position, currentTile.facing, direction, strategy);
             }
             direction = HexDirection.Forward;
 
-            if(HexMapHelper.GetTileShape(newTile) == TileShape.Hexagon){
-                currentFacing = HexMapHelper.GetTileInHexDirection(newTile, currentTile, HexDirection.Backward);
+            if(HexMapHelper.GetTileShape(newTileCoords) == TileShape.Hexagon){
+                currentTile.facing = HexMapHelper.GetTileInHexDirection(newTileCoords, currentTile.position, HexDirection.Backward);
             }else{
                 //We're stepping into a Pentagon with Hex Directions. What do we do?
-                currentFacing = GetFacingWhenEnteringPentagon(currentTile, newTile, strategy);
+                currentTile.facing = GetFacingWhenEnteringPentagon(currentTile.position, newTileCoords, strategy);
             }
 
-            currentTile = newTile;
+            currentTile = new TileWithFacing(newTileCoords, currentTile.facing, currentTile.level);
+            activePath.AppendTile(currentTile);
         }
-        return new TileWithFacing() { position = currentTile, facing = currentFacing };
+        return activePath;
+    }
+
+    public static TileWithFacing TraverseVertical(this TileWithFacing startVec, int relativeAscention){
+        TilePath path = new TilePath(startVec);
+        return path.TraverseVertical(relativeAscention).GetEndTile();
+    }
+
+    public static TilePath TraverseVertical(this TilePath activePath, int relativeAscention){
+        TileWithFacing currentTile = activePath.GetEndTile();
+        for(int step = 0; step < Mathf.Abs(relativeAscention); step++){
+            TileWithFacing newTile;
+            if(relativeAscention > 0 && currentTile.level < TileLevel.MAX){
+                newTile = new TileWithFacing(currentTile.position, currentTile.facing, currentTile.level + 1);
+            }else if(relativeAscention < 0 && currentTile.level > TileLevel.MIN) {
+                newTile = new TileWithFacing(currentTile.position, currentTile.facing, currentTile.level - 1);
+            }else{
+                throw new System.Exception($"Attempted to traverse to a TileLevel outside of bounds. {currentTile} Attempted Level: {currentTile.level + Mathf.Clamp(relativeAscention, -1, 1)}");
+            }
+            currentTile = newTile;
+            activePath.AppendTile(currentTile);
+        }
+        return activePath;
     }
 
     public static TileWithFacing Face(this TileWithFacing startVec, HexDirection direction){
+        TilePath path = new TilePath(startVec);
+        return path.Face(direction).GetEndTile();
+    }
+
+    public static TilePath Face(this TilePath activePath, HexDirection direction){
+        TileWithFacing currentTile = activePath.GetEndTile();
         TileCoords newFacing;
-        if(HexMapHelper.GetTileShape(startVec.position) == TileShape.Hexagon){
-            newFacing = HexMapHelper.GetTileInHexDirection(startVec.position, startVec.facing, direction);
+        if(HexMapHelper.GetTileShape(currentTile.position) == TileShape.Hexagon){
+            newFacing = HexMapHelper.GetTileInHexDirection(currentTile.position, currentTile.facing, direction);
         }else{
-            newFacing = GetNewTileWhenLeavingPentagon(startVec.position, startVec.facing, direction, PentagonTraversalStrategy.LeanLeft);
+            newFacing = GetNewTileWhenLeavingPentagon(currentTile.position, currentTile.facing, direction, PentagonTraversalStrategy.LeanLeft);
         }
-        return new TileWithFacing() { position = startVec.position, facing = newFacing };
+        activePath.AppendTile(new TileWithFacing(currentTile.position, newFacing, currentTile.level));
+        return activePath;
     }
 
     public static HexDirection RotateClockwise(this HexDirection startingDirection, int steps = 1) {

@@ -11,7 +11,7 @@ public class EnemyShipBrain : BaseBrain<ShipGamePiece>
     public override BaseGamePiece FindTarget()
     {
         //Player Ship
-        if(currentTarget != null) Debug.DrawLine(HexMapHelper.GetWorldPointFromTile(myGamePiece.currentTile), HexMapHelper.GetWorldPointFromTile(currentTarget.currentTile), Color.yellow, 5f);
+        if(currentTarget != null) Debug.DrawLine(HexMapHelper.GetWorldPointFromTile(myGamePiece.currentTile.position), HexMapHelper.GetWorldPointFromTile(currentTarget.currentTile.position), Color.yellow, 5f);
         return currentTarget;
     }
 
@@ -24,9 +24,9 @@ public class EnemyShipBrain : BaseBrain<ShipGamePiece>
     [EventListener]
     void OnNewTurn(GameControllerFsm.Events.BeginCommandSelectionState @event){
         FindTarget();
-        TileWithFacing startVec = new TileWithFacing() {position = myGamePiece.currentTile, facing = myGamePiece.currentTileFacing};
-        TileCoords missileOkayZone = startVec.Traverse(HexDirection.Forward, myGamePiece.shipTemplete.missileTemplate.TopSpeed).position;
-        if(HexMapHelper.CrowFlyDistance(new Tile(missileOkayZone, myGamePiece.currentLevel), new Tile(currentTarget.currentTile, currentTarget.currentLevel)) < 4f){
+        TileWithFacing startVec = myGamePiece.currentTile;
+        TileCoords missileOkayZone = startVec.TraversePlanar(HexDirection.Forward, myGamePiece.shipTemplete.missileTemplate.TopSpeed).position;
+        if(HexMapHelper.CrowFlyDistance(new Tile(missileOkayZone, myGamePiece.currentTile.level), new Tile(currentTarget.currentTile.position, currentTarget.currentTile.level)) < 4f){
             myGamePiece.QueueMissile(true);
         }
     }

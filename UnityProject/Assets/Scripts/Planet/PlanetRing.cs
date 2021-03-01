@@ -18,21 +18,22 @@ public class PlanetRing : MonoBehaviour, IHaveTileFootprint
         TileCoords startTile = HexMapHelper.GetTileFromWorldPoint(transform.position);
         TileWithFacing startVec = new TileWithFacing() {
             position = startTile,
-            facing = HexMapHelper.GetNeighborTiles(startTile)[facingIndex]
+            facing = HexMapHelper.GetNeighborTiles(startTile)[facingIndex],
+            level = level
             };
 
-        List<Tile> footprintParts = new List<Tile>();
-        footprintParts.Add(new Tile() {position = startVec.position, level = level});
+        List<FootprintTile> footprintParts = new List<FootprintTile>();
+        footprintParts.Add(new FootprintTile(startVec.position, startVec.level, TileObstacleType.Solid));
 
         List<Vector3> lineNodes = new List<Vector3>();
         TileWithFacing currentVec = startVec;
         for(int nodeIndex = 0; nodeIndex < maxLength; nodeIndex++){
-            currentVec = currentVec.Traverse(HexDirection.Forward);
+            currentVec = currentVec.TraversePlanar(HexDirection.Forward);
             if(currentVec.position == startVec.position) {
                 break;
             }
             lineNodes.Add(HexMapHelper.GetWorldPointFromTile(currentVec.position, level));
-            footprintParts.Add(new Tile(){position = currentVec.position, level = level});
+            footprintParts.Add(new FootprintTile(currentVec.position, level, TileObstacleType.Solid));
         }
         line.positionCount = lineNodes.Count;
         line.SetPositions(lineNodes.ToArray());

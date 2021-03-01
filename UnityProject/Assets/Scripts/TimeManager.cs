@@ -10,7 +10,7 @@ public class TimeManager : MeFsm
     public static float TurnTime {get; private set;} = 0;
     public static float TurnDeltaTime {get; private set;} = 0;
 
-    public static float TurnRatio {
+    public static float TurnTimeNormalized {
         get {
             return Mathf.Clamp01(TurnTime / TurnDuration);
         }
@@ -22,7 +22,7 @@ public class TimeManager : MeFsm
     public static float SimulationTime {get; private set;} = 0;
     public static float SimulationDeltaTime {get; private set;} = 0;
 
-    public static float SimulationRatio {
+    public static float SimulationTimeNormalized {
         get {
             return Mathf.Clamp01(SimulationTime / TurnDuration);
         }

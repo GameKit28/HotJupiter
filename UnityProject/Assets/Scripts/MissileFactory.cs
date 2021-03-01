@@ -13,19 +13,18 @@ public class MissileFactory : MonoBehaviour
         instance = this;
     }
 
-    public static void SpawnMissile(TileCoords tileCoords, TileCoords tileFacing, TileLevel level, BaseGamePiece spawningPiece, MissileStats template) {
+    public static void SpawnMissile(TileWithFacing originTile, BaseGamePiece spawningPiece, MissileStats template) {
         GameObject newMissile = SimplePool.Spawn(
             instance.missilePrefab, 
             Vector3.zero, 
             Quaternion.identity, 
             instance.gamePieceHolder);
-        newMissile.GetComponentInChildren<MissileGamePiece>().currentTileFacing = tileFacing;
-        newMissile.GetComponentInChildren<MissileGamePiece>().currentTile = tileCoords;
-        newMissile.GetComponentInChildren<MissileGamePiece>().currentLevel = level;
+
+        newMissile.GetComponentInChildren<MissileGamePiece>().currentTile = originTile;
         newMissile.GetComponentInChildren<MissileGamePiece>().PositionAndOrientPiece();
 
-        newMissile.GetComponentInChildren<PieceController>().worldBase.transform.position = HexMapHelper.GetWorldPointFromTile(tileCoords, level);
-        newMissile.GetComponentInChildren<PieceController>().worldModel.transform.rotation = HexMapHelper.GetRotationFromFacing(tileCoords, tileFacing);
+        newMissile.GetComponentInChildren<PieceController>().worldBase.transform.position = HexMapHelper.GetWorldPointFromTile(originTile.position, originTile.level);
+        newMissile.GetComponentInChildren<PieceController>().worldModel.transform.rotation = HexMapHelper.GetRotationFromFacing(originTile.position, originTile.facing);
 
         newMissile.GetComponentInChildren<NavigationSystem>().GenerateCommandPoints();
 

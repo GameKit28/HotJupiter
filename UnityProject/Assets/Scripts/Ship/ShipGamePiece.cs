@@ -60,7 +60,7 @@ public class ShipGamePiece : NavigatingGamePiece
             missileCount -= 1;
             missileCooldown = shipTemplete.missileFireCooldownTurns;
 
-            MissileFactory.SpawnMissile(currentTile, currentTileFacing, currentLevel, this, shipTemplete.missileTemplate);
+            MissileFactory.SpawnMissile(currentTile, this, shipTemplete.missileTemplate);
             AudioSource.PlayClipAtPoint(missileFireSound, transform.position);
         }
     }

@@ -8,8 +8,8 @@ public class DynamicFootprint : FootprintBase {
         footprintTemplate = template;
     }
 
-    public void SetPivotTile(TileWithFacing pivotVec, int pivotLevel) {
-        footprintParts = CalculateTilesFromTemplate(footprintTemplate, pivotVec.position, pivotVec.facing, pivotLevel);
+    public void SetPivotTile(TileWithFacing pivotVec) {
+        footprintParts = CalculateTilesFromTemplate(footprintTemplate, pivotVec);
         PlayfieldManager.RemoveAllClaims(footprintOwner);
         if(!TryClaimFootprintTiles()) UnityEngine.Debug.LogWarning("Unable to claim footprint tiles.");
         base.FireFootprintUpdatedEvent();
@@ -17,22 +17,37 @@ public class DynamicFootprint : FootprintBase {
 }
 
 public class StaticFootprint : FootprintBase {
-    public StaticFootprint(IHaveTileFootprint owner, List<Tile> footprintParts)
+    public StaticFootprint(IHaveTileFootprint owner, List<FootprintTile> footprintParts)
         : base(owner){
         this.footprintParts = footprintParts;
-        if(!TryClaimFootprintTiles()) UnityEngine.Debug.LogWarning("Unable to claim footprint tiles.");
+        if(!TryClaimFootprintTiles()) UnityEngine.Debug.LogWarning($"Owner {owner} unable to claim footprint tiles.");
     }
 
-    public StaticFootprint(IHaveTileFootprint owner, RelativeFootprintTemplate footprint, TileCoords pivotTile, TileCoords pivotFacing, int pivotLevel)
+    public StaticFootprint(IHaveTileFootprint owner, RelativeFootprintTemplate footprint, TileWithFacing pivotVec)
         : base(owner) {
-        footprintParts = CalculateTilesFromTemplate(footprint, pivotTile, pivotFacing, pivotLevel);
-        if(!TryClaimFootprintTiles()) UnityEngine.Debug.LogWarning("Unable to claim footprint tiles.");
+        footprintParts = CalculateTilesFromTemplate(footprint, pivotVec);
+        if(!TryClaimFootprintTiles()) UnityEngine.Debug.LogWarning($"Owner {owner} unable to claim footprint tiles.");
+    }
+}
+
+public struct FootprintTile {
+    public Tile tile;
+    public TileObstacleType obstacleType;
+
+    public FootprintTile(TileCoords position, TileLevel level, TileObstacleType obstacleType){
+        tile = new Tile(position, level);
+        this.obstacleType = obstacleType;
+    }
+
+    public override string ToString()
+    {
+        return $"FootprintTile - Tile:{tile}, Obstacle:{obstacleType}";
     }
 }
 
 public abstract class FootprintBase {
 
-    protected List<Tile> footprintParts = new List<Tile>();
+    protected List<FootprintTile> footprintParts = new List<FootprintTile>();
 
     protected IHaveTileFootprint footprintOwner;
 
@@ -42,7 +57,7 @@ public abstract class FootprintBase {
         this.footprintOwner = footprintOwner;
     }
 
-    public List<Tile> GetAllTilesInFootprint(){
+    public List<FootprintTile> GetAllTilesInFootprint(){
         return footprintParts;
     }
 
@@ -50,18 +65,19 @@ public abstract class FootprintBase {
         FootprintUpdatedEvent?.Invoke();
     }
 
-    protected List<Tile> CalculateTilesFromTemplate(RelativeFootprintTemplate footprint, TileCoords pivotTile, TileCoords pivotFacing, int pivotLevel){
-        List<Tile> footprintList = new List<Tile>();
+    protected List<FootprintTile> CalculateTilesFromTemplate(RelativeFootprintTemplate footprint, TileWithFacing pivotVec){
+        List<FootprintTile> footprintList = new List<FootprintTile>();
         foreach (var part in footprint.footprintParts)
         {
-            TileWithFacing newVec = new TileWithFacing(){position = pivotTile, facing = pivotFacing};
+            TileWithFacing newVec = pivotVec;
             if(part.relativePosStep1.step > 0){
-                newVec = newVec.Traverse(part.relativePosStep1.direction, part.relativePosStep1.step);
+                newVec = newVec.TraversePlanar(part.relativePosStep1.direction, part.relativePosStep1.step);
             }
             if(part.relativePosStep2.step > 0){
-                newVec = newVec.Traverse(part.relativePosStep2.direction, part.relativePosStep2.step);
+                newVec = newVec.TraversePlanar(part.relativePosStep2.direction, part.relativePosStep2.step);
             }
-            footprintList.Add(new Tile(){position = newVec.position, level = pivotLevel + part.relativeLevel} );
+            newVec.TraverseVertical(part.relativeLevel);
+            footprintList.Add(new FootprintTile(newVec.position, newVec.level, part.obstacleType));
         }
         return footprintList;
     }
@@ -69,14 +85,14 @@ public abstract class FootprintBase {
     protected bool TryClaimFootprintTiles(){
         bool canClaim = true;
         foreach(var part in footprintParts){
-            if((int)PlayfieldManager.GetTileObstacleType(part) > (int)TileObstacleType.Empty)
+            if((int)PlayfieldManager.GetTileObstacleType(part.tile) > (int)TileObstacleType.Empty)
                 canClaim = false;
                 break;
         }
 
         if(canClaim){
             foreach(var part in footprintParts){
-                if(!PlayfieldManager.TryStakeTileClaim(part, footprintOwner, TileObstacleType.Solid)){
+                if(!PlayfieldManager.TryStakeTileClaim(part, footprintOwner)){
                     UnityEngine.Debug.LogError($"Tile was occupied despite our initial check.");
                 };
             }

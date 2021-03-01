@@ -72,22 +72,22 @@ public class FootprintIndicator : MonoBehaviour
     void Update()
     {
         if(isDirty && tileFootprintObject.GetFootprint() != null){        
-            List<Tile> footParts = tileFootprintObject.GetFootprint().GetAllTilesInFootprint();
+            List<FootprintTile> footParts = tileFootprintObject.GetFootprint().GetAllTilesInFootprint();
             
             if(polygons.Count == 0) Initialize(footParts.Count);
             Color meshColor = Color.white;
             
             for(int footPartIndex = 0; footPartIndex < footParts.Count; footPartIndex++){
-                Tile footPart = footParts[footPartIndex];
-                HexasphereGrid.Tile footTile = HexMapUI.GetHexasphereTile(footPart);
+                FootprintTile footPart = footParts[footPartIndex];
+                HexasphereGrid.Tile footTile = HexMapUI.GetHexasphereTile(footPart.tile);
                 if(footTile != null) {
                     Vector3[] vertices = new Vector3[7];
-                    vertices[0] = transform.InverseTransformPoint(footTile.center * 2f * HexMapHelper.GetRadialOffsetFromLevel(footPart.level));
+                    vertices[0] = transform.InverseTransformPoint(footTile.center * 2f * HexMapHelper.GetRadialOffsetFromLevel(footPart.tile.level));
                     for(int i = 0; i < footTile.vertices.Length; i++){
-                        vertices[i + 1] = transform.InverseTransformPoint(footTile.vertices[i] * 2f * HexMapHelper.GetRadialOffsetFromLevel(footPart.level));
+                        vertices[i + 1] = transform.InverseTransformPoint(footTile.vertices[i] * 2f * HexMapHelper.GetRadialOffsetFromLevel(footPart.tile.level));
                     }
 
-                    meshColor = HexMapUI.GetLevelColor(footPart.level);
+                    meshColor = HexMapUI.GetLevelColor(footPart.tile.level);
 
                     polygons[footPartIndex].SetVertices(vertices);
                     polygons[footPartIndex].SetTriangles(

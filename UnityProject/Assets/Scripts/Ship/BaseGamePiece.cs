@@ -11,23 +11,18 @@ public abstract class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveTil
     }
     public EventPublisher eventPublisher {get; private set;} = new EventPublisher();
 
-    public TileCoords currentTile;
-    public TileCoords currentTileFacing;
-    public int currentLevel;
+    public TileWithFacing currentTile;
 
-    private TileCoords destinationTile;
-    private TileCoords destinationTileFacing;
-    private int destinationLevel;
-
+    private TileWithFacing destinationTile;
 
     public GameObject gamePieceModel;
 
     public TileCoords GetPivotTilePosition(){
-        return currentTile;
+        return currentTile.position;
     }
 
     public TileLevel GetPivotTileLevel(){
-        return currentLevel;
+        return currentTile.level;
     }
 
     protected DynamicFootprint footprint;
@@ -37,7 +32,7 @@ public abstract class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveTil
     }
 
     public TileCoords GetTileFacing(){
-        return currentTileFacing;
+        return currentTile.facing;
     }
 
     protected virtual void Awake() {
@@ -47,8 +42,8 @@ public abstract class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveTil
     // Start is called before the first frame update
     protected virtual void Start()
     {
-        currentTile = HexMapHelper.GetTileFromWorldPoint(transform.position);
-        currentTileFacing = HexMapHelper.GetNeighborTiles(currentTile)[0];
+        currentTile.position = HexMapHelper.GetTileFromWorldPoint(transform.position);
+        currentTile.facing = HexMapHelper.GetNeighborTiles(currentTile.position)[0];
 
         PositionAndOrientPiece();
         eventPublisher.Publish(new Events.CompletedSetup());
@@ -58,27 +53,20 @@ public abstract class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveTil
 
     }
 
-    public void SetDestination(TileCoords destinationTile, TileCoords destinationTileFacing, int destinationLevel) {
-        this.destinationTile = destinationTile;
-        this.destinationTileFacing = destinationTileFacing;
-        this.destinationLevel = destinationLevel;
+    public void SetDestination(TileWithFacing tile) {
+        this.destinationTile = tile;
     }
 
-    public TileCoords GetDestinationTile(){
+    public TileWithFacing GetDestinationTile(){
         //Used by missiles to intercept
         return this.destinationTile;
     }
 
-    public int GetDestinationLevel(){
-        //Used by missiles to intercept
-        return this.destinationLevel;
-    }
-
     public void PositionAndOrientPiece(){
-        transform.position = HexMapHelper.GetWorldPointFromTile(currentTile, currentLevel);
-        gamePieceModel.transform.rotation = HexMapHelper.GetRotationFromFacing(currentTile, currentTileFacing);
+        transform.position = HexMapHelper.GetWorldPointFromTile(currentTile.position, currentTile.level);
+        gamePieceModel.transform.rotation = HexMapHelper.GetRotationFromFacing(currentTile.position, currentTile.facing);
 
-        footprint.SetPivotTile(new TileWithFacing() {position = currentTile, facing = currentTileFacing}, currentLevel);
+        footprint.SetPivotTile(currentTile);
     }
 
     [EventListener]
@@ -89,8 +77,6 @@ public abstract class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveTil
     [EventListener]
     protected virtual void OnEndPlayingPhase(GameControllerFsm.Events.EndPlayingOutTurnState @event){
         currentTile = destinationTile;
-        currentTileFacing = destinationTileFacing;
-        currentLevel = destinationLevel;
 
         PositionAndOrientPiece();
         gameObject.SetActive(true);

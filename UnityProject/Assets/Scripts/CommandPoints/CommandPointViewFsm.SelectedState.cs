@@ -19,7 +19,7 @@ public partial class CommandPointViewFsm {
 
         protected override void ExitState()
         {
-            ParentFsm.spriteRenderer.color = HexMapUI.GetLevelColor(ParentFsm.model.destinationLevel);
+            ParentFsm.spriteRenderer.color = HexMapUI.GetLevelColor(ParentFsm.model.destinationTile.level);
         }
 
         // Update is called once per frame
@@ -28,7 +28,7 @@ public partial class CommandPointViewFsm {
             //Swap Color between (Cyan selected color and level color)
             swapCountdown -= TimeManager.UIDeltaTime;
             if(swapCountdown < 0) {
-                ParentFsm.spriteRenderer.color = isBaseColor ? Color.cyan : HexMapUI.GetLevelColor(ParentFsm.model.destinationLevel);
+                ParentFsm.spriteRenderer.color = isBaseColor ? Color.cyan : HexMapUI.GetLevelColor(ParentFsm.model.destinationTile.level);
                 swapCountdown += colorSwapRate;
                 isBaseColor = !isBaseColor;
             }

@@ -6,7 +6,6 @@ using UnityEngine;
 public class RelativeFootprintTemplate : ScriptableObject
 {
     public List<RelativeFootprint> footprintParts = new List<RelativeFootprint>();
-    public TileObstacleType obstacleType;
 }
 
 [System.Serializable]
@@ -22,6 +21,7 @@ public struct RelativeFootprint
     public int relativeLevel;
     public DirectionStep relativePosStep1;
     public DirectionStep relativePosStep2;
+    public TileObstacleType obstacleType;
 }
 
 public enum TileObstacleType{

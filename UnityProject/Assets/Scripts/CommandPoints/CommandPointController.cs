@@ -22,21 +22,20 @@ public class CommandPointController : MonoBehaviour
         model.spline.gameObject.SetActive(false);
     }
 
+    public void SetTilePath(TilePath tilePath){
+        model.tilePath = tilePath;
+
+        model.destinationTile = tilePath.GetEndTile();
+
+        SetSpline(model.sourcePosition, model.sourceHeading,
+            HexMapHelper.GetWorldPointFromTile(model.destinationTile.position, model.destinationTile.level), HexMapHelper.GetFacingVector(model.destinationTile.position, model.destinationTile.facing));
+
+        eventPublisher.Publish(new Events.DestinationSet());
+    }
+
     public void SetSource(Vector3 sourcePosition, Vector3 forwardVector) {
         model.sourcePosition = sourcePosition;
         model.sourceHeading = forwardVector;
-    }
-
-    public void SetDestination(TileCoords tileCoords, TileCoords facingTile, TileLevel level) {
-        model.destinationTile = tileCoords;
-        model.destinationFacingTile = facingTile;
-        model.destinationLevel = level;
-
-        SetSpline(model.sourcePosition, model.sourceHeading,
-            HexMapHelper.GetWorldPointFromTile(tileCoords, level), HexMapHelper.GetFacingVector(tileCoords, facingTile));
-
-        eventPublisher.Publish(new Events.DestinationSet());
-
     }
     public void SetEndVelocity(int velocity) {
         model.endVelocity = velocity;

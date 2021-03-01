@@ -22,7 +22,7 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
     private BGCurve activeWorldPath;
 
     public TileCoords GetPivotTilePosition(){
-        return gamePiece.currentTile;
+        return gamePiece.currentTile.position;
     }
 
     public RelativeFootprintTemplate GetFootprint(){
@@ -30,11 +30,11 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
     }
 
     public TileLevel GetPivotTileLevel(){
-        return gamePiece.currentLevel;
+        return gamePiece.currentTile.level;
     }
 
     public TileCoords GetTileFacing(){
-        return gamePiece.currentTileFacing;
+        return gamePiece.currentTile.facing;
     }
 
     void Awake() {
@@ -50,9 +50,9 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
 
     public void SetSelectedCommandPoint(CommandPointController point){
         selectedCommandPoint = point;
-        gamePiece.SetDestination(selectedCommandPoint.model.destinationTile, selectedCommandPoint.model.destinationFacingTile, selectedCommandPoint.model.destinationLevel);
+        gamePiece.SetDestination(selectedCommandPoint.model.destinationTile);
         gamePiece.currentVelocity = selectedCommandPoint.model.endVelocity;
-        Debug.DrawLine(HexMapHelper.GetWorldPointFromTile(gamePiece.currentTile), HexMapHelper.GetWorldPointFromTile(selectedCommandPoint.model.destinationTile), Color.cyan, 5f);
+        Debug.DrawLine(HexMapHelper.GetWorldPointFromTile(gamePiece.currentTile.position), HexMapHelper.GetWorldPointFromTile(selectedCommandPoint.model.destinationTile.position), Color.cyan, 5f);
     }
     public void SetActivePath(BGCurve path) {
         activeWorldPath = path;
@@ -66,14 +66,14 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
             BGCcMath math = activeWorldPath.GetComponent<BGCcMath>();
 
             Vector3 tangent;
-            worldBase.transform.position = math.CalcPositionAndTangentByDistanceRatio(TimeManager.TurnRatio, out tangent);
+            worldBase.transform.position = math.CalcPositionAndTangentByDistanceRatio(TimeManager.TurnTimeNormalized, out tangent);
             worldModel.transform.rotation = Quaternion.LookRotation(tangent, worldBase.transform.position);
         }
     }
 
     void ResetToGamePiecePosition(){
-        worldBase.transform.position = HexMapHelper.GetWorldPointFromTile(gamePiece.currentTile, gamePiece.currentLevel);
-        worldModel.transform.rotation = HexMapHelper.GetRotationFromFacing(gamePiece.currentTile, gamePiece.currentTileFacing);
+        worldBase.transform.position = HexMapHelper.GetWorldPointFromTile(gamePiece.currentTile.position, gamePiece.currentTile.level);
+        worldModel.transform.rotation = HexMapHelper.GetRotationFromFacing(gamePiece.currentTile.position, gamePiece.currentTile.facing);
     }
 
     [EventListener]

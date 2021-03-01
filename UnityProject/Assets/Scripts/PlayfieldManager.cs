@@ -43,12 +43,14 @@ public class PlayfieldManager : MonoBehaviour
         HashSet<TileClaim> tileClaims;
         TileObstacleType foundObstacle = TileObstacleType.Empty;
         if(instance.tileContents.TryGetValue(tile, out tileClaims)){
+            Debug.Log($"Tile Claim Found {tile}");
             foreach(TileClaim claim in tileClaims){
                 if((int)claim.obstacleType > (int)foundObstacle){
                     foundObstacle = claim.obstacleType;
                 }
             }
         }
+        Debug.Log($"Obstacle Type: {tile}, {foundObstacle}");
         return foundObstacle;
     }
 
@@ -63,11 +65,13 @@ public class PlayfieldManager : MonoBehaviour
         return tileOccupants;
     }
 
-    public static bool TryStakeTileClaim(Tile tile, IHaveTileFootprint claimant, TileObstacleType claimType){
+    public static bool TryStakeTileClaim(FootprintTile tile, IHaveTileFootprint claimant){
+        Debug.Log(tile);
+        Debug.Log(claimant);
         HashSet<TileClaim> tileClaims;
-        if(instance.tileContents.TryGetValue(tile, out tileClaims)){
+        if(instance.tileContents.TryGetValue(tile.tile, out tileClaims)){
             if(tileClaims == null) tileClaims = new HashSet<TileClaim>();
-            if(claimType != TileObstacleType.Empty){
+            if(tile.obstacleType != TileObstacleType.Empty){
                 foreach(TileClaim claim in tileClaims){
                     if((int)claim.obstacleType > 0){ //Not Empty
                         return false;
@@ -76,9 +80,9 @@ public class PlayfieldManager : MonoBehaviour
             }
         }else{
             tileClaims = new HashSet<TileClaim>();
-            instance.tileContents.Add(tile, tileClaims);
+            instance.tileContents.Add(tile.tile, tileClaims);
         }
-        tileClaims.Add(new TileClaim() {claimHolder = claimant, obstacleType = claimType});
+        tileClaims.Add(new TileClaim() {claimHolder = claimant, obstacleType = tile.obstacleType});
         
         HashSet<HashSet<TileClaim>> claimSets;
         if(instance.claimMap.TryGetValue(claimant, out claimSets)){
