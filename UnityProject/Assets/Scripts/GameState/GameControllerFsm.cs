@@ -23,11 +23,11 @@ public partial class GameControllerFsm : MeFsm
     }
 
     public void OnEndTurnClicked() {
-        DoEndTurn();
+        DoCommitTurn();
     }
 
-    private void DoEndTurn(){
+    private void DoCommitTurn(){
         Debug.Log("end turn");
-        SwapState<ProcessingCommandsState>();
+        SwapState<IntentDeclarationState>();
     }
 }

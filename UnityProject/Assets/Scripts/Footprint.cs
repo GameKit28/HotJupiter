@@ -10,8 +10,8 @@ public class DynamicFootprint : FootprintBase {
 
     public void SetPivotTile(TileWithFacing pivotVec) {
         footprintParts = CalculateTilesFromTemplate(footprintTemplate, pivotVec);
-        PlayfieldManager.RemoveAllClaims(footprintOwner);
-        if(!TryClaimFootprintTiles()) UnityEngine.Debug.LogWarning("Unable to claim footprint tiles.");
+        PlayfieldManager.RemoveAllReservations(footprintOwner);
+        //if(!TryClaimFootprintTiles()) UnityEngine.Debug.LogWarning("Unable to claim footprint tiles.");
         base.FireFootprintUpdatedEvent();
     }
 }
@@ -20,13 +20,13 @@ public class StaticFootprint : FootprintBase {
     public StaticFootprint(IHaveTileFootprint owner, List<FootprintTile> footprintParts)
         : base(owner){
         this.footprintParts = footprintParts;
-        if(!TryClaimFootprintTiles()) UnityEngine.Debug.LogWarning($"Owner {owner} unable to claim footprint tiles.");
+        //if(!TryClaimFootprintTiles()) UnityEngine.Debug.LogWarning($"Owner {owner} unable to claim footprint tiles.");
     }
 
     public StaticFootprint(IHaveTileFootprint owner, RelativeFootprintTemplate footprint, TileWithFacing pivotVec)
         : base(owner) {
         footprintParts = CalculateTilesFromTemplate(footprint, pivotVec);
-        if(!TryClaimFootprintTiles()) UnityEngine.Debug.LogWarning($"Owner {owner} unable to claim footprint tiles.");
+        //if(!TryClaimFootprintTiles()) UnityEngine.Debug.LogWarning($"Owner {owner} unable to claim footprint tiles.");
     }
 }
 
@@ -82,7 +82,7 @@ public abstract class FootprintBase {
         return footprintList;
     }
 
-    protected bool TryClaimFootprintTiles(){
+    /*protected bool TryClaimFootprintTiles(){
         bool canClaim = true;
         foreach(var part in footprintParts){
             if((int)PlayfieldManager.GetTileObstacleType(part.tile) > (int)TileObstacleType.Empty)
@@ -92,14 +92,14 @@ public abstract class FootprintBase {
 
         if(canClaim){
             foreach(var part in footprintParts){
-                if(!PlayfieldManager.TryStakeTileClaim(part, footprintOwner)){
+                if(!PlayfieldManager.TryReserveTile(part, footprintOwner)){
                     UnityEngine.Debug.LogError($"Tile was occupied despite our initial check.");
                 };
             }
         }
 
         return canClaim;
-    }
+    }*/
 }
 
 public delegate void FootprintUpdatedDel();

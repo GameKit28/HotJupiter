@@ -26,6 +26,6 @@ public struct RelativeFootprint
 
 public enum TileObstacleType{
     Empty = 0, //Does not preclude other objects from occupying this tile.
-    Semisolid = 1, //Only one object can occupy this space, but other objects can pass through.
-    Solid = 2, //Only one object can occupy this space. Other objects like ships cannot pass through this tile.
+    Semisolid = 1, //Only one object can occupy this space at the end of a turn, but other objects can pass through.
+    Solid = 2, //Only one object can occupy this space at any moment. Other objects like ships cannot pass through this tile.
 }

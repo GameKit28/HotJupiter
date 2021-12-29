@@ -6,6 +6,8 @@ using HexasphereGrid;
 
 public class FootprintIndicator : MonoBehaviour
 {
+    const bool hideWhenExecuting = true;
+
     [SerializeReference]
     public GameObject attachedObject; // Must derive from IHaveTilePosition
     private List<Mesh> polygons = new List<Mesh>();
@@ -55,6 +57,8 @@ public class FootprintIndicator : MonoBehaviour
         if (attachedObject != null) {
             tileFootprintObject = attachedObject.GetComponent<IHaveTileFootprint>();
         }
+
+        GameControllerFsm.eventPublisher.SubscribeAll(this);
     }
 
     void Initialize(int size){
@@ -113,5 +117,15 @@ public class FootprintIndicator : MonoBehaviour
 
     void OnFootprintUpdated(){
         isDirty = true;
+    }
+
+    [EventListener]
+    private void OnPlayingOutTurnStart(GameControllerFsm.Events.BeginPlayingOutTurnState @event){
+        GetComponent<MeshRenderer>().enabled = !hideWhenExecuting;
+    }
+
+    [EventListener]
+    private void OnPlayingOutTurnEnd(GameControllerFsm.Events.EndPlayingOutTurnState @event){
+        GetComponent<MeshRenderer>().enabled = true;
     }
 }

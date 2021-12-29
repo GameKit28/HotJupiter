@@ -92,7 +92,7 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
     }
 
     [EventListener]
-    void OnStartPlayingTurn(GameControllerFsm.Events.BeginPlayingOutTurnState @event){
+    void OnStartPlayingOutTurn(GameControllerFsm.Events.BeginPlayingOutTurnState @event){
         SetActivePath(selectedCommandPoint.model.spline);
     }
 }

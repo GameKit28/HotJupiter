@@ -22,7 +22,7 @@ public partial class GameControllerFsm : MeFsm
         void Update()
         {
             if(Input.GetKeyDown(KeyCode.Space)) {
-                ParentFsm.DoEndTurn();
+                ParentFsm.DoCommitTurn();
             }
         }
     }

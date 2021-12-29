@@ -40,6 +40,9 @@ public class CommandPointController : MonoBehaviour
     public void SetEndVelocity(int velocity) {
         model.endVelocity = velocity;
     }
+    public void SetGForce(int gForce){
+        model.gForce = gForce;
+    }
     protected void SetSpline(Vector3 startPosition, Vector3 startHeading, Vector3 endPosition, Vector3 endHeading){
         model.spline.Clear();
 

@@ -25,6 +25,10 @@ public class NavigationSystem: MonoBehaviour
     {
         if (hasGeneratedThisTurn) return;
 
+        int gForceModifier = 0;
+        if(pieceController.gamePiece.currentVelocity == pieceController.pieceTemplate.TopSpeed) gForceModifier = 1;
+        if(pieceController.gamePiece.currentVelocity == 2) gForceModifier = -1;
+
         //Standard Destinations
 
         //Forward Facing (current speed)
@@ -33,57 +37,67 @@ public class NavigationSystem: MonoBehaviour
 
         var defalutSelectedPoint = InstantiateCommandPoint(
             new TilePath(startingVec).TraversePlanar(HexDirection.Forward, pieceController.gamePiece.currentVelocity),
-            pieceController.gamePiece.currentVelocity);
+            pieceController.gamePiece.currentVelocity,
+            0);
 
         //Forward Facing (speed up)
         if(pieceController.gamePiece.currentVelocity < pieceController.pieceTemplate.TopSpeed && pieceController.pieceTemplate.canAccelerate) {
             InstantiateCommandPoint(
                 new TilePath(startingVec).TraversePlanar(HexDirection.Forward, pieceController.gamePiece.currentVelocity + 1),
-                pieceController.gamePiece.currentVelocity + 1);
+                pieceController.gamePiece.currentVelocity + 1,
+                1);
         }
 
         //Forward Facing (slow down)
         if(pieceController.gamePiece.currentVelocity > 2 && pieceController.pieceTemplate.canDecelerate) {
             InstantiateCommandPoint(
                 new TilePath(startingVec).TraversePlanar(HexDirection.Forward, pieceController.gamePiece.currentVelocity - 1),
-                pieceController.gamePiece.currentVelocity - 1);
+                pieceController.gamePiece.currentVelocity - 1,
+                1);
         }
 
         //Turn Left (straight bank)
         InstantiateCommandPoint(
             new TilePath(startingVec).TraversePlanar(HexDirection.Forward, pieceController.gamePiece.currentVelocity).Face(HexDirection.ForwardLeft),
-            pieceController.gamePiece.currentVelocity);
+            pieceController.gamePiece.currentVelocity,
+            0 + gForceModifier);
 
 
         //Turn Right (straight bank)
         InstantiateCommandPoint(
             new TilePath(startingVec).TraversePlanar(HexDirection.Forward, pieceController.gamePiece.currentVelocity).Face(HexDirection.ForwardRight),
-            pieceController.gamePiece.currentVelocity);
+            pieceController.gamePiece.currentVelocity,
+            0 + gForceModifier);
 
         //Turn Radius
         for(int manu = 1; manu <= pieceController.pieceTemplate.Maneuverability; manu++){
+            int baseGForce = manu - 1;
             if(pieceController.gamePiece.currentVelocity - manu >= 1) {
                 if(pieceController.pieceTemplate.canStrafe){
                     //Strafe Left
                     InstantiateCommandPoint(
                         new TilePath(startingVec).TraversePlanar(HexDirection.Forward, pieceController.gamePiece.currentVelocity - manu).TraversePlanar(HexDirection.ForwardLeft, manu).Face(HexDirection.ForwardRight),
-                        pieceController.gamePiece.currentVelocity);
+                        pieceController.gamePiece.currentVelocity,
+                        baseGForce + gForceModifier);
 
                     //Strafe Right
                     InstantiateCommandPoint(
                         new TilePath(startingVec).TraversePlanar(HexDirection.Forward, pieceController.gamePiece.currentVelocity - manu).TraversePlanar(HexDirection.ForwardRight, manu).Face(HexDirection.ForwardLeft),
-                        pieceController.gamePiece.currentVelocity);
+                        pieceController.gamePiece.currentVelocity,
+                        baseGForce + gForceModifier);
                 }
 
                 //Turn Left
                 InstantiateCommandPoint(
                     new TilePath(startingVec).TraversePlanar(HexDirection.Forward, pieceController.gamePiece.currentVelocity - manu).TraversePlanar(HexDirection.ForwardLeft, manu),
-                    pieceController.gamePiece.currentVelocity);
+                    pieceController.gamePiece.currentVelocity,
+                    baseGForce + gForceModifier);
 
                 //Turn Right
                 InstantiateCommandPoint(
                     new TilePath(startingVec).TraversePlanar(HexDirection.Forward, pieceController.gamePiece.currentVelocity - manu).TraversePlanar(HexDirection.ForwardRight, manu),
-                    pieceController.gamePiece.currentVelocity);
+                    pieceController.gamePiece.currentVelocity,
+                    baseGForce + gForceModifier);
             }
         }
 
@@ -92,14 +106,16 @@ public class NavigationSystem: MonoBehaviour
             if(pieceController.GetPivotTileLevel() < TileLevel.MAX && pieceController.gamePiece.currentVelocity >= 1){
                 InstantiateCommandPoint(
                     new TilePath(startingVec).TraversePlanar(HexDirection.Forward, pieceController.gamePiece.currentVelocity - 1).TraverseVertical(1).TraversePlanar(HexDirection.Forward, 1),
-                    pieceController.gamePiece.currentVelocity);
+                    pieceController.gamePiece.currentVelocity,
+                    1 + gForceModifier);
                 }
 
         }else{
             if(pieceController.GetPivotTileLevel() < TileLevel.MAX && pieceController.gamePiece.currentVelocity >= 2){
                 InstantiateCommandPoint(
                     new TilePath(startingVec).TraversePlanar(HexDirection.Forward, pieceController.gamePiece.currentVelocity - 2).TraverseVertical(1).TraversePlanar(HexDirection.Forward, 1),
-                    pieceController.gamePiece.currentVelocity);
+                    pieceController.gamePiece.currentVelocity,
+                    1 + gForceModifier);
             }
         }
 
@@ -107,7 +123,8 @@ public class NavigationSystem: MonoBehaviour
         if(pieceController.GetPivotTileLevel() > 1 && pieceController.gamePiece.currentVelocity >= 1){
             InstantiateCommandPoint(
                     new TilePath(startingVec).TraversePlanar(HexDirection.Forward, pieceController.gamePiece.currentVelocity - 1).TraverseVertical(-1).TraversePlanar(HexDirection.Forward, 1),
-                    pieceController.gamePiece.currentVelocity);
+                    pieceController.gamePiece.currentVelocity,
+                    1 + gForceModifier);
         }
         
         eventPublisher.Publish(new Events.NewPointSelected() { SelectedPoint = defalutSelectedPoint });
@@ -131,12 +148,13 @@ public class NavigationSystem: MonoBehaviour
         GenerateCommandPoints();
     }
 
-    private CommandPointController InstantiateCommandPoint(TilePath path, int endVelocity){
+    private CommandPointController InstantiateCommandPoint(TilePath path, int endVelocity, int gForce){
         CommandPointController commandPoint = GameObject.Instantiate(commandPointPrefab, transform.position, transform.rotation, transform).GetComponent<CommandPointController>();
 
         commandPoint.SetSource(pieceController.worldModel.transform.position, HexMapHelper.GetFacingVector(pieceController.gamePiece.currentTile.position, pieceController.gamePiece.currentTile.facing));
-        commandPoint.SetTilePath(path);
         commandPoint.SetEndVelocity(endVelocity);
+        commandPoint.SetGForce(Mathf.Max(0, gForce));
+        commandPoint.SetTilePath(path); //Hidden knowledge, must be called after SetGForce
 
         if(commandPoint.view != null) {
             eventPublisher.SubscribeAll(commandPoint.view);

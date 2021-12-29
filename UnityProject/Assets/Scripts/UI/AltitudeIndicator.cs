@@ -5,6 +5,8 @@ using MeEngine.Events;
 
 public class AltitudeIndicator : MonoBehaviour
 {
+    //private const bool hideWhenExecuting = true;
+
     private const float xzScale = 0.05f;
     private const float visibleDiffThreshold = 0.1f; //Hide the indicator of the attached object is this close to the "plane"
     
@@ -16,6 +18,10 @@ public class AltitudeIndicator : MonoBehaviour
 
     private Vector3? lastPosition;
     private int? lastUIMapAltitude;
+
+    /*void Start() {
+        GameControllerFsm.eventPublisher.SubscribeAll(this);
+    }*/
 
     // Update is called once per frame
     void Update()
@@ -47,4 +53,16 @@ public class AltitudeIndicator : MonoBehaviour
             this.gameObject.SetActive(false);
         }
     }
+
+    /*[EventListener]
+    private void OnPlayingOutTurnStart(GameControllerFsm.Events.BeginPlayingOutTurnState @event){
+        heightCylinder.GetComponentInChildren<MeshRenderer>().enabled = !hideWhenExecuting;
+        baseSprite.GetComponent<SpriteRenderer>().enabled = !hideWhenExecuting;
+    }
+
+    [EventListener]
+    private void OnPlayingOutTurnEnd(GameControllerFsm.Events.EndPlayingOutTurnState @event){
+        heightCylinder.GetComponentInChildren<MeshRenderer>().enabled = true;
+        baseSprite.GetComponent<SpriteRenderer>().enabled = true;
+    }*/
 }

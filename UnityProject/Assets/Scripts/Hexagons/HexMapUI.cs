@@ -13,6 +13,8 @@ public class HexMapUI : MonoBehaviour
 
     public static EventPublisher eventPublisher { get; private set; } = new EventPublisher();
 
+    private const bool hideWhenExecuting = true;
+
     public List<Hexasphere> tileSpheres = new List<Hexasphere>();
     static HexMapUI instance;
 
@@ -55,6 +57,7 @@ public class HexMapUI : MonoBehaviour
 
     void Start(){
         HideAllButCurrentUILevel();
+        GameControllerFsm.eventPublisher.SubscribeAll(this);
     }
 
     void Update(){
@@ -81,6 +84,20 @@ public class HexMapUI : MonoBehaviour
             return hexasphere.tiles[tile.position.index];
         }else{
             return null;
+        }
+    }
+
+    [EventListener]
+    private void OnPlayingOutTurnStart(GameControllerFsm.Events.BeginPlayingOutTurnState @event){
+        for(int levelIndex = 0; levelIndex < tileSpheres.Count; levelIndex++){
+            tileSpheres[levelIndex].gameObject.SetActive(!hideWhenExecuting);
+        }
+    }
+
+    [EventListener]
+    private void OnPlayingOutTurnEnd(GameControllerFsm.Events.EndPlayingOutTurnState @event){
+        for(int levelIndex = 0; levelIndex < tileSpheres.Count; levelIndex++){
+            tileSpheres[levelIndex].gameObject.SetActive(levelIndex == currentUIMapLevel);
         }
     }
 }
