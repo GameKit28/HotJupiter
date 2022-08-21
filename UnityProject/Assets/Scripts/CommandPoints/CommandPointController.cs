@@ -2,6 +2,7 @@
 using MeEngine.Events;
 using UnityEngine;
 using BansheeGz.BGSpline.Curve;
+using System;
 
 public class CommandPointController : MonoBehaviour
 {
@@ -50,5 +51,13 @@ public class CommandPointController : MonoBehaviour
             startPosition - startHeading, startPosition + startHeading, true));
         model.spline.AddPoint(new BGCurvePoint(model.spline, endPosition, BGCurvePoint.ControlTypeEnum.BezierSymmetrical,
             endPosition - endHeading, endPosition + endHeading, true));
+    }
+
+    public void SubscribeNavigationEvents(EventPublisher navigationSystemEventPublisher)
+    {
+        if(view != null) {
+            navigationSystemEventPublisher.SubscribeAll(view);
+            view.eventPublisher.SubscribeAll(this);
+        }
     }
 }

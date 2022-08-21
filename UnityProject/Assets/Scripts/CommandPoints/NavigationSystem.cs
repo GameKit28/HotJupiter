@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using MeEngine.Events;
 public class NavigationSystem: MonoBehaviour
@@ -155,11 +154,7 @@ public class NavigationSystem: MonoBehaviour
         commandPoint.SetEndVelocity(endVelocity);
         commandPoint.SetGForce(Mathf.Max(0, gForce));
         commandPoint.SetTilePath(path); //Hidden knowledge, must be called after SetGForce
-
-        if(commandPoint.view != null) {
-            eventPublisher.SubscribeAll(commandPoint.view);
-            commandPoint.view.eventPublisher.SubscribeAll(this);
-        }
+        commandPoint.SubscribeNavigationEvents(this.eventPublisher);
 
         availableCommandPoints.Add(commandPoint);
         return commandPoint;
