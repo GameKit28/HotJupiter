@@ -33,7 +33,10 @@ public class PlanetRing : MonoBehaviour, IHaveTileFootprint
                 break;
             }
             lineNodes.Add(HexMapHelper.GetWorldPointFromTile(currentVec.position, level));
-            footprintParts.Add(new FootprintTile(currentVec.position, level, TileObstacleType.Solid));
+            var footprintTile = new FootprintTile(currentVec.position, level, TileObstacleType.Solid);
+            footprintParts.Add(footprintTile);
+
+            PlayfieldManager.TryReserveTile(footprintTile, this, new PlayfieldManager.SimulationTimePeriod(0, TimeManager.TurnDuration));
         }
         line.positionCount = lineNodes.Count;
         line.SetPositions(lineNodes.ToArray());

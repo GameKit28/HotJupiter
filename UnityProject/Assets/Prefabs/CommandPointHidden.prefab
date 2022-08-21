@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 6833982719512332556}
   - component: {fileID: 6833982719512332557}
   - component: {fileID: 6833982719512332566}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: BGCurve
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -362,7 +362,7 @@ GameObject:
   - component: {fileID: 7019884071448738380}
   - component: {fileID: 2407753840796367116}
   - component: {fileID: 9184191438686835089}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: CommandPointHidden
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -396,12 +396,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4009e1cc0a3453e4db082322cd52ee75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isSelected: 0
   model: {fileID: 9184191438686835089}
   view: {fileID: 0}
   pathingMaterialScheme: {fileID: 11400000, guid: 47d6fb80c7d14d348843afdc73e3db82,
     type: 2}
-  myNavigationSystem: {fileID: 0}
 --- !u!54 &2407753840796367116
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -431,11 +429,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   destinationTile:
-    index: 0
-  destinationFacingTile:
-    index: 0
-  destinationLevel: 0
+    position:
+      index: 0
+    facing:
+      index: 0
+    level:
+      level: 0
   endVelocity: 0
+  gForce: 0
   sourcePosition: {x: 0, y: 0, z: 0}
   sourceHeading: {x: 0, y: 0, z: 0}
   spline: {fileID: 6833982719512332561}

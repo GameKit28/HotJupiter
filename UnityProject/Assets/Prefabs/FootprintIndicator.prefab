@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6457957216588166957}
   - component: {fileID: 3604251184056060465}
   - component: {fileID: 8106711434453587117}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: FootprintIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}

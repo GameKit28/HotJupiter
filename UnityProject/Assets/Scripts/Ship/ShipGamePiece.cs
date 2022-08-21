@@ -66,7 +66,7 @@ public class ShipGamePiece : NavigatingGamePiece
     }
 
     [EventListener]
-    public void OnProcessEndTurn(GameControllerFsm.Events.BeginProcessingCommandsState @event) {
+    public void OnProcessEndTurn(GameControllerFsm.Events.BeginIntentDeclarationState @event) {
         Debug.Log("On Process End Turn");
         if(willFireMissileThisTurn){
             FireMissile();

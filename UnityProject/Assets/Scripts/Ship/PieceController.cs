@@ -6,8 +6,6 @@ using BansheeGz.BGSpline.Components;
 using MeEngine.Events;
 public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
 {
-    public bool isPlayerControlled = false;
-
     public BaseManuStats pieceTemplate;
 
     public NavigatingGamePiece gamePiece;

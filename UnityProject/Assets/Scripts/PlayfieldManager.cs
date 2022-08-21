@@ -4,16 +4,28 @@ using UnityEngine;
 
 public class PlayfieldManager : MonoBehaviour
 {
+    //Path Conflict Resolution Order
+    //Sort pieces in order of slowest to fastest, (then biggest to smallest?, then what?)
+    //Piece places reservations for all tiles on path (semi-solid, or solid)
+    //* If a reservation already exists
+    //* * Inventory surounding tiles for those without reservations
+    //* * Randomly select free tile in place of planned path tile
+    //* * Evasive action has taken place. Add one G-Force to manuever
+    //* * Continue reserving tiles in path
+
+    //TODO: Open Question. How do we respond to an event and still place reservations in a specific order?
+
+
     /*public interface IPathConflictResolver{
         IPathTraveler DeterminePrevailingClaimant(List<IPathTraveler> claimants, Tile contestedTile);
         bool IsAnyConflict(List<IPathTraveler> claimants, Tile contestedTile);
     }*/
 
-    public interface IPathTraveler: IHaveTilePosition, IHaveTileFacing, IHaveTileFootprint {
+    /*public interface IPathTraveler: IHaveTilePosition, IHaveTileFacing, IHaveTileFootprint {
         //bool HasConflictOverTile(List<IPathTraveler> otherClaimants, Tile contestedTile);
         void YieldReservation(IPathTraveler prevailingObject, Tile contestedTile, float simulationTime);
         //void OnPrevailingReservation(List<IPathTraveler> yieldingObjects, Tile contestedTile);
-    }
+    }*/
 
     public struct SimulationTimePeriod{
         public float start; //inclusive
@@ -109,7 +121,7 @@ public class PlayfieldManager : MonoBehaviour
         return tileOccupants;
     }
 
-    /*public static bool TryReserveTile(FootprintTile tile, IHaveTileFootprint claimant, SimulationTimePeriod timePeriod){
+    public static bool TryReserveTile(FootprintTile tile, IHaveTileFootprint claimant, SimulationTimePeriod timePeriod){
         HashSet<TileReservation> tileReservations;
         if(instance.tileReservations.TryGetValue(tile.tile, out tileReservations)){
             if(tileReservations == null) tileReservations = new HashSet<TileReservation>();
@@ -141,7 +153,7 @@ public class PlayfieldManager : MonoBehaviour
         }
 
         return true;
-    }*/
+    }
 
     public static void RemoveTileReservations(Tile tile, IHaveTileFootprint reservationHolder){
         HashSet<TileReservation> currentTileReservations;

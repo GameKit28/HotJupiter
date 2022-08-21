@@ -28,6 +28,10 @@ public class StaticObstacle : MonoBehaviour, IHaveTilePosition, IHaveTileFootpri
         modelHolder.transform.rotation = HexMapHelper.GetRotationFromFacing(pivotPosition, pivotFacing);
 
         footprint = new StaticFootprint(this, template.footprint, new TileWithFacing(pivotPosition, pivotFacing, pivotLevel));
+
+        foreach(var tile in footprint.GetAllTilesInFootprint()){
+            PlayfieldManager.TryReserveTile(tile, this, new PlayfieldManager.SimulationTimePeriod(0, TimeManager.TurnDuration));
+        }
     }
 
     public FootprintBase GetFootprint(){

@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 6833982719512332556}
   - component: {fileID: 6833982719512332557}
   - component: {fileID: 6833982719512332566}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: BGCurve
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -363,7 +363,7 @@ GameObject:
   - component: {fileID: 2407753840796367116}
   - component: {fileID: 2147708147616572302}
   - component: {fileID: 3825747881660399445}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: CommandPointVisible
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -398,12 +398,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4009e1cc0a3453e4db082322cd52ee75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isSelected: 0
   model: {fileID: 2147708147616572302}
   view: {fileID: 3825747881660399445}
   pathingMaterialScheme: {fileID: 11400000, guid: 47d6fb80c7d14d348843afdc73e3db82,
     type: 2}
-  myNavigationSystem: {fileID: 0}
 --- !u!54 &2407753840796367116
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -433,11 +431,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   destinationTile:
-    index: 0
-  destinationFacingTile:
-    index: 0
-  destinationLevel: 0
+    position:
+      index: 0
+    facing:
+      index: 0
+    level:
+      level: 0
   endVelocity: 0
+  gForce: 0
   sourcePosition: {x: 0, y: 0, z: 0}
   sourceHeading: {x: 0, y: 0, z: 0}
   spline: {fileID: 6833982719512332561}
@@ -471,7 +472,7 @@ GameObject:
   - component: {fileID: 6833982719837389980}
   - component: {fileID: 6833982719837389986}
   - component: {fileID: 6833982719837389987}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -565,7 +566,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5520069841561039277}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SpriteHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -597,7 +598,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 536754306598032310}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SpritePivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -626,6 +627,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5520069841561039277}
     m_Modifications:
+    - target: {fileID: 1327076793471197778, guid: 1880ffe21821edc49a537083122ab000,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 3145386182844533311, guid: 1880ffe21821edc49a537083122ab000,
         type: 3}
       propertyPath: attachedObject
@@ -690,6 +696,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: AltitudeIndicator
+      objectReference: {fileID: 0}
+    - target: {fileID: 3766616885675976478, guid: 1880ffe21821edc49a537083122ab000,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6113098594405039555, guid: 1880ffe21821edc49a537083122ab000,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8982723288552524567, guid: 1880ffe21821edc49a537083122ab000,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1880ffe21821edc49a537083122ab000, type: 3}

@@ -12,9 +12,9 @@ public partial class GameControllerFsm : MeFsm
         protected override void EnterState()
         {
             base.EnterState();
-            Debug.Log("Entering ProcessingCommandsState");
+            Debug.Log("Entering IntentDeclarationState");
 
-            GameControllerFsm.eventPublisher.Publish(new Events.BeginProcessingCommandsState());
+            GameControllerFsm.eventPublisher.Publish(new Events.BeginIntentDeclarationState());
 
             SwapState<CalculatingInterceptsState>();
         }

@@ -41,7 +41,7 @@ public class MissileBrain : BaseBrain<MissileGamePiece>
         var availableCommands = pieceController.navigationSystem.GetAvailableCommandPoints();
 
         if(currentTarget != null){
-            // Missile know where their target will be
+            // Missiles know where their target will be
             TileWithFacing targetDestinationTile = currentTarget.GetDestinationTile();
             Vector3 targetDestinationWorldSpace = HexMapHelper.GetWorldPointFromTile(targetDestinationTile.position, targetDestinationTile.level);
 
@@ -72,7 +72,7 @@ public class MissileBrain : BaseBrain<MissileGamePiece>
     }
 
     [EventListener]
-    void OnEndOfTurn(GameControllerFsm.Events.BeginProcessingCommandsState @event){
+    void OnEndOfTurn(GameControllerFsm.Events.BeginIntentDeclarationState @event){
         Debug.Log("Missile Selecing Command");
         pieceController.SetSelectedCommandPoint(SelectCommand());
     }
