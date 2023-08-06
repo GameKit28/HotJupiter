@@ -141,6 +141,12 @@ namespace HexasphereGrid {
 		/// </summary>
 		/// <param name="textureWithColors">Texture with colors.</param>
 		public void ApplyColors (Texture2D textureWithColors) {
+
+			if (tiles == null) {
+				Debug.LogError("Hexasphere is not initialized and ApplyColors() is called.");
+				return;
+            }
+
 			// Load texture colors and dimensions
 			Color32[] colors = textureWithColors.GetPixels32 ();
 			int textureWidth = textureWithColors.width;
@@ -175,17 +181,17 @@ namespace HexasphereGrid {
 		}
 
 
-        /// <summary>
-        /// Adjusts object transform to match a given tile position and orientation.
-        /// </summary>
-        /// <param name="go">The gameobject to align.</param>
-        /// <param name="tileIndex">Tile index.</param>
-        /// <param name="altitude">Altitude or elevation relative to tile center.</param>
-        /// <param name="snapRotationToVertex0">Clamps rotation and align to vertex 0 of the tile</param>
-        /// <param name="adjustScale">Adjust scale to fit tile size</param>
-        /// <param name="scaleRatio">Scale multiplier. Used only if adjustScale is true.</param>
-        /// <param name="fitToSphereSurface">Places the object on sphere surface instead of the polygon of the tile. When many tiles are shown, surface and polygon almost match but this is not the case if there're few tiles.</param>
-        public void ParentAndAlignToTile (GameObject go, int tileIndex, float altitude = 0, bool snapRotationToVertex0 = false, bool adjustScale = true, float scaleRatio = 1f, bool fitToSphereSurface = true) {
+		/// <summary>
+		/// Adjusts object transform to match a given tile position and orientation.
+		/// </summary>
+		/// <param name="go">The gameobject to align.</param>
+		/// <param name="tileIndex">Tile index.</param>
+		/// <param name="altitude">Altitude or elevation relative to tile center.</param>
+		/// <param name="snapRotationToVertex0">Clamps rotation and align to vertex 0 of the tile</param>
+		/// <param name="adjustScale">Adjust scale to fit tile size</param>
+		/// <param name="scaleRatio">Scale multiplier. Used only if adjustScale is true.</param>
+		/// <param name="fitToSphereSurface">Places the object on spherical center at the altitude of the extruded tile (faster) instead of the polygon center of the tile (slower). When many tiles are shown, surface and polygon center position almost match but this is not the case if there're few tiles.</param>
+		public void ParentAndAlignToTile (GameObject go, int tileIndex, float altitude = 0, bool snapRotationToVertex0 = false, bool adjustScale = true, float scaleRatio = 1f, bool fitToSphereSurface = true) {
 			if (tileIndex < 0 || tileIndex >= tiles.Length)
 				return;
 
@@ -217,16 +223,22 @@ namespace HexasphereGrid {
 			if (!adjustScale)
 				return;
 			Renderer renderer = go.GetComponentInChildren<Renderer> ();
-			go.transform.localScale = Misc.Vector3one;
-			float tileSize = 1, spriteSize;
-			spriteSize = Vector3.Distance (renderer.bounds.max, renderer.bounds.min) / 1.4142135f;
-			if (tiles [tileIndex].vertices.Length == 6) {
-				tileSize = Vector3.Distance (GetTileVertexPosition (tileIndex, 0), GetTileVertexPosition (tileIndex, 3));
-			} else if (tiles [tileIndex].vertices.Length == 5) {
-				tileSize = Vector3.Distance (GetTileVertexPosition (tileIndex, 0), GetTileVertexPosition (tileIndex, 2));
+			if (renderer != null) {
+				go.transform.localScale = Misc.Vector3one;
+				float tileSize = 1, spriteSize;
+				spriteSize = Vector3.Distance(renderer.bounds.max, renderer.bounds.min) / 1.4142135f;
+				if (tiles[tileIndex].vertices.Length == 6) {
+					tileSize = Vector3.Distance(GetTileVertexPosition(tileIndex, 0), GetTileVertexPosition(tileIndex, 3));
+				} else if (tiles[tileIndex].vertices.Length == 5) {
+					tileSize = Vector3.Distance(GetTileVertexPosition(tileIndex, 0), GetTileVertexPosition(tileIndex, 2));
+				}
+				float scale = scaleRatio * (tileSize / spriteSize);
+				if (renderer is SpriteRenderer) {
+					go.transform.localScale = new Vector3(scale, scale, 1f);
+				} else {
+					go.transform.localScale = new Vector3(scale, scale, scale);
+				}
 			}
-			float scale = scaleRatio * (tileSize / spriteSize);
-			go.transform.localScale = new Vector3 (scale, scale, 1f);
 		}
 
 		#endregion

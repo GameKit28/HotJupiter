@@ -94,7 +94,7 @@ public class HexMapHelper : MonoBehaviour
     }
 
     public static TileCoords GetTileFromWorldPoint(Vector3 worldPos){
-        return new TileCoords(){ index = instance.baseHexasphere.GetTileAtPos(worldPos) };
+        return new TileCoords(){ index = instance.baseHexasphere.GetTileAtPosition(worldPos) };
     }
 
     public static List<TileCoords> GetNeighborTiles(TileCoords tile){

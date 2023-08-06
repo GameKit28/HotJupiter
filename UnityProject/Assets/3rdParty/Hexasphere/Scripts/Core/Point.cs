@@ -1,10 +1,10 @@
 using UnityEngine;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace HexasphereGrid {
-	public class Point: IEqualityComparer<Point> {
+
+	public class Point: IEqualityComparer<Point>, IEquatable<Point> {
 
 		public float x, y, z;
 

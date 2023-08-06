@@ -9,12 +9,11 @@
 
 
         SubShader{
-            Tags { "Queue" = "Geometry-2" "RenderPipeline" = "LightweightPipeline" }
+            Tags { "Queue" = "Geometry-2" "RenderPipeline" = "UniversalPipeline" }
             Blend[_SrcBlend][_DstBlend]
             ZWrite[_ZWrite]
 
             Pass {
-                //    Tags { "LightMode" = "LightweightForward" }
                     Offset 1, 1
 
                         CGPROGRAM
@@ -29,12 +28,14 @@
         fixed4 _Color;
         fixed _TileAlpha;
         float4 _MainLightPosition;
-half4 _MainLightColor;
+        half4 _MainLightColor;
+
         struct appdata {
             float4 vertex   : POSITION;
             #if HEXA_LIT
                 float3 normal   : NORMAL;
             #endif
+            UNITY_VERTEX_INPUT_INSTANCE_ID
         };
 
         struct v2f {
@@ -43,10 +44,15 @@ half4 _MainLightColor;
             #if HEXA_LIT
                 float3 norm  : NORMAL;
             #endif
+            UNITY_VERTEX_OUTPUT_STEREO
         };
 
         v2f vert(appdata v) {
             v2f o;
+                UNITY_SETUP_INSTANCE_ID(v);
+                UNITY_INITIALIZE_OUTPUT(v2f, o);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+
             o.pos = UnityObjectToClipPos(v.vertex);
             TRANSFER_SHADOW(o);
             #if HEXA_LIT
@@ -85,7 +91,7 @@ half4 _MainLightColor;
 				#pragma fragment frag
 				#pragma fragmentoption ARB_precision_hint_fastest
 				#pragma multi_compile_fwdbase nolightmap nodynlightmap novertexlight nodirlightmap
-                #pragma multi_compile _ HEXA_LIT
+                #pragma multi_compile_local _ HEXA_LIT
 				#include "UnityCG.cginc"
 				#include "AutoLight.cginc"
                 #include "Lighting.cginc"
@@ -98,6 +104,7 @@ half4 _MainLightColor;
                     #if HEXA_LIT
                         float3 normal   : NORMAL;
                     #endif
+                    UNITY_VERTEX_INPUT_INSTANCE_ID
     			};
 
 				struct v2f {
@@ -106,10 +113,15 @@ half4 _MainLightColor;
                     #if HEXA_LIT
                         float3 norm  : NORMAL;
                     #endif
+                    UNITY_VERTEX_OUTPUT_STEREO
 				};
 
 				v2f vert(appdata v) {
     				v2f o;
+                UNITY_SETUP_INSTANCE_ID(v);
+                UNITY_INITIALIZE_OUTPUT(v2f, o);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+
 	                o.pos = UnityObjectToClipPos(v.vertex);
 	                TRANSFER_SHADOW(o);
                     #if HEXA_LIT

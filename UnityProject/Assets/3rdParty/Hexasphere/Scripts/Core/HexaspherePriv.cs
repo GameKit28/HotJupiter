@@ -21,7 +21,7 @@ using GVR;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using UnityEngine.EventSystems;
 
 namespace HexasphereGrid {
     public delegate Point GetCachedPointDelegate(Point point);
@@ -71,6 +71,10 @@ namespace HexasphereGrid {
         List<int> tmpList;
         Dictionary<int, bool> tmpDict;
         List<int> tmpCandidates;
+        int lastHoverTileIndex;
+        bool canInteract = true;
+        Texture2DArray finalTexArray;
+        bool triggerOnGenerateEvent;
 
         #region Gameloop events
 
@@ -103,6 +107,9 @@ namespace HexasphereGrid {
                 DestroyImmediate(_tileColoredMat);
             if (_tileTexturedMat != null)
                 DestroyImmediate(_tileTexturedMat);
+            if (finalTexArray != null) {
+                DestroyImmediate(finalTexArray);
+            }
         }
 
         void LateUpdate() {
@@ -111,6 +118,9 @@ namespace HexasphereGrid {
 												if (Input.GetKeyDown (KeyCode.D))
 																rayDebug = true;
 #endif
+
+            UpdateHexasphereCenter();
+
             if (shouldUpdateMaterialProperties) {
                 UpdateMaterialProperties();
             }
@@ -128,7 +138,7 @@ namespace HexasphereGrid {
             }
 
             if (highlightMaterial != null && lastHighlightedTileIndex >= 0) {
-                highlightMaterial.SetFloat("_ColorShift", Mathf.PingPong(Time.time * _highlightSpeed, 1f));
+                highlightMaterial.SetFloat(ShaderParams.ColorShift, Mathf.PingPong(Time.time * _highlightSpeed, 1f));
             }
 
             // Check mouse buttons state
@@ -169,17 +179,26 @@ namespace HexasphereGrid {
             rightMouseButtonPressed = Input.GetMouseButton(1) && !_rightButtonDrag;
 
             // Check whether the points is on an UI element, then avoid user interaction
-            bool canInteract = true;
             if (respectOtherUI) {
-                if (UnityEngine.EventSystems.EventSystem.current != null) {
-                    if (Application.isMobilePlatform && Input.touchCount > 0 && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId)) {
-                        canInteract = false;
-                    } else if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject(-1))
-                        canInteract = false;
+                if (EventSystem.current != null) {
+                    if (Application.isMobilePlatform) {
+                        if (Input.touchCount > 0) {
+                            Touch touch = Input.GetTouch(0);
+                            if (touch.phase == TouchPhase.Began) {
+                                canInteract = !EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId);
+                            }
+                        }
+                    } else {
+                        canInteract = !EventSystem.current.IsPointerOverGameObject(-1);
+                    }
+                } else {
+                    canInteract = true;
                 }
                 if (!canInteract) {
                     HideHighlightedTile();
                 }
+            } else {
+                canInteract = true;
             }
 
             if (canInteract) {
@@ -196,10 +215,16 @@ namespace HexasphereGrid {
                 transform.rotation = Quaternion.Slerp(flyingStartRotation, flyingEndRotation, t);
                 if (t >= 1) {
                     flying = false;
+                    if (OnFlyEnd != null) OnFlyEnd(this);
                 }
-                if (_rotationAxisAllowed == ROTATION_AXIS_ALLOWED.STRAIGHT) {
+                if (_rotationAxisAllowed == ROTATION_AXIS_ALLOWED.Straight) {
                     KeepStraight();
                 }
+            }
+
+            if (triggerOnGenerateEvent) {
+                triggerOnGenerateEvent = false;
+                if (OnGeneration != null) OnGeneration(this);
             }
         }
 
@@ -223,21 +248,23 @@ namespace HexasphereGrid {
             }
         }
 
-        void FixedUpdate() {
+        void UpdateHexasphereCenter() {
+            if (_style == STYLE.Invisible) return;
+
             if (_style != STYLE.Shaded) {
                 if (_gridMatExtrusion != null) {
-                    _gridMatExtrusion.SetVector("_Center", transform.position);
+                    _gridMatExtrusion.SetVector(ShaderParams.Center, transform.position);
                 }
                 if (_gridMatNoExtrusion != null) {
-                    _gridMatNoExtrusion.SetVector("_Center", transform.position);
+                    _gridMatNoExtrusion.SetVector(ShaderParams.Center, transform.position);
                 }
             }
             if (_extruded && _style != STYLE.Wireframe) {
                 if (_tileShadedFrameMatExtrusion != null) {
-                    _tileShadedFrameMatExtrusion.SetVector("_Center", transform.position);
+                    _tileShadedFrameMatExtrusion.SetVector(ShaderParams.Center, transform.position);
                 }
                 if (_tileShadedFrameMatBevel != null) {
-                    _tileShadedFrameMatBevel.SetVector("_Center", transform.position);
+                    _tileShadedFrameMatBevel.SetVector(ShaderParams.Center, transform.position);
                 }
             }
         }
@@ -248,6 +275,35 @@ namespace HexasphereGrid {
         #region Initialization
 
         public void Init() {
+
+            if (!_tileTextureStretch) {
+                // compute hexagon uvs to fit circle
+                for (int k = 0; k < 6; k++) {
+                    float angle = Mathf.PI - k * 2f * Mathf.PI / 6f;
+                    float uvx = Mathf.Cos(angle) * 0.5f + 0.5f;
+                    float uvy = Mathf.Sin(angle) * 0.5f + 0.5f;
+                    hexagonUVsExtruded[k].x = hexagonUVs[k].x = uvx;
+                    hexagonUVsExtruded[k].y = hexagonUVs[k].y = uvy;
+                }
+                for (int k = 0; k < 6; k++) {
+                    hexagonUVsInverted[k] = hexagonUVs[k];
+                    hexagonUVsInverted[k].y = 1f - hexagonUVsInverted[k].y;
+                }
+
+                // compute pentagon uvs to fit circle
+                for (int k = 0; k < 5; k++) {
+                    float angle = Mathf.PI - (k + 1) * 2f * Mathf.PI / 5f;
+                    float uvx = Mathf.Cos(angle) * 0.5f + 0.5f;
+                    float uvy = Mathf.Sin(angle) * 0.5f + 0.5f;
+                    pentagonUVsExtruded[k].x = pentagonUVs[k].x = uvx;
+                    pentagonUVsExtruded[k].y = pentagonUVs[k].y = uvy;
+                }
+                for (int k = 0; k < 5; k++) {
+                    pentagonUVsInverted[k] = pentagonUVs[k];
+                    pentagonUVsInverted[k].y = 1f - pentagonUVs[k].y;
+                }
+            }
+
             sphereCollider = GetComponent<SphereCollider>();
             if (sphereCollider == null) {
                 sphereCollider = gameObject.AddComponent<SphereCollider>();
@@ -255,6 +311,7 @@ namespace HexasphereGrid {
             if (highlightMaterial == null) {
                 highlightMaterial = Resources.Load<Material>("Materials/HexaTileHighlightMat");
             }
+            SetHighlightStyle();
 
             allowedTextureArray = SystemInfo.supports2DArrayTextures;
             if (!allowedTextureArray) {
@@ -314,16 +371,17 @@ namespace HexasphereGrid {
 
             CheckMousePosNormalMode(out position, out ray);
 
-            if (_rotationEnabled) {
-                if (leftMouseButtonClick) {
+            if (leftMouseButtonClick) {
 #if VR_GOOGLE
 																				mouseDragStartScreenPos = GvrController.TouchPos;
 #endif
-                    mouseDragStartLocalPosition = transform.InverseTransformPoint(position);
-                    mouseStartedDragging = true;
-                    hasDragged = false;
-                    clickStart = Time.time;
-                } else if (mouseStartedDragging && (leftMouseButtonPressed || (Input.touchSupported && Input.touchCount == 1))) {
+                mouseDragStartLocalPosition = transform.InverseTransformPoint(position);
+                mouseStartedDragging = true;
+                hasDragged = false;
+                clickStart = Time.time;
+            } else if (mouseStartedDragging && (leftMouseButtonPressed || (Input.touchSupported && Input.touchCount == 1))) {
+                if (_rotationEnabled) {
+
 #if VR_GOOGLE
 																				float distFactor = Mathf.Min (Vector3.Distance (_cameraMain.transform.position, transform.position) / transform.localScale.y, 1f);
 																				Vector3 dragDirection = (mouseDragStartScreenPos - (Vector3)GvrController.TouchPos) * distFactor * _mouseDragSensitivity;
@@ -336,10 +394,10 @@ namespace HexasphereGrid {
 #else
                     Vector3 localPos = transform.InverseTransformPoint(position);
                     if (localPos != mouseDragStartLocalPosition) {
-                        if (_rotationAxisAllowed == ROTATION_AXIS_ALLOWED.X_AXIS_ONLY) {
+                        if (_rotationAxisAllowed == ROTATION_AXIS_ALLOWED.XAxisOnly) {
                             mouseDragStartLocalPosition.x = 0;
                             localPos.x = 0;
-                        } else if (_rotationAxisAllowed == ROTATION_AXIS_ALLOWED.Y_AXIS_ONLY) {
+                        } else if (_rotationAxisAllowed == ROTATION_AXIS_ALLOWED.YAxisOnly) {
                             mouseDragStartLocalPosition.y = 0;
                             localPos.y = 0;
                         }
@@ -353,7 +411,7 @@ namespace HexasphereGrid {
                             transform.rotation *= rot;
                         }
                         // Keep straight
-                        if (_rotationAxisAllowed == ROTATION_AXIS_ALLOWED.STRAIGHT) {
+                        if (_rotationAxisAllowed == ROTATION_AXIS_ALLOWED.Straight) {
                             // Avoid rotation across poles
                             KeepStraight();
                             CheckMousePosNormalMode(out position, out ray);
@@ -361,12 +419,21 @@ namespace HexasphereGrid {
                         }
 
                         if (angle > _dragThreshold) {
-                            hasDragged = true;
+                            if (!hasDragged) {
+                                hasDragged = true;
+                                if (OnDragStart != null) OnDragStart(this);
+                            }
                         }
                     }
+
 #endif
-                } else {
+                }
+            } else {
+                if (mouseStartedDragging) {
                     mouseStartedDragging = false;
+                    if (hasDragged) {
+                        if (OnDragEnd != null) OnDragEnd(this);
+                    }
                 }
             }
 
@@ -379,9 +446,9 @@ namespace HexasphereGrid {
                 transform.Rotate(axis, rotAngle, Space.World);
             }
 
-            if (leftMouseButtonRelease && !hasDragged && (Time.time-clickStart <= _clickDuration) && OnTileClick != null) {
-                OnTileClick(lastHighlightedTileIndex);
-                lastClickedTile = lastHighlightedTileIndex;
+            if (leftMouseButtonRelease && !hasDragged && (Time.time - clickStart <= _clickDuration) && OnTileClick != null) {
+                OnTileClick(this, lastHoverTileIndex);
+                lastClickedTile = lastHoverTileIndex;
             }
 
             if (_zoomEnabled) {
@@ -430,6 +497,7 @@ namespace HexasphereGrid {
                             }
                         }
                         wheelAccel *= _zoomDamping; // smooth dampening
+                        if (OnZoom != null) OnZoom(this);
                     }
                 } else {
                     wheelAccel = 0;
@@ -526,8 +594,8 @@ namespace HexasphereGrid {
             }
 
             if (leftMouseButtonRelease && !hasDragged && (Time.time - clickStart <= _clickDuration) && OnTileClick != null) {
-                OnTileClick(lastHighlightedTileIndex);
-                lastClickedTile = lastHighlightedTileIndex;
+                OnTileClick(this, lastHoverTileIndex);
+                lastClickedTile = lastHoverTileIndex;
             }
 
             if (_zoomEnabled) {
@@ -574,17 +642,18 @@ namespace HexasphereGrid {
             if (!mouseIsOver)
                 return;
 
-            if (_highlightEnabled || OnTileMouseOver != null || (!Application.isPlaying && useEditorRay)) {
+            if (_highlightEnabled || OnTileClick != null || OnTileMouseOver != null || (!Application.isPlaying && useEditorRay)) {
                 int tileIndex;
                 if (_extruded && _raycast3D) {
-                    tileIndex = GetTileInRayDirection(ray, position);
+                    tileIndex = GetTileInRayDirection(ray, position, out _);
                 } else {
                     Vector3 localPosition = transform.InverseTransformPoint(position);
-                    tileIndex = GetTileAtLocalPosition(localPosition, true);
+                    tileIndex = GetTileAtLocalPosition(localPosition);
                 }
                 if (tileIndex >= 0 && tileIndex != lastHighlightedTileIndex) {
+                    lastHoverTileIndex = tileIndex;
                     if (OnTileMouseOver != null)
-                        OnTileMouseOver(tileIndex);
+                        OnTileMouseOver(this, tileIndex);
                     if (_highlightEnabled) {
                         if (lastHighlightedTile != null)
                             HideHighlightedTile();
@@ -603,13 +672,14 @@ namespace HexasphereGrid {
             if (!mouseIsOver)
                 return;
 
-            if (_highlightEnabled || OnTileMouseOver != null) {
+            if (_highlightEnabled || OnTileClick != null || OnTileMouseOver != null) {
                 int tileIndex;
                 Vector3 localPosition = transform.InverseTransformPoint(position);
-                tileIndex = GetTileAtLocalPosition(localPosition, true);
+                tileIndex = GetTileAtLocalPosition(localPosition);
                 if (tileIndex >= 0 && tileIndex != lastHighlightedTileIndex) {
+                    lastHoverTileIndex = tileIndex;
                     if (OnTileMouseOver != null)
-                        OnTileMouseOver(tileIndex);
+                        OnTileMouseOver(this, tileIndex);
                     if (_highlightEnabled) {
                         if (lastHighlightedTile != null)
                             HideHighlightedTile();
@@ -637,30 +707,31 @@ namespace HexasphereGrid {
         const int MAX_VERTEX_COUNT_PER_CHUNK = 65500;
         const int VERTEX_ARRAY_SIZE = 65530;
 
-        Dictionary<Point, Point> points = new Dictionary<Point, Point>();
-        Dictionary<Point, int> verticesIdx = new Dictionary<Point, int>();
-        List<Vector3>[] verticesWire = new List<Vector3>[HEXASPHERE_MAX_PARTS];
-        List<int>[] indicesWire = new List<int>[HEXASPHERE_MAX_PARTS];
-        List<Vector2>[] uvWire = new List<Vector2>[HEXASPHERE_MAX_PARTS];
-        List<Color32>[] colorWire = new List<Color32>[HEXASPHERE_MAX_PARTS];
-        List<Vector3>[] verticesShaded = new List<Vector3>[HEXASPHERE_MAX_PARTS];
-        List<int>[] indicesShaded = new List<int>[HEXASPHERE_MAX_PARTS];
-        List<Vector4>[] uvShaded = new List<Vector4>[HEXASPHERE_MAX_PARTS];
-        List<Vector4>[] uv2Shaded = new List<Vector4>[HEXASPHERE_MAX_PARTS];
-        List<Color32>[] colorShaded = new List<Color32>[HEXASPHERE_MAX_PARTS];
+        readonly Dictionary<Point, Point> points = new Dictionary<Point, Point>();
+        readonly Dictionary<Point, int> verticesIdx = new Dictionary<Point, int>();
+        readonly List<Vector3>[] verticesWire = new List<Vector3>[HEXASPHERE_MAX_PARTS];
+        readonly List<int>[] indicesWire = new List<int>[HEXASPHERE_MAX_PARTS];
+        readonly List<Vector2>[] uvWire = new List<Vector2>[HEXASPHERE_MAX_PARTS];
+        readonly List<Color32>[] colorWire = new List<Color32>[HEXASPHERE_MAX_PARTS];
+        readonly List<Vector3>[] verticesShaded = new List<Vector3>[HEXASPHERE_MAX_PARTS];
+        readonly List<int>[] indicesShaded = new List<int>[HEXASPHERE_MAX_PARTS];
+        readonly List<Vector4>[] uvShaded = new List<Vector4>[HEXASPHERE_MAX_PARTS];
+        readonly List<Vector4>[] uv2Shaded = new List<Vector4>[HEXASPHERE_MAX_PARTS];
+        readonly List<Color32>[] colorShaded = new List<Color32>[HEXASPHERE_MAX_PARTS];
+
         const float PHI = 1.61803399f;
-        List<Texture2D> texArray = new List<Texture2D>(255);
-        Dictionary<Color, Texture2D> solidTexCache = new Dictionary<Color, Texture2D>();
-        Mesh[] shadedMeshes = new Mesh[HEXASPHERE_MAX_PARTS];
-        MeshFilter[] shadedMFs = new MeshFilter[HEXASPHERE_MAX_PARTS];
-        MeshRenderer[] shadedMRs = new MeshRenderer[HEXASPHERE_MAX_PARTS];
-        Mesh[] wiredMeshes = new Mesh[HEXASPHERE_MAX_PARTS];
-        MeshFilter[] wiredMFs = new MeshFilter[HEXASPHERE_MAX_PARTS];
-        MeshRenderer[] wiredMRs = new MeshRenderer[HEXASPHERE_MAX_PARTS];
-        bool[] colorShadedDirty = new bool[HEXASPHERE_MAX_PARTS];
-        bool[] uvShadedDirty = new bool[HEXASPHERE_MAX_PARTS];
-        bool[] uvWireDirty = new bool[HEXASPHERE_MAX_PARTS];
-        bool[] colorWireDirty = new bool[HEXASPHERE_MAX_PARTS];
+        readonly List<Texture2D> texArray = new List<Texture2D>(255);
+        readonly Dictionary<Color, Texture2D> solidTexCache = new Dictionary<Color, Texture2D>();
+        readonly Mesh[] shadedMeshes = new Mesh[HEXASPHERE_MAX_PARTS];
+        readonly MeshFilter[] shadedMFs = new MeshFilter[HEXASPHERE_MAX_PARTS];
+        readonly MeshRenderer[] shadedMRs = new MeshRenderer[HEXASPHERE_MAX_PARTS];
+        readonly Mesh[] wiredMeshes = new Mesh[HEXASPHERE_MAX_PARTS];
+        readonly MeshFilter[] wiredMFs = new MeshFilter[HEXASPHERE_MAX_PARTS];
+        readonly MeshRenderer[] wiredMRs = new MeshRenderer[HEXASPHERE_MAX_PARTS];
+        readonly bool[] colorShadedDirty = new bool[HEXASPHERE_MAX_PARTS];
+        readonly bool[] uvShadedDirty = new bool[HEXASPHERE_MAX_PARTS];
+        readonly bool[] uvWireDirty = new bool[HEXASPHERE_MAX_PARTS];
+        readonly bool[] colorWireDirty = new bool[HEXASPHERE_MAX_PARTS];
         [SerializeField] Vector3 oldCameraPosition;
 
         Material gridMatExtrusion {
@@ -676,7 +747,7 @@ namespace HexasphereGrid {
         Material gridMatNoExtrusion {
             get {
                 if (_gridMatNoExtrusion == null) {
-                    _gridMatNoExtrusion = Instantiate(Resources.Load<Material>("Materials/HexaGridMatNoExtrusion")) as Material;
+                    _gridMatNoExtrusion = Instantiate(Resources.Load<Material>("Materials/HexaGridMatNoExtrusion"));
                     _gridMatNoExtrusion.hideFlags = HideFlags.DontSave;
                 }
                 return _gridMatNoExtrusion;
@@ -707,7 +778,7 @@ namespace HexasphereGrid {
         Material tileShadedFrameMatNoExtrusion {
             get {
                 if (_tileShadedFrameMatNoExtrusion == null) {
-                    _tileShadedFrameMatNoExtrusion = Instantiate(Resources.Load<Material>("Materials/HexaTilesBackgroundMatNoExtrusion")) as Material;
+                    _tileShadedFrameMatNoExtrusion = Instantiate(Resources.Load<Material>("Materials/HexaTilesBackgroundMatNoExtrusion"));
                     _tileShadedFrameMatNoExtrusion.hideFlags = HideFlags.DontSave;
                 }
                 return _tileShadedFrameMatNoExtrusion;
@@ -717,7 +788,7 @@ namespace HexasphereGrid {
         Material tileColoredMat {
             get {
                 if (_tileColoredMat == null) {
-                    _tileColoredMat = Instantiate(Resources.Load<Material>("Materials/HexaTilesMat")) as Material;
+                    _tileColoredMat = Instantiate(Resources.Load<Material>("Materials/HexaTilesMat"));
                     _tileColoredMat.hideFlags = HideFlags.DontSave;
                 }
                 return _tileColoredMat;
@@ -727,7 +798,7 @@ namespace HexasphereGrid {
         Material tileTexturedMat {
             get {
                 if (_tileTexturedMat == null) {
-                    _tileTexturedMat = Instantiate(Resources.Load<Material>("Materials/HexaTilesTexturedMat")) as Material;
+                    _tileTexturedMat = Instantiate(Resources.Load<Material>("Materials/HexaTilesTexturedMat"));
                     _tileTexturedMat.hideFlags = HideFlags.DontSave;
                 }
                 return _tileTexturedMat;
@@ -774,6 +845,7 @@ namespace HexasphereGrid {
             } else {
                 if (needRegenerate || needRegenerateWireframe || currentWireframeColorFromTile != _wireframeColorFromTile || currentSmartEdges != _smartEdges) {
                     RebuildWireframe();
+                    triggerOnGenerateEvent = true;
                 }
                 if (needRegenerate) {
                     needRegenerate = false;
@@ -800,8 +872,9 @@ namespace HexasphereGrid {
                 _tileShadedFrameMatNoExtrusion.SetColor("_Color", _tileTintColor);
                 _tileShadedFrameMatNoExtrusion.SetColor("_AmbientColor", _ambientColor);
                 _tileShadedFrameMatNoExtrusion.SetFloat("_MinimumLight", _minimumLight);
+                _tileShadedFrameMatNoExtrusion.SetColor("_SpecularTint", _specularTint);
+                _tileShadedFrameMatNoExtrusion.SetFloat("_Smoothness", _smoothness * 100f);
             }
-            UpdateLightingMode();
 
             Color wireColor = _wireframeColor;
             wireColor.r *= _wireframeIntensity;
@@ -817,15 +890,14 @@ namespace HexasphereGrid {
             }
             sphereCollider.radius = _extruded ? 0.5f * (1.0f + _extrudeMultiplier) : 0.5f;
 
-            UpdateTransparencyMode();
+            UpdateTransparencyAndLightingMode();
             if (_transparencyTiles != currentTransparencyTiles) {
                 UpdateTilesTransparency();
             }
 
             UpdateBevel();
 
-
-            FixedUpdate();
+            UpdateHexasphereCenter();
         }
 
         void UpdateTilesTransparency() {
@@ -833,26 +905,26 @@ namespace HexasphereGrid {
             foreach (KeyValuePair<Color, Material> kvp in colorCache) {
                 Material mat = kvp.Value;
                 if (mat != null) {
-                    mat.SetFloat("_TileAlpha", _transparencyTiles);
+                    mat.SetFloat(ShaderParams.TileAlpha, _transparencyTiles);
                 }
             }
             foreach (KeyValuePair<int, Material> kvp in textureCache) {
                 Material mat = kvp.Value;
                 if (mat != null) {
-                    mat.SetFloat("_TileAlpha", _transparencyTiles);
+                    mat.SetFloat(ShaderParams.TileAlpha, _transparencyTiles);
                 }
             }
         }
 
 
-        void UpdateTransparencyMode() {
-            UpdateTransparencyMat(_tileShadedFrameMatBevel);
-            UpdateTransparencyMat(_tileShadedFrameMatExtrusion);
-            UpdateTransparencyMat(_tileShadedFrameMatNoExtrusion);
-            UpdateTransparencyMat(_gridMatExtrusion);
-            UpdateTransparencyMat(_gridMatNoExtrusion);
-            UpdateTransparencyMat(_tileColoredMat);
-            UpdateTransparencyMat(_tileTexturedMat);
+        void UpdateTransparencyAndLightingMode() {
+            UpdateTransparencyAndLightingMat(_tileShadedFrameMatBevel);
+            UpdateTransparencyAndLightingMat(_tileShadedFrameMatExtrusion);
+            UpdateTransparencyAndLightingMat(_tileShadedFrameMatNoExtrusion);
+            UpdateTransparencyAndLightingMat(_gridMatExtrusion);
+            UpdateTransparencyAndLightingMat(_gridMatNoExtrusion);
+            UpdateTransparencyAndLightingMat(_tileColoredMat);
+            UpdateTransparencyAndLightingMat(_tileTexturedMat);
 
             if (_tileShadedFrameMatExtrusion != null) {
                 if (_transparencyCull) {
@@ -870,23 +942,13 @@ namespace HexasphereGrid {
             }
         }
 
-        void UpdateLightingMode() {
-            if (_lighting) {
-                Shader.EnableKeyword("HEXA_LIT");
-            } else {
-                if (Shader.IsKeywordEnabled("HEXA_LIT")) {
-                    Shader.DisableKeyword("HEXA_LIT");
-                }
-            }
-        }
-
-        void UpdateTransparencyMat(Material mat) {
+        void UpdateTransparencyAndLightingMat(Material mat) {
             if (mat == null)
                 return;
             if (_transparent) {
                 mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
                 mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-				mat.SetInt ("_ZWrite", _transparencyZWrite ? 1 : 0);
+                mat.SetInt("_ZWrite", _transparencyZWrite ? 1 : 0);
                 if (mat.renderQueue < 3000) {
                     mat.renderQueue += 2000;
                 }
@@ -900,7 +962,15 @@ namespace HexasphereGrid {
                 }
                 mat.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Back);
             }
-            mat.SetFloat("_TileAlpha", _transparencyTiles);
+            mat.SetFloat(ShaderParams.TileAlpha, _transparencyTiles);
+
+            if (_lighting) {
+                mat.EnableKeyword("HEXA_LIT");
+            } else {
+                if (mat.IsKeywordEnabled("HEXA_LIT")) {
+                    mat.DisableKeyword("HEXA_LIT");
+                }
+            }
         }
 
         void UpdateMeshRenderersShadowSupport() {
@@ -918,10 +988,14 @@ namespace HexasphereGrid {
             }
         }
 
+
         /// <summary>
         /// Generate the hexasphere geometry.
         /// </summary>
         public void Generate() {
+
+            triggerOnGenerateEvent = true;
+
 #if TRACE_PERFORMANCE
 			DateTime dt = DateTime.Now;
 #endif
@@ -942,7 +1016,13 @@ namespace HexasphereGrid {
             };
 
             if (_rotationShift != Misc.Vector3zero) {
+#if UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+                if (PlayerSettings.GetScriptingBackend(EditorUserBuildSettings.selectedBuildTargetGroup) == ScriptingImplementation.IL2CPP) {
+                    Debug.LogWarning("Hexasphere: rotation shift is not available in Android/iOS when scripting backend is set to IL2CPP (due to lack of floating point accuracy)");
+                } else {
+#endif
                 Quaternion q = Quaternion.Euler(_rotationShift);
+
                 for (int k = 0; k < corners.Length; k++) {
                     Point c = corners[k];
                     Vector3 v = (Vector3)c;
@@ -951,6 +1031,9 @@ namespace HexasphereGrid {
                     c.y = v.y;
                     c.z = v.z;
                 }
+#if UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+                }
+#endif
             }
 
 
@@ -1098,7 +1181,7 @@ namespace HexasphereGrid {
 
         void BuildWireframe() {
 
-            if (_style == STYLE.Shaded) {
+            if (_style == STYLE.Shaded || _style == STYLE.Invisible) {
                 return;
             }
 
@@ -1377,7 +1460,7 @@ namespace HexasphereGrid {
         }
 
         void UpdateWireMaterialsFast() {
-            if (_style == STYLE.Shaded || !_extruded || _invertedMode)
+            if (_style == STYLE.Shaded || _style == STYLE.Invisible || !_extruded || _invertedMode)
                 return;
 
             for (int k = 0; k < wireChunkCount; k++) {
@@ -1405,15 +1488,15 @@ namespace HexasphereGrid {
 
         void BuildTiles() {
 
-            if (tiles == null || _style == STYLE.Wireframe)
+            if (tiles == null || _style == STYLE.Wireframe || _style == STYLE.Invisible)
                 return;
 
             int chunkIndex = 0;
-            List<Vector3> vertexChunk = CheckList<Vector3>(ref verticesShaded[chunkIndex]);
-            List<int> indexChunk = CheckList<int>(ref indicesShaded[chunkIndex]);
+            List<Vector3> vertexChunk = CheckList(ref verticesShaded[chunkIndex]);
+            List<int> indexChunk = CheckList(ref indicesShaded[chunkIndex]);
 
             bool useGPos = _extruded && (_bevel || _lighting || _transparencyCull);
-            List<Vector4> uv2Chunk = useGPos ? CheckList<Vector4>(ref uv2Shaded[chunkIndex]) : null;
+            List<Vector4> uv2Chunk = useGPos ? CheckList(ref uv2Shaded[chunkIndex]) : null;
 
             int verticesCount = 0;
             int tileCount = tiles.Length;
@@ -1436,10 +1519,10 @@ namespace HexasphereGrid {
                     continue;
                 if (verticesCount > MAX_VERTEX_COUNT_PER_CHUNK) {
                     chunkIndex++;
-                    vertexChunk = CheckList<Vector3>(ref verticesShaded[chunkIndex]);
-                    indexChunk = CheckList<int>(ref indicesShaded[chunkIndex]);
+                    vertexChunk = CheckList(ref verticesShaded[chunkIndex]);
+                    indexChunk = CheckList(ref indicesShaded[chunkIndex]);
                     if (useGPos) {
-                        uv2Chunk = CheckList<Vector4>(ref uv2Shaded[chunkIndex]);
+                        uv2Chunk = CheckList(ref uv2Shaded[chunkIndex]);
                     }
                     verticesCount = 0;
                 }
@@ -1524,12 +1607,12 @@ namespace HexasphereGrid {
 
         void BuildShadedMaterials() {
 
-            if (tiles == null || _style == STYLE.Wireframe)
+            if (tiles == null || _style == STYLE.Wireframe || _style == STYLE.Invisible)
                 return;
 
             int chunkIndex = 0;
-            List<Vector4> uvChunk = CheckList<Vector4>(ref uvShaded[chunkIndex]);
-            List<Color32> colorChunk = CheckList<Color32>(ref colorShaded[chunkIndex]);
+            List<Vector4> uvChunk = CheckList(ref uvShaded[chunkIndex]);
+            List<Color32> colorChunk = CheckList(ref colorShaded[chunkIndex]);
             Material tileShadedFrameMat = GetShadedFrameMat();
             if (whiteTex == null)
                 whiteTex = GetCachedSolidTex(Color.white);
@@ -1538,14 +1621,16 @@ namespace HexasphereGrid {
 
             int verticesCount = 0;
             int tileCount = tiles.Length;
+            Color32 defaultShaderColor32 = _defaultShadedColor;
+
             for (int k = 0; k < tileCount; k++) {
                 Tile tile = tiles[k];
                 if (!tile.visible)
                     continue;
                 if (verticesCount > MAX_VERTEX_COUNT_PER_CHUNK) {
                     chunkIndex++;
-                    uvChunk = CheckList<Vector4>(ref uvShaded[chunkIndex]);
-                    colorChunk = CheckList<Color32>(ref colorShaded[chunkIndex]);
+                    uvChunk = CheckList(ref uvShaded[chunkIndex]);
+                    colorChunk = CheckList(ref colorShaded[chunkIndex]);
                     verticesCount = 0;
                 }
                 Point[] tileVertices = tile.vertexPoints;
@@ -1568,7 +1653,7 @@ namespace HexasphereGrid {
                 Texture2D tileTexture;
                 int textureIndex = 0;
                 Vector2 textureScale, textureOffset;
-                if (tile.customMat && tile.customMat.HasProperty("_MainTex") && tile.customMat.mainTexture != null) {
+                if (tile.customMat && tile.customMat.HasProperty(ShaderParams.MainTex) && tile.customMat.mainTexture != null) {
                     tileTexture = (Texture2D)tile.customMat.mainTexture;
                     textureIndex = texArray.IndexOf(tileTexture);
                     textureScale = tile.customMat.mainTextureScale;
@@ -1582,7 +1667,12 @@ namespace HexasphereGrid {
                     texArray.Add(tileTexture);
                     textureIndex = texArray.Count - 1;
                 }
-                Color color = tile.customMat != null ? tile.customMat.color : _defaultShadedColor;
+                Color32 color;
+                if (tile.customMat != null) {
+                    color = tile.customMat.color;
+                } else {
+                    color = defaultShaderColor32;
+                }
                 Vector4 uv4;
                 tile.uvShadedChunkStart = verticesCount;
                 tile.uvShadedChunkIndex = chunkIndex;
@@ -1624,17 +1714,20 @@ namespace HexasphereGrid {
             if (allowedTextureArray) {
                 int texArrayCount = texArray.Count;
                 currentTextureSize = _tileTextureSize;
-                Texture2DArray finalTexArray = new Texture2DArray(_tileTextureSize, _tileTextureSize, texArrayCount, TextureFormat.ARGB32, true);
+                if (finalTexArray != null) {
+                    DestroyImmediate(finalTexArray);
+                }
+                finalTexArray = new Texture2DArray(_tileTextureSize, _tileTextureSize, texArrayCount, TextureFormat.ARGB32, true);
                 for (int k = 0; k < texArrayCount; k++) {
                     if (texArray[k].width != _tileTextureSize || texArray[k].height != _tileTextureSize) {
-                        texArray[k] = Instantiate(texArray[k]) as Texture2D;
+                        texArray[k] = Instantiate(texArray[k]);
                         texArray[k].hideFlags = HideFlags.DontSave;
                         TextureScaler.Scale(texArray[k], _tileTextureSize, _tileTextureSize, FilterMode.Trilinear);
                     }
                     finalTexArray.SetPixels32(texArray[k].GetPixels32(), k);
                 }
                 finalTexArray.Apply(true, true);
-                tileShadedFrameMat.SetTexture("_MainTex", finalTexArray);
+                tileShadedFrameMat.SetTexture(ShaderParams.MainTex, finalTexArray);
             }
 
             pendingTextureArrayUpdate = false;
@@ -1645,7 +1738,7 @@ namespace HexasphereGrid {
 
         void UpdateShadedMaterials() {
 
-            if (tiles == null || _style == STYLE.Wireframe)
+            if (tiles == null || _style == STYLE.Wireframe || _style == STYLE.Invisible)
                 return;
 
             int chunkIndex = 0;
@@ -1690,7 +1783,7 @@ namespace HexasphereGrid {
                 Texture2D tileTexture;
                 int textureIndex = 0;
                 Vector2 textureScale, textureOffset;
-                if (tile.customMat && tile.customMat.HasProperty("_MainTex") && tile.customMat.mainTexture != null) {
+                if (tile.customMat && tile.customMat.HasProperty(ShaderParams.MainTex) && tile.customMat.mainTexture != null) {
                     tileTexture = (Texture2D)tile.customMat.mainTexture;
                     textureIndex = texArray.IndexOf(tileTexture);
                     textureScale = tile.customMat.mainTextureScale;
@@ -1791,7 +1884,7 @@ namespace HexasphereGrid {
 
         void UpdateShadedMaterialsFast() {
 
-            if (_style == STYLE.Wireframe)
+            if (_style == STYLE.Wireframe || _style == STYLE.Invisible)
                 return;
 
             if (pendingColorsUpdate) {
@@ -1850,14 +1943,16 @@ namespace HexasphereGrid {
 
         #region Tile functions
 
+        // originally, hexagons/pentagons uvs mapping where a bit stretchy. They're recomputed on initialization to fit a perfect circle and reduce distortion.
+
         Transform tilesRoot;
-        int[] hexagonIndices = new int[] {
+        readonly int[] hexagonIndices = new int[] {
             0, 1, 5,
             1, 2, 5,
             4, 5, 2,
             3, 4, 2
         };
-        Vector2[] hexagonUVs = new Vector2[] {
+        readonly Vector2[] hexagonUVs = new Vector2[] {
             new Vector2 (0, 0.5f),
             new Vector2 (0.25f, 1f),
             new Vector2 (0.75f, 1f),
@@ -1865,15 +1960,15 @@ namespace HexasphereGrid {
             new Vector2 (0.75f, 0f),
             new Vector2 (0.25f, 0f)
         };
-        Vector2[] hexagonUVsInverted = new Vector2[] {	// same but y' = 1 - y
-			new Vector2 (0, 0.5f),
-            new Vector2 (0.25f, 0f),
-            new Vector2 (0.75f, 0f),
-            new Vector2 (1f, 0.5f),
-            new Vector2 (0.75f, 1f),
-            new Vector2 (0.25f, 1f)
-        };
-        int[] hexagonIndicesExtruded = new int[] {
+        readonly Vector2[] hexagonUVsInverted = new Vector2[] {	// same but y' = 1 - y
+                 new Vector2(0, 0.5f),
+                 new Vector2(0.25f, 0f),
+                 new Vector2(0.75f, 0f),
+                 new Vector2(1f, 0.5f),
+                 new Vector2(0.75f, 1f),
+                 new Vector2(0.25f, 1f)
+             };
+        readonly int[] hexagonIndicesExtruded = new int[] {
             0, 1, 6,
             5, 0, 6,
             1, 2, 5,
@@ -1881,7 +1976,7 @@ namespace HexasphereGrid {
             2, 3, 7,
             3, 4, 7
         };
-        Vector2[] hexagonUVsExtruded = new Vector2[] {
+        readonly Vector2[] hexagonUVsExtruded = new Vector2[] {
             new Vector2 (0, 0.5f),
             new Vector2 (0.25f, 1f),
             new Vector2 (0.75f, 1f),
@@ -1891,40 +1986,40 @@ namespace HexasphereGrid {
             new Vector2 (0.25f, 0.5f),
             new Vector2 (0.75f, 0.5f)
         };
-        int[] hexagonIndicesInverted = new int[] {
+        readonly int[] hexagonIndicesInverted = new int[] {
             0, 5, 1,
             1, 5, 2,
             4, 2, 5,
             3, 2, 4
         };
 
-        int[] pentagonIndices = new int[] {
+        readonly int[] pentagonIndices = new int[] {
             0, 1, 4,
             1, 2, 4,
             3, 4, 2
         };
-        Vector2[] pentagonUVs = new Vector2[] {
+        readonly Vector2[] pentagonUVs = new Vector2[] {
             new Vector2 (0, 0.33f),
             new Vector2 (0.25f, 1f),
             new Vector2 (0.75f, 1f),
             new Vector2 (1f, 0.33f),
             new Vector2 (0.5f, 0f),
         };
-        Vector2[] pentagonUVsInverted = new Vector2[] { // same but y' = 1 - y
-			new Vector2 (0f, 0.66f),
-            new Vector2 (0.25f, 0f),
-            new Vector2 (0.75f, 0f),
-            new Vector2 (1f, 0.66f),
-            new Vector2 (0.5f, 1f),
-        };
-        int[] pentagonIndicesExtruded = new int[] {
+        readonly Vector2[] pentagonUVsInverted = new Vector2[] { // same but y' = 1 - y
+                new Vector2 (0f, 0.66f),
+                 new Vector2 (0.25f, 0f),
+                 new Vector2 (0.75f, 0f),
+                 new Vector2 (1f, 0.66f),
+                 new Vector2 (0.5f, 1f),
+             };
+        readonly int[] pentagonIndicesExtruded = new int[] {
             0, 1, 5,
             4, 0, 5,
             1, 2, 4,
             2, 3, 6,
             3, 4, 6
         };
-        Vector2[] pentagonUVsExtruded = new Vector2[] {
+        readonly Vector2[] pentagonUVsExtruded = new Vector2[] {
             new Vector2 (0, 0.33f),
             new Vector2 (0.25f, 1f),
             new Vector2 (0.75f, 1f),
@@ -1934,14 +2029,17 @@ namespace HexasphereGrid {
             new Vector2 (0.625f, 0.5f)
 
         };
-        int[] pentagonIndicesInverted = new int[] {
+        readonly int[] pentagonIndicesInverted = new int[] {
             0, 4, 1,
             1, 4, 2,
             3, 2, 4
         };
-        Dictionary<Color, Material> colorCache = new Dictionary<Color, Material>();
-        Dictionary<int, Material> textureCache = new Dictionary<int, Material>();
+        readonly Dictionary<Color, Material> colorCache = new Dictionary<Color, Material>();
+        readonly Dictionary<int, Material> textureCache = new Dictionary<int, Material>();
 
+        bool ValidTileIndex(int tileIndex) {
+            return tileIndex >= 0 && tiles != null && tileIndex < tiles.Length;
+        }
 
         void UpdateTileMeshVertexPositions(int tileIndex) {
             Tile tile = tiles[tileIndex];
@@ -1965,7 +2063,8 @@ namespace HexasphereGrid {
         }
 
 
-        void GenerateTileMesh(int tileIndex, Material mat) {
+        Vector2[] uvTmp;
+        GameObject GenerateTileMesh(int tileIndex, Material mat, float extrusionAmount = -1) {
             if (tilesRoot == null) {
                 tilesRoot = CreateGOandParent(gameObject.transform, HEXASPHERE_TILESROOT).transform;
             }
@@ -1974,11 +2073,14 @@ namespace HexasphereGrid {
             Mesh mesh = new Mesh();
             mesh.hideFlags = HideFlags.DontSave;
             Tile tile = tiles[tileIndex];
-            if (_extruded) {
+            if (extrusionAmount < 0 && _extruded) {
+                extrusionAmount = tile.extrudeAmount * _extrudeMultiplier;
+            }
+            if (extrusionAmount > 0) {
                 Vector3[] tileVertices = tile.vertices;
                 Vector3[] extrudedVertices = new Vector3[tileVertices.Length];
                 for (int k = 0; k < tileVertices.Length; k++) {
-                    extrudedVertices[k] = tileVertices[k] * (1f + tile.extrudeAmount * _extrudeMultiplier);
+                    extrudedVertices[k] = tileVertices[k] * (1f + extrusionAmount);
                 }
                 mesh.vertices = extrudedVertices;
             } else {
@@ -1995,24 +2097,65 @@ namespace HexasphereGrid {
                 uv = _invertedMode ? pentagonUVsInverted : pentagonUVs;
             }
             if (tile.rotation != 0) {
-                Vector2[] oldUV = uv;
-                uv = new Vector2[uv.Length];
-                for (int k = 0; k < uv.Length; k++) {   // copy array to avoid modification of the source in case of rotation
-                    uv[k] = oldUV[k];
+                int uvLength = uv.Length;
+                if (uvTmp == null || uvTmp.Length != uvLength) {
+                    uvTmp = new Vector2[uv.Length];
+                }
+                for (int k = 0; k < uvLength; k++) {   // copy array to avoid modification of the source in case of rotation
+                    uvTmp[k] = uv[k];
                 }
                 float cosTheta = Mathf.Cos(tile.rotation);
                 float sinTheta = Mathf.Sin(tile.rotation);
-                for (int b = 0; b < uv.Length; b++) {
-                    RotateUV(ref uv[b].x, ref uv[b].y, cosTheta, sinTheta);
+                for (int b = 0; b < uvLength; b++) {
+                    RotateUV(ref uvTmp[b].x, ref uvTmp[b].y, cosTheta, sinTheta);
                 }
+                mesh.uv = uvTmp;
+            } else {
+                mesh.uv = uv;
             }
-            mesh.uv = uv;
 
             mf.sharedMesh = mesh;
             MeshRenderer mr = go.AddComponent<MeshRenderer>();
             mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             mr.sharedMaterial = mat;
             tile.renderer = mr;
+
+            return go;
+        }
+
+        void UpdateTileMeshUV(int tileIndex) {
+            Tile tile = tiles[tileIndex];
+            if (tile.renderer == null) return;
+            MeshFilter mf = tile.renderer.GetComponent<MeshFilter>();
+            if (mf == null) return;
+            Mesh mesh = mf.sharedMesh;
+            int tileVerticesCount = tile.vertices.Length;
+            Vector2[] uv;
+            if (tileVerticesCount == 6) {
+                mesh.SetIndices(_invertedMode ? hexagonIndicesInverted : hexagonIndices, MeshTopology.Triangles, 0, false);
+                uv = _invertedMode ? hexagonUVsInverted : hexagonUVs;
+            } else {
+                mesh.SetIndices(_invertedMode ? pentagonIndicesInverted : pentagonIndices, MeshTopology.Triangles, 0, false);
+                uv = _invertedMode ? pentagonUVsInverted : pentagonUVs;
+            }
+            if (tile.rotation != 0) {
+                int uvLength = uv.Length;
+                if (uvTmp == null || uvTmp.Length != uvLength) {
+                    uvTmp = new Vector2[uv.Length];
+                }
+                for (int k = 0; k < uv.Length; k++) {   // copy array to avoid modification of the source in case of rotation
+                    uvTmp[k] = uv[k];
+                }
+                float cosTheta = Mathf.Cos(tile.rotation);
+                float sinTheta = Mathf.Sin(tile.rotation);
+                for (int b = 0; b < uv.Length; b++) {
+                    RotateUV(ref uvTmp[b].x, ref uvTmp[b].y, cosTheta, sinTheta);
+                }
+                mesh.uv = uvTmp;
+            } else {
+                mesh.uv = uv;
+            }
+            mf.sharedMesh = mesh;
         }
 
         int CombineHash(int hash1, int hash2) {
@@ -2030,20 +2173,20 @@ namespace HexasphereGrid {
                 if (colorCache.TryGetValue(color, out mat)) {
                     return mat;
                 }
-                mat = Instantiate(tileColoredMat) as Material;
+                mat = Instantiate(tileColoredMat);
                 colorCache[color] = mat;
             } else {
                 int key = CombineHash(texture.GetHashCode(), color.GetHashCode());
                 if (textureCache.TryGetValue(key, out mat)) {
                     return mat;
                 }
-                mat = Instantiate(tileTexturedMat) as Material;
+                mat = Instantiate(tileTexturedMat);
                 mat.mainTexture = texture;
                 textureCache[key] = mat;
             }
             mat.hideFlags = HideFlags.DontSave;
             mat.color = color;
-            mat.SetFloat("_TileAlpha", _transparencyTiles);
+            mat.SetFloat(ShaderParams.TileAlpha, _transparencyTiles);
             return mat;
         }
 
@@ -2075,9 +2218,22 @@ namespace HexasphereGrid {
             if (highlightMaterial != null) {
                 Color co = highlightMaterial.color;
                 co.a = 0.2f;
-                highlightMaterial.SetColor("_Color2", co);
-                if (highlightMaterial.HasProperty("_MainTex")) {
+                highlightMaterial.SetColor(ShaderParams.Color2, co);
+                if (highlightMaterial.HasProperty(ShaderParams.MainTex)) {
                     highlightMaterial.mainTexture = null;
+                }
+            }
+        }
+
+        void SetHighlightStyle() {
+            if (highlightMaterial != null) {
+                switch (_highlightStyle) {
+                    case HIGHLIGHT_STYLE.TintBackground:
+                        highlightMaterial.shaderKeywords = new string[] { ShaderParams.SKW_HIGHLIGHT_TINT_BACKGROUND };
+                        break;
+                    default:
+                        highlightMaterial.shaderKeywords = null;
+                        break;
                 }
             }
         }
@@ -2125,7 +2281,7 @@ namespace HexasphereGrid {
         }
 
 
-        int GetTileAtLocalPosition(Vector3 localPosition, bool reuseLastHit) {
+        int GetTileAtLocalPosition(Vector3 localPosition) {
 
             if (tiles == null)
                 return -1;
@@ -2153,10 +2309,7 @@ namespace HexasphereGrid {
 
             // follow the shortest path to the minimum distance
             Tile nearest = tiles[lastHitTileIndex];
-            float tileDist =
-                (nearest.center.x - localPosition.x) * (nearest.center.x - localPosition.x) +
-                (nearest.center.y - localPosition.y) * (nearest.center.y - localPosition.y) +
-                (nearest.center.z - localPosition.z) * (nearest.center.z - localPosition.z);
+            float tileDist;
             float minDist = 1e6f;
             for (int k = 0; k < tiles.Length; k++) {
                 Tile newNearest = GetNearestTileToPosition(nearest.neighbours, localPosition, out tileDist);
@@ -2181,7 +2334,8 @@ namespace HexasphereGrid {
 								}
 #endif
 
-        int GetTileInRayDirection(Ray ray, Vector3 worldPosition) {
+        int GetTileInRayDirection(Ray ray, Vector3 worldPosition, out Vector3 hitPosition) {
+            hitPosition = worldPosition;
             if (tiles == null)
                 return -1;
 
@@ -2207,7 +2361,7 @@ namespace HexasphereGrid {
             }
 
             // Get tile at first hit
-            int nearest = GetTileAtLocalPosition(transform.InverseTransformPoint(worldPosition), true);
+            int nearest = GetTileAtLocalPosition(transform.InverseTransformPoint(worldPosition));
             if (nearest < 0)
                 return -1;
 
@@ -2225,7 +2379,7 @@ namespace HexasphereGrid {
                 if (dist < minDist) {
                     minDist = dist;
                     candidate = nearest;
-
+                    hitPosition = currPoint;
                 }
                 if (rayHeight < tileHeight) {
 #if RAYCAST3D_DEBUG
@@ -2240,7 +2394,7 @@ namespace HexasphereGrid {
 																				PutBall (currPoint, Color.red);
 #endif
 
-                nearest = GetTileAtLocalPosition(transform.InverseTransformPoint(currPoint), true); //( GetNearestTileToPosition (tile, transform.InverseTransformPoint (currPoint));
+                nearest = GetTileAtLocalPosition(transform.InverseTransformPoint(currPoint));
                 if (nearest < 0)
                     break;
                 tile = tiles[nearest];
@@ -2259,6 +2413,7 @@ namespace HexasphereGrid {
             if (dist < minDist) {
                 minDist = dist;
                 candidate = nearest;
+                hitPosition = currPoint;
 
             }
             if (rayHeight < tileHeight) {
@@ -2307,8 +2462,12 @@ namespace HexasphereGrid {
         }
 
         bool GetHitPoint(out Vector3 position, out Ray ray) {
-            RaycastHit hit;
             ray = GetRay();
+            return GetHitPoint(ray, out position);
+        }
+
+        bool GetHitPoint(Ray ray, out Vector3 position) {
+            RaycastHit hit;
             if (_invertedMode) {
                 if (Physics.Raycast(ray.origin + ray.direction * transform.localScale.z, -ray.direction, out hit, transform.localScale.z)) {
                     if (hit.collider.gameObject == gameObject) {
@@ -2345,7 +2504,7 @@ namespace HexasphereGrid {
 																RegisterVRPointers();
 																ray = new Ray (_cameraMain.transform.position, GvrController.Orientation * Vector3.forward);
 																}
-#elif VR_SAMSUNG_GEAR_CONTROLLER && UNITY_5_5_OR_NEWER
+#elif VR_SAMSUNG_GEAR_CONTROLLER
 																if (SVR_Laser != null && SVR_Laser.gameObject.activeInHierarchy) {
 																Vector3 endPos = SVR_Laser.GetPosition(1);
 																if (!SVR_Laser.useWorldSpace) endPos = SVR_Laser.transform.TransformPoint(endPos);

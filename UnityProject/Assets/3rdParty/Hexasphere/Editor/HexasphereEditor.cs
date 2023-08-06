@@ -4,6 +4,8 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine.Rendering;
+using System.Reflection;
 
 namespace HexasphereGrid {
     [CustomEditor(typeof(Hexasphere)), CanEditMultipleObjects]
@@ -24,11 +26,11 @@ namespace HexasphereGrid {
         StringBuilder sb;
 
         SerializedProperty style, numDivisions, smartEdges, transparent, transparencyTiles, transparencyZWrite, transparencyDoubleSided, transparencyCull, invertedMode, extruded, extrudeMultiplier, bevel, gradientIntensity, raycast3D, wireframeColor, wireframeColorFromTile, wireframeIntensity;
-        SerializedProperty defaultShadedColor, tileTintColor, castShadows, receiveShadows, tileTextureSize, rotationShift, vrEnabled;
-        SerializedProperty lighting, ambientColor, minimumLight;
-        SerializedProperty highlightEnabled, highlightColor, highlightSpeed, pathFindingFormula, pathFindingSearchLimit, pathFindingUseExtrusion, pathFindingExtrusionWeight;
+        SerializedProperty defaultShadedColor, tileTintColor, castShadows, receiveShadows, tileTextureSize, tileTextureStretch, rotationShift, vrEnabled;
+        SerializedProperty lighting, ambientColor, minimumLight, specularTint, smoothness;
+        SerializedProperty highlightEnabled, highlightColor, highlightStyle, highlightSpeed, pathFindingFormula, pathFindingSearchLimit, pathFindingUseExtrusion, pathFindingExtrusionWeight;
         SerializedProperty rotationEnabled, rotationSpeed, rotationAxisAllowed, rotationAxisVerticalThreshold, zoomEnabled, zoomSpeed, zoomDamping, zoomMinDistance, zoomMaxDistance;
-        SerializedProperty rightClickRotates, rightClickRotatingClockwise, rightButtonDrag, dragThreshold, clickDuration;
+        SerializedProperty rightClickRotates, rightClickRotatingClockwise, rightButtonDrag, dragThreshold, clickDuration, flyToTilt;
         SerializedProperty cameraMain, enableGridEditor, respectOtherUI;
 
         Texture2D _headerTexture;
@@ -50,6 +52,7 @@ namespace HexasphereGrid {
             gradientIntensity = serializedObject.FindProperty("_gradientIntensity");
             raycast3D = serializedObject.FindProperty("_raycast3D");
             tileTextureSize = serializedObject.FindProperty("_tileTextureSize");
+            tileTextureStretch = serializedObject.FindProperty("_tileTextureStretch");
             rotationShift = serializedObject.FindProperty("_rotationShift");
             vrEnabled = serializedObject.FindProperty("_VREnabled");
             enableGridEditor = serializedObject.FindProperty("_enableGridEditor");
@@ -62,6 +65,8 @@ namespace HexasphereGrid {
             lighting = serializedObject.FindProperty("_lighting");
             ambientColor = serializedObject.FindProperty("_ambientColor");
             minimumLight = serializedObject.FindProperty("_minimumLight");
+            specularTint = serializedObject.FindProperty("_specularTint");
+            smoothness = serializedObject.FindProperty("_smoothness");
             castShadows = serializedObject.FindProperty("_castShadows");
             receiveShadows = serializedObject.FindProperty("_receiveShadows");
 
@@ -69,6 +74,7 @@ namespace HexasphereGrid {
             respectOtherUI = serializedObject.FindProperty("_respectOtherUI");
             highlightEnabled = serializedObject.FindProperty("_highlightEnabled");
             highlightColor = serializedObject.FindProperty("_highlightColor");
+            highlightStyle = serializedObject.FindProperty("_highlightStyle");
             highlightSpeed = serializedObject.FindProperty("_highlightSpeed");
             rotationEnabled = serializedObject.FindProperty("_rotationEnabled");
             rotationSpeed = serializedObject.FindProperty("_rotationSpeed");
@@ -79,6 +85,7 @@ namespace HexasphereGrid {
             rightButtonDrag = serializedObject.FindProperty("_rightButtonDrag");
             dragThreshold = serializedObject.FindProperty("_dragThreshold");
             clickDuration = serializedObject.FindProperty("_clickDuration");
+            flyToTilt = serializedObject.FindProperty("_flyToTilt");
             zoomEnabled = serializedObject.FindProperty("_zoomEnabled");
             zoomSpeed = serializedObject.FindProperty("_zoomSpeed");
             zoomDamping = serializedObject.FindProperty("_zoomDamping");
@@ -107,11 +114,7 @@ namespace HexasphereGrid {
         }
 
         public override void OnInspectorGUI() {
-#if UNITY_5_6_OR_NEWER
             serializedObject.UpdateIfRequiredOrScript();
-#else
-			serializedObject.UpdateIfDirtyOrScript ();
-#endif
 
             if (titleLabelStyle == null) {
                 titleLabelStyle = new GUIStyle(EditorStyles.label);
@@ -127,6 +130,8 @@ namespace HexasphereGrid {
             GUILayout.Label(_headerTexture, GUILayout.ExpandWidth(true));
             GUILayout.EndHorizontal();
             GUI.skin.label.alignment = TextAnchor.MiddleLeft;
+
+            CheckDepthPrimingMode();
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Hexasphere Settings", titleLabelStyle);
@@ -183,9 +188,16 @@ namespace HexasphereGrid {
             EditorGUILayout.PropertyField(lighting, new GUIContent("Use Lighting", "If the hexasphere geometry can cast shadows over itself or other geometry, and also be influenced by the directional light."));
             EditorGUILayout.PropertyField(ambientColor, new GUIContent("Ambient Color", "Ambient color is added to the final tile color."));
             EditorGUILayout.PropertyField(minimumLight, new GUIContent("Minimum Light", "Minimum lighting applied to all tiles."));
-            EditorGUILayout.PropertyField(castShadows, new GUIContent("Cast Shadows", "If hexasphere can cast shadows."));
-            EditorGUILayout.PropertyField(receiveShadows, new GUIContent("Receive Shadows", "If hexasphere can receive shadows."));
+            if (!extruded.boolValue) {
+                EditorGUILayout.PropertyField(specularTint, new GUIContent("Specular Tint", "Color for the specular lighting."));
+                EditorGUILayout.PropertyField(smoothness, new GUIContent("Smoothness", "Surface smoothness whith is applied to the specular lighting."));
+            }
+            if (GraphicsSettings.currentRenderPipeline == null) {
+                EditorGUILayout.PropertyField(castShadows, new GUIContent("Cast Shadows", "If hexasphere can cast shadows."));
+                EditorGUILayout.PropertyField(receiveShadows, new GUIContent("Receive Shadows", "If hexasphere can receive shadows."));
+            }
             EditorGUILayout.PropertyField(tileTextureSize, new GUIContent("Tile Texture Size", "Textures assigned to tiles will be rescaled to this size if different. Note that textures should be marked as readable."));
+            EditorGUILayout.PropertyField(tileTextureStretch, new GUIContent("Tile Texture Stretch", "Specifies if UV coordinates should stretch the texture to fit the rectangle enclosing the hexagon. If disabled, uv coordinates of hexagon vertices will match a regular hexagon enclosed in a circle."));
             EditorGUILayout.PropertyField(rotationShift, new GUIContent("Rotation Shift", "Applies an internal rotation to the generated vertices. Let's you control where the pentagons will be located."));
             EditorGUILayout.PropertyField(vrEnabled, new GUIContent("VR Enabled", "Uses VR-compatible raycasting."));
             EditorGUILayout.Separator();
@@ -193,12 +205,17 @@ namespace HexasphereGrid {
             EditorGUILayout.PropertyField(cameraMain, new GUIContent("Camera", "Camera used for interaction."));
             EditorGUILayout.PropertyField(respectOtherUI, new GUIContent("Respect Other UI", "Prevents interaction with hexasphere when an UI element is under pointer."));
             EditorGUILayout.PropertyField(highlightEnabled, new GUIContent("Enable Highlight", "Enables or disables selection of tiles."));
-            EditorGUILayout.PropertyField(highlightColor, new GUIContent("Highlight Color", "Main tint color for the highlighted tile."));
-            EditorGUILayout.PropertyField(highlightSpeed, new GUIContent("   Highlight Speed", "Speed for the flashing animation."));
+            if (highlightEnabled.boolValue) {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.PropertyField(highlightStyle, new GUIContent("Style", "The style of the highlight blending."));
+                EditorGUILayout.PropertyField(highlightColor, new GUIContent("Color", "Main tint color for the highlighted tile."));
+                EditorGUILayout.PropertyField(highlightSpeed, new GUIContent("Speed", "Speed for the flashing animation."));
+                EditorGUI.indentLevel--;
+            }
             EditorGUILayout.PropertyField(rotationEnabled, new GUIContent("Enable Rotation", "Enables or disables rotation of hexasphere by user drag."));
             EditorGUILayout.PropertyField(rotationSpeed, new GUIContent("   Rotation Speed", "Speed for the rotation."));
             EditorGUILayout.PropertyField(rotationAxisAllowed, new GUIContent("   Rotation Axis", "Allowed rotation axis."));
-            if (rotationAxisAllowed.intValue == (int)ROTATION_AXIS_ALLOWED.STRAIGHT) {
+            if (rotationAxisAllowed.intValue == (int)ROTATION_AXIS_ALLOWED.Straight) {
                 EditorGUILayout.PropertyField(rotationAxisVerticalThreshold, new GUIContent("   Min Pole Distance", "Allowed minimum distance to North or South Pole."));
             }
             EditorGUILayout.PropertyField(rightButtonDrag, new GUIContent("Right Button Drag", "If set to true, user can hold and drag the hexasphere using the right mouse button."));
@@ -209,6 +226,7 @@ namespace HexasphereGrid {
             GUI.enabled = true;
             EditorGUILayout.PropertyField(dragThreshold, new GUIContent("Drag Threshold", "Minimum angle rotation to consider dragging has occured."));
             EditorGUILayout.PropertyField(clickDuration, new GUIContent("Click Duration", "Maximum time between button press and release to account for a click."));
+            EditorGUILayout.PropertyField(flyToTilt, new GUIContent("Fly To Tilt Angle", "Optional vertical tilt applied to FlyTo method. USeful if your camera is not pointing towards the center of the hexasphere."));
             EditorGUILayout.PropertyField(zoomEnabled, new GUIContent("Enable Zoom", "Enables or disables zoom of hexasphere by using mouse wheel or pinch in/out."));
             EditorGUILayout.PropertyField(zoomSpeed, new GUIContent("   Zoom Speed", "Speed for the zoom in/out."));
             EditorGUILayout.PropertyField(zoomDamping, new GUIContent("   Zoom Damping", "Speed for decelerating zoom once wheel has been released."));
@@ -255,12 +273,12 @@ namespace HexasphereGrid {
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Grid Editor", titleLabelStyle);
                 GUILayout.FlexibleSpace();
-                if (GUILayout.Button("Export Tiles")) {
+                if (GUILayout.Button("Export Config")) {
                     if (EditorUtility.DisplayDialog("Export Grid Settings", "This option will add a Hexasphere Config component to this game object with current tile settings. You can restore this configuration just enabling this new component.", "Ok", "Cancel")) {
                         CreatePlaceholder();
                     }
                 }
-                if (GUILayout.Button("Reset")) {
+                if (GUILayout.Button("Reset Tiles")) {
                     if (EditorUtility.DisplayDialog("Reset Grid", "Reset tiles to their default values?", "Ok", "Cancel")) {
                         ResetTiles();
                         GUIUtility.ExitGUI();
@@ -284,7 +302,7 @@ namespace HexasphereGrid {
                         for (int k = 0; k < selectedCount; k++) {
                             if (tileSelectedIndices[k] < 0 || tileSelectedIndices[k] >= hexa.tiles.Length) {
                                 tileSelectedIndices.Clear();
-                                EditorGUIUtility.ExitGUI();
+                                GUIUtility.ExitGUI();
                                 return;
                             }
                         }
@@ -303,7 +321,7 @@ namespace HexasphereGrid {
                                 }
                                 sb.Append(tileSelectedIndices[k].ToString());
                             }
-                            GUILayout.Label(sb.ToString());
+                            GUILayout.TextArea(sb.ToString(), GUILayout.ExpandHeight(true));
                         }
                         EditorGUILayout.EndHorizontal();
                         Tile selectedTile = hexa.tiles[tileSelectedIndex];
@@ -450,10 +468,12 @@ namespace HexasphereGrid {
                 if (!e.shift && tileSelectedIndices.Contains(tileHighlightedIndex)) {
                     tileSelectedIndices.Remove(tileHighlightedIndex);
                 } else {
-                    if (!e.control) {
+                    if (!e.shift && !e.control) {
                         tileSelectedIndices.Clear();
                     }
-                    tileSelectedIndices.Add(tileHighlightedIndex);
+                    if (!tileSelectedIndices.Contains(tileHighlightedIndex)) { 
+                        tileSelectedIndices.Add(tileHighlightedIndex);
+                    }
 
                     if (textureMode > 0) {
                         hexa.SetTileTexture(tileHighlightedIndex, textureMode, Color.white);
@@ -557,6 +577,8 @@ namespace HexasphereGrid {
 
         #endregion
 
+        #region Editor menu integration
+
         [MenuItem("GameObject/3D Object/Hexasphere", false)]
         static void CreateHexasphereMenuOption(MenuCommand menuCommand) {
             // Create a custom game object
@@ -573,7 +595,42 @@ namespace HexasphereGrid {
             go.AddComponent<Hexasphere>();
         }
 
+        #endregion
 
+        #region SRP utils
+
+        void CheckDepthPrimingMode() {
+            RenderPipelineAsset pipe = GraphicsSettings.currentRenderPipeline;
+            if (pipe == null) return;
+            // Check depth priming mode
+            FieldInfo renderers = pipe.GetType().GetField("m_RendererDataList", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (renderers == null) return;
+            foreach (var renderer in (object[])renderers.GetValue(pipe)) {
+                if (renderer == null) continue;
+                FieldInfo depthPrimingModeField = renderer.GetType().GetField("m_DepthPrimingMode", BindingFlags.NonPublic | BindingFlags.Instance);
+                int depthPrimingMode = -1;
+                if (depthPrimingModeField != null) {
+                    depthPrimingMode = (int)depthPrimingModeField.GetValue(renderer);
+                }
+
+                FieldInfo renderingModeField = renderer.GetType().GetField("m_RenderingMode", BindingFlags.NonPublic | BindingFlags.Instance);
+                int renderingMode = -1;
+                if (renderingModeField != null) {
+                    renderingMode = (int)renderingModeField.GetValue(renderer);
+                }
+
+                if (renderingMode == 0 && depthPrimingMode != 0) {
+                    EditorGUILayout.HelpBox("Depth Priming Mode in URP asset must be disabled.", MessageType.Warning);
+                    if (GUILayout.Button("Show Pipeline Asset")) {
+                        Selection.activeObject = (Object)renderer;
+                        GUIUtility.ExitGUI();
+                    }
+                    EditorGUILayout.Separator();
+                }
+            }
+        }
+
+        #endregion
     }
 
 }

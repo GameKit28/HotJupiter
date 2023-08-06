@@ -118,7 +118,7 @@ namespace HexasphereGrid {
 						continue;
 					// Custom tile crossing logic
 					if (OnPathFindingCrossTile != null) {
-						gridValue += OnPathFindingCrossTile (nextTileIndex);
+						gridValue += OnPathFindingCrossTile (this, nextTileIndex, currentTileIndex);
 					}
 
 					float mNewG = pfCalc [currentTileIndex].g + gridValue;

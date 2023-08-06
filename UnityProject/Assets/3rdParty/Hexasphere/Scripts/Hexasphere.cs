@@ -4,17 +4,15 @@
 /// </summary>
 
 using UnityEngine;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 
 
 namespace HexasphereGrid {
-				
-	public enum STYLE {
+
+    public enum STYLE {
 		Wireframe = 0,
 		Shaded = 1,
-		ShadedWireframe = 2
+		ShadedWireframe = 2,
+		Invisible = 3
 	}
 
 	public partial class Hexasphere: MonoBehaviour {
@@ -51,7 +49,7 @@ namespace HexasphereGrid {
 
 
 		[SerializeField]
-		bool _smartEdges = false;
+		bool _smartEdges;
 
 		public bool smartEdges {
 			get { return _smartEdges; }
@@ -64,7 +62,7 @@ namespace HexasphereGrid {
 		}
 
 		[SerializeField]
-		bool _transparent = false;
+		bool _transparent;
 
 		public bool transparent {
 			get { return _transparent; }
@@ -149,7 +147,7 @@ namespace HexasphereGrid {
 		}
 
 		[SerializeField]
-		bool _lighting = false;
+		bool _lighting;
 
 		public bool lighting {
 			get { return _lighting; }
@@ -162,7 +160,7 @@ namespace HexasphereGrid {
 		}
 
 		[SerializeField]
-		bool _castShadows = false;
+		bool _castShadows;
 
 		public bool castShadows {
 			get { return _castShadows; }
@@ -190,6 +188,7 @@ namespace HexasphereGrid {
 
 
 		[SerializeField]
+		[ColorUsage(true, true)]
 		Color _ambientColor = Color.black;
 
 		public Color ambientColor {
@@ -216,8 +215,38 @@ namespace HexasphereGrid {
 			}
 		}
 
+
 		[SerializeField]
-		bool _extruded = false;
+		[ColorUsage(true, true)]
+		Color _specularTint = Color.black;
+
+		public Color specularTint {
+			get { return _specularTint; }
+			set {
+				if (_specularTint != value) {
+					_specularTint = value;
+					UpdateMaterialProperties();
+				}
+			}
+		}
+
+
+		[SerializeField, Range(0, 16)]
+		float _smoothness = 3f;
+
+		public float smoothness {
+			get { return _smoothness; }
+			set {
+				if (_smoothness != value) {
+					_smoothness = value;
+					UpdateMaterialProperties();
+				}
+			}
+		}
+
+
+		[SerializeField]
+		bool _extruded;
 
 		public bool extruded {
 			get { return _extruded; }
@@ -231,7 +260,7 @@ namespace HexasphereGrid {
 
 
 		[SerializeField]
-		bool _bevel = false;
+		bool _bevel;
 
 		public bool bevel {
 			get { return _bevel; }
@@ -259,6 +288,22 @@ namespace HexasphereGrid {
 			}
 		}
 
+
+
+		[SerializeField]
+		bool _tileTextureStretch = true;
+
+		public bool tileTextureStretch {
+			get { return _tileTextureStretch; }
+			set {
+				if (_tileTextureStretch != value) {
+					_tileTextureStretch = value;
+					UpdateMaterialProperties();
+				}
+			}
+		}
+
+
 		[SerializeField]
 		[Range(0, 1f)]
 		float _extrudeMultiplier = 0.05f;
@@ -275,7 +320,7 @@ namespace HexasphereGrid {
 		}
 
 		[SerializeField]
-		bool _VREnabled = false;
+		bool _VREnabled;
 
 		public bool VREnabled {
 			get { return _VREnabled; }
@@ -303,6 +348,7 @@ namespace HexasphereGrid {
 		}
 
 		[SerializeField]
+		[ColorUsage(true, true)]
 		Color _wireframeColor = Color.white;
 
 		public Color wireframeColor {
@@ -317,7 +363,7 @@ namespace HexasphereGrid {
 
 
 		[SerializeField]
-		bool _wireframeColorFromTile = false;
+		bool _wireframeColorFromTile;
 
 		public bool wireframeColorFromTile {
 			get { return _wireframeColorFromTile; }
@@ -346,6 +392,7 @@ namespace HexasphereGrid {
 
 
 		[SerializeField]
+		[ColorUsage(true, true)]
 		Color _defaultShadedColor = new Color(0.56f, 0.71f, 0.54f);
 
 		public Color defaultShadedColor {
@@ -360,6 +407,7 @@ namespace HexasphereGrid {
 
 
 		[SerializeField]
+		[ColorUsage(true, true)]
 		Color _tileTintColor = Color.white;
 
 		public Color tileTintColor {

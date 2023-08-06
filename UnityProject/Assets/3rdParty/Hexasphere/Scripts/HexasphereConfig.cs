@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace HexasphereGrid {
 
@@ -20,15 +19,14 @@ namespace HexasphereGrid {
 		[HideInInspector]
 		public Texture2D[] textures;
 
-		// Use this for initialization
 		void OnEnable () {
-			if (!Application.isPlaying)
-				LoadConfiguration ();
+			if (Application.isPlaying) {
+				Invoke(nameof(LoadConfiguration), 0);
+			} else {
+				LoadConfiguration();
+			}
 		}
 
-		void Start () {
-			LoadConfiguration ();
-		}
 
 		/// <summary>
 		/// Call this method to force a configuration load.

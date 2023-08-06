@@ -3,28 +3,22 @@ using System.Collections;
 
 namespace HexasphereGrid {
 
-	public delegate void TileEvent(int tileIndex);
 
 	public enum ROTATION_AXIS_ALLOWED {
-		BOTH_AXIS = 0,
-		X_AXIS_ONLY = 1,
-		Y_AXIS_ONLY = 2,
-		STRAIGHT = 3
+		BothAxis = 0,
+		[InspectorName("X-Axis Only")]
+		XAxisOnly = 1,
+		[InspectorName("Y-Axis Only")]
+		YAxisOnly = 2,
+		Straight = 3
 	}
 
+	public enum HIGHLIGHT_STYLE {
+		Default = 0,
+		TintBackground = 10
+    }
+
     partial class Hexasphere : MonoBehaviour {
-
-
-        /// <summary>
-        /// Fired when path finding algorithmn evaluates a tile. Return the increased cost for tile.
-        /// </summary>
-        public event TileEvent OnTileClick;
-
-        /// <summary>
-        /// Fired when cursor is on a tile
-        /// </summary>
-        public event TileEvent OnTileMouseOver;
-
 
         [SerializeField]
         Camera _cameraMain;
@@ -81,7 +75,7 @@ namespace HexasphereGrid {
 
 		[SerializeField]
 		ROTATION_AXIS_ALLOWED
-			_rotationAxisAllowed = ROTATION_AXIS_ALLOWED.BOTH_AXIS;
+			_rotationAxisAllowed = ROTATION_AXIS_ALLOWED.BothAxis;
 
 		public ROTATION_AXIS_ALLOWED	rotationAxisAllowed {
 			get { return _rotationAxisAllowed; }
@@ -158,7 +152,7 @@ namespace HexasphereGrid {
 		}
 
 		[SerializeField]
-		float _zoomMaxDistance = 2f;
+		float _zoomMaxDistance = 10f;
 
 		public float zoomMaxDistance {
 			get { return _zoomMaxDistance; }
@@ -170,7 +164,22 @@ namespace HexasphereGrid {
 		}
 
 
+
 		[SerializeField]
+		[Range(-90, 90)]
+		float _flyToTilt;
+
+		public float flyToTilt {
+			get { return _flyToTilt; }
+			set {
+				if (_flyToTilt != value) {
+					_flyToTilt = value;
+				}
+			}
+		}
+
+		[SerializeField]
+		[ColorUsage(true, true)]
 		Color _highlightColor = new Color(0, 0.25f, 1f, 0.8f);
 
 		public Color highlightColor {
@@ -192,6 +201,19 @@ namespace HexasphereGrid {
 			set {
 				if (_highlightSpeed != value) {
 					_highlightSpeed = value;
+				}
+			}
+		}
+
+		[SerializeField]
+		HIGHLIGHT_STYLE _highlightStyle = HIGHLIGHT_STYLE.Default;
+
+		public HIGHLIGHT_STYLE highlightStyle {
+			get { return _highlightStyle; }
+			set {
+				if (_highlightStyle != value) {
+					_highlightStyle = value;
+					SetHighlightStyle();
 				}
 			}
 		}
@@ -323,12 +345,16 @@ namespace HexasphereGrid {
 				v1 = _cameraMain.transform.forward;
 			} else {
 				v1 = (_cameraMain.transform.position - transform.position).normalized;
+				// account for camera x-axis rotation
+				if (_flyToTilt != 0) {
+					v1 = Quaternion.Euler(_flyToTilt, 0, 0) * v1;
+				}
 			}
 			flyingStartRotation = transform.rotation;
 			flyingEndRotation = Quaternion.FromToRotation(v2, v1);
 			if (duration <= 0) {
 				transform.rotation = flyingEndRotation;
-				if (_rotationAxisAllowed == ROTATION_AXIS_ALLOWED.STRAIGHT) {
+				if (_rotationAxisAllowed == ROTATION_AXIS_ALLOWED.Straight) {
 					KeepStraight ();
 				}
 				return;
@@ -336,6 +362,7 @@ namespace HexasphereGrid {
 			flyingStartTime = Time.time;
 			flyingDuration = duration;
 			flying = true;
+			if (OnFlyStart != null) OnFlyStart(this);
 		}
 
 		public bool isMouseOver {

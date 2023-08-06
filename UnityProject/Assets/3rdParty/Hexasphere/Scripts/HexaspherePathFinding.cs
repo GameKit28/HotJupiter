@@ -5,9 +5,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace HexasphereGrid {
-	
-	/* Event definitions */
-	public delegate float PathFindingEvent (int tileIndex);
 
 
 	public enum HeuristicFormula {
@@ -21,14 +18,9 @@ namespace HexasphereGrid {
 
 		public const int ALL_TILES = ~0;
 
-		/// <summary>
-		/// Fired when path finding algorithmn evaluates a tile. Return the increased cost for tile.
-		/// </summary>
-		public event PathFindingEvent OnPathFindingCrossTile;
-
 		[SerializeField]
 		HeuristicFormula
-			_pathFindingHeuristicFormula = HeuristicFormula.SphericalDistance;
+			_pathFindingHeuristicFormula = HeuristicFormula.Euclidean;
 
 		/// <summary>
 		/// The path finding heuristic formula to estimate distance from current position to destination
@@ -61,7 +53,7 @@ namespace HexasphereGrid {
 
 		[SerializeField]
 		bool
-			_pathFindingUseExtrusion = false;
+			_pathFindingUseExtrusion;
 
 		/// <summary>
 		/// If extrusion (altitude) should be accounted for pathfinding computation.
@@ -119,9 +111,9 @@ namespace HexasphereGrid {
 			// Minimum distance for routing?
 			indices.Clear();
 			if (startingPoint != endingPoint) {
-				ComputeRouteMatrix (groupMask);
 				mSearchLimit = searchLimit == 0 ? _pathFindingSearchLimit : searchLimit;
 				mIgnoreTileCanCross = ignoreTileCanCross;
+				ComputeRouteMatrix(groupMask);
 				List<PFClosedNode> route = FindPathFast (startingPoint, endingPoint);
 				if (route != null) {
 					int routeCount = route.Count;

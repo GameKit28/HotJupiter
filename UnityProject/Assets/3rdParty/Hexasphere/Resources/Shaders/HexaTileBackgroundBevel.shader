@@ -16,50 +16,63 @@
 
 
         SubShader{
-            Tags { "Queue" = "Geometry-2" "RenderType" = "Opaque" "RenderPipeline" = "LightweightPipeline" }
+            Tags { "Queue" = "Geometry-2" "RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline" }
             Blend[_SrcBlend][_DstBlend]
             ZWrite[_ZWrite]
             Pass {
-                //    Tags { "LightMode" = "LightweightForward" }
+
+                PackageRequirements {
+                    "com.unity.render-pipelines.universal"
+                }
+
                     Offset 2, 2
 
-                        CGPROGRAM
+                        HLSLPROGRAM
                         #pragma vertex vert
                         #pragma fragment frag
                         #pragma geometry geom
                         #pragma fragmentoption ARB_precision_hint_fastest
                         #pragma exclude_renderers gles
+            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS
+	        #pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
+            #pragma multi_compile_fragment _ _SHADOWS_SOFT
 
-            #pragma multi_compile _ HEXA_ALPHA
+            #pragma multi_compile_local _ HEXA_LIT
+            #pragma multi_compile_local _ HEXA_ALPHA
             #pragma target 4.0
-            #include "UnityCG.cginc"
-            #include "AutoLight.cginc"
-            #include "Lighting.cginc"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
-            UNITY_DECLARE_TEX2DARRAY(_MainTex);
-            sampler2D _BumpMask;
-            fixed _GradientIntensity;
+            TEXTURE2D_ARRAY(_MainTex);
+            SAMPLER(sampler_MainTex);
+
+            TEXTURE2D(_BumpMask);
+            SAMPLER(sampler_BumpMask);
+
+            half _GradientIntensity;
             float _ExtrusionMultiplier;
-            fixed4 _Color;
-            fixed3 _AmbientColor;
+            half4 _Color;
+            half3 _AmbientColor;
             float _MinimumLight;
             float3 _Center;
-            fixed _TileAlpha;
-            float4 _MainLightPosition;
-            half4 _MainLightColor;
+            half _TileAlpha;
 
             struct appdata {
                 float4 vertex   : POSITION;
                 float4 texcoord : TEXCOORD0;
                 float4 gPos     : TEXCOORD1;
-                fixed4 color : COLOR;
+                half4 color : COLOR;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
             struct v2g {
                 float4 vertex : POSITION;
                 float4 uv     : TEXCOORD0;
-                fixed4 color : COLOR;
+                half4 color : COLOR;
                 float4 gPos     : TEXCOORD1;
+               #if HEXA_LIT
+                    float3 worldPos : TEXCOORD2;
+                #endif
+                UNITY_VERTEX_OUTPUT_STEREO
             };
 
             struct g2f {
@@ -67,26 +80,52 @@
                 float3 uv    : TEXCOORD0;
                 float3 norm     : TEXCOORD1;
                 float3 axisNorm : TEXCOORD2;
-                SHADOW_COORDS(3)
-                fixed4 color : COLOR;
+                half4 color : COLOR;
+                #if HEXA_LIT
+                    float3 wpos  : TEXCOORD3;
+                #endif
             };
 
             struct VertexInfo {
                 float4 vertex;
             };
 
+
+            float GetLightAttenuation(float3 wpos) {
+	            float4 shadowCoord = TransformWorldToShadowCoord(wpos);
+	            float atten = MainLightRealtimeShadow(shadowCoord);
+                return atten;
+            }
+
+
             v2g vert(appdata v) {
                 v2g o;
+                UNITY_SETUP_INSTANCE_ID(v);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+
                 o.vertex = v.vertex;
                 o.uv = v.texcoord;
-                fixed4 color = v.color * _Color;
+                half4 color = v.color * _Color;
                 color.a *= _TileAlpha;
                 o.color = color;
                 o.gPos = v.gPos;
+
+                #if HEXA_LIT
+                    o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
+                #endif
+
                 return o;
             }
 
-            void Extrude(v2g p0, v2g p1, float extrusion, fixed4 color, float3 norm0, float3 norm1, inout TriangleStream<g2f> outputStream) {
+
+            #if HEXA_LIT
+                #define OUTPUT_WPOS(tri, vertex) tri.wpos = mul(unity_ObjectToWorld, vertex).xyz;
+            #else
+                #define OUTPUT_WPOS(tri, vertex)
+            #endif
+
+
+            void Extrude(v2g p0, v2g p1, float extrusion, half4 color, float3 norm0, float3 norm1, inout TriangleStream<g2f> outputStream) {
                 g2f tri;
                 VertexInfo v;
 
@@ -95,59 +134,59 @@
                 // First side triangle
                 v.vertex = p1.vertex;
                 v.vertex.xyz *= extrusion; // = p1.pos.xyz * extrusion;
-                tri.pos = UnityObjectToClipPos(v.vertex); //float4(v, p1.pos.w));
+                tri.pos = TransformObjectToHClip(v.vertex.xyz); //float4(v, p1.pos.w));
                 tri.uv = float3(0.0, 1.0, p1.uv.z);
                 tri.color = color;
                 tri.norm = tri.axisNorm = norm1;
-                TRANSFER_SHADOW(tri);
+                OUTPUT_WPOS(tri, v.vertex);
                 outputStream.Append(tri);
 
                 //                	v = p0.pos.xyz * extrusion;
                 v.vertex = p0.vertex;
                 v.vertex.xyz *= extrusion;
-                tri.pos = UnityObjectToClipPos(v.vertex); // float4(v, p0.pos.w));
+                tri.pos = TransformObjectToHClip(v.vertex.xyz); // float4(v, p0.pos.w));
                 tri.uv = float3(1.0, 1.0, p0.uv.z);
                 tri.norm = tri.axisNorm = norm0;
-                TRANSFER_SHADOW(tri);
+                OUTPUT_WPOS(tri, v.vertex);
                 outputStream.Append(tri);
 
                 //                	v = p0.pos.xyz;
                 v.vertex = p0.vertex;
-                tri.pos = UnityObjectToClipPos(v.vertex); // p0.pos);
+                tri.pos = TransformObjectToHClip(v.vertex.xyz); // p0.pos);
                 tri.uv = float3(1.0, 0.0, p0.uv.z);
-                fixed4 darkerColor = color * _GradientIntensity;
+                half4 darkerColor = color * _GradientIntensity;
                 tri.color = darkerColor;
-                tri.norm = tri.axisNorm = UnityObjectToWorldNormal(v.vertex.xyz - gPos);
-                TRANSFER_SHADOW(tri);
+                tri.norm = tri.axisNorm = TransformObjectToWorldNormal(v.vertex.xyz - gPos);
+                OUTPUT_WPOS(tri, v.vertex);
                 outputStream.Append(tri);
 
                 // Second side triangle (completes the side quad)
 //                	v = p1.pos.xyz;
                 v.vertex = p1.vertex;
                 outputStream.RestartStrip();
-                tri.pos = UnityObjectToClipPos(v.vertex); // p1.pos);
+                tri.pos = TransformObjectToHClip(v.vertex.xyz); // p1.pos);
                 tri.uv = float3(0.0, 0.0, p1.uv.z);
-                tri.norm = tri.axisNorm = UnityObjectToWorldNormal(v.vertex.xyz - gPos);
-                TRANSFER_SHADOW(tri);
+                tri.norm = tri.axisNorm = TransformObjectToWorldNormal(v.vertex.xyz - gPos);
+                OUTPUT_WPOS(tri, v.vertex);
                 outputStream.Append(tri);
 
                 //                	v = p1.pos.xyz * extrusion;
                 v.vertex = p1.vertex;
                 v.vertex.xyz *= extrusion;
-                tri.pos = UnityObjectToClipPos(v.vertex); // float4(v, p1.pos.w));
+                tri.pos = TransformObjectToHClip(v.vertex.xyz); // float4(v, p1.pos.w));
                 tri.uv = float3(0.0, 1.0, p1.uv.z);
                 tri.color = color;
                 tri.norm = tri.axisNorm = norm1;
-                TRANSFER_SHADOW(tri);
+                OUTPUT_WPOS(tri, v.vertex);
                 outputStream.Append(tri);
 
                 //                	v = p0.pos.xyz;
                 v.vertex = p0.vertex;
-                tri.pos = UnityObjectToClipPos(v.vertex); // p0.pos);
+                tri.pos = TransformObjectToHClip(v.vertex.xyz); // p0.pos);
                 tri.uv = float3(1.0, 0.0, p0.uv.z);
                 tri.color = darkerColor;
-                tri.norm = tri.axisNorm = UnityObjectToWorldNormal(v.vertex.xyz - gPos);
-                TRANSFER_SHADOW(tri);
+                tri.norm = tri.axisNorm = TransformObjectToWorldNormal(v.vertex.xyz - gPos);
+                OUTPUT_WPOS(tri, v.vertex);
                 outputStream.Append(tri);
                 outputStream.RestartStrip();
             }
@@ -166,8 +205,9 @@
 #endif
 
                 g2f topFace;
-                fixed4 color = input[0].color;
+                half4 color = input[0].color;
                 topFace.color = color;
+
 
                 gPos += normalize(_Center - gPos) * 0.1;
 
@@ -177,65 +217,67 @@
                 VertexInfo v;
                 v.vertex = input[0].vertex;
                 v.vertex.xyz *= extrusion;
-                topFace.pos = UnityObjectToClipPos(v.vertex);
-                topFace.uv = float4(input[0].uv.xyz, 1.0);
+                topFace.pos = TransformObjectToHClip(v.vertex.xyz);
+                topFace.uv = input[0].uv.xyz;
                 float3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
                 float3 norm = normalize(worldPos - gPos);
                 norm = lerp(norm, axisNorm, input[0].gPos.w);
                 float3 norm0 = topFace.norm = norm;
-                TRANSFER_SHADOW(topFace);
+                OUTPUT_WPOS(topFace, v.vertex);
+
                 outputStream.Append(topFace);
 
                 //                    v = input[1].pos;
                 //	                v.xyz *= extrusion;
                 v.vertex = input[1].vertex;
                 v.vertex.xyz *= extrusion;
-                topFace.pos = UnityObjectToClipPos(v.vertex);
-                topFace.uv = float4(input[1].uv.xyz, 1.0);
+                topFace.pos = TransformObjectToHClip(v.vertex.xyz);
+                topFace.uv = input[1].uv.xyz;
                 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
                 norm = normalize(worldPos - gPos);
                 norm = lerp(norm, axisNorm, input[0].gPos.w);
                 float3 norm1 = topFace.norm = norm;
-                TRANSFER_SHADOW(topFace);
+                OUTPUT_WPOS(topFace, v.vertex);
                 outputStream.Append(topFace);
 
                 //                    v = input[2].pos;
                 //	                v.xyz *= extrusion;
                 v.vertex = input[2].vertex;
                 v.vertex.xyz *= extrusion;
-                topFace.pos = UnityObjectToClipPos(v.vertex);
-                topFace.uv = float4(input[2].uv.xyz, 1.0);
+                topFace.pos = TransformObjectToHClip(v.vertex.xyz);
+                topFace.uv = input[2].uv.xyz;
                 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
                 norm = normalize(worldPos - gPos);
                 norm = lerp(norm, axisNorm, input[0].gPos.w);
                 topFace.norm = norm;
-                TRANSFER_SHADOW(topFace);
+                OUTPUT_WPOS(topFace, v.vertex);
                 outputStream.Append(topFace);
 
                 outputStream.RestartStrip();
 
-                // Side
                 Extrude(input[0], input[1], extrusion, color, norm0, norm1, outputStream);
 
             }
 
-            fixed4 frag(g2f i) : SV_Target {
+            half4 frag(g2f i) : SV_Target {
 
-                    fixed  atten = SHADOW_ATTENUATION(i);
-                    fixed  mask = tex2D(_BumpMask, i.uv.xy).r;
+                    half  mask = SAMPLE_TEXTURE2D(_BumpMask, sampler_BumpMask, i.uv.xy).r;
                     float3 norm = normalize(lerp(i.norm, i.axisNorm, mask));
-                    fixed  ndl = max(0, dot(norm, _MainLightPosition.xyz));
+                    half  ndl = max(0, dot(norm, _MainLightPosition.xyz));
                     ndl = max(ndl, _MinimumLight);
-                    fixed4 edgeColor = i.color * _MainLightColor;
+                    half4 edgeColor = i.color * _MainLightColor;
                     edgeColor.rgb *= ndl;
 
-                    fixed4 color = UNITY_SAMPLE_TEX2DARRAY(_MainTex, i.uv) * edgeColor;
+                    half4 color = SAMPLE_TEXTURE2D_ARRAY(_MainTex, sampler_MainTex, i.uv.xy, i.uv.z) * edgeColor;
+                #if HEXA_LIT
+                    half atten = GetLightAttenuation(i.wpos);
                     color.rgb *= atten;
+                #endif
                     color.rgb += _AmbientColor;
                     return color;
 
             }
-            ENDCG
+            ENDHLSL
     }
         }
 
@@ -256,7 +298,7 @@
 				#pragma fragmentoption ARB_precision_hint_fastest
 				#pragma exclude_renderers gles
 				#pragma multi_compile_fwdbase nolightmap nodynlightmap novertexlight nodirlightmap
-				#pragma multi_compile _ HEXA_ALPHA
+				#pragma multi_compile_local _ HEXA_ALPHA
 				#pragma target 4.0
 				#include "UnityCG.cginc"
 				#include "AutoLight.cginc"
@@ -277,6 +319,7 @@
 					float4 texcoord : TEXCOORD0;
 					float4 gPos     : TEXCOORD1;
 					fixed4 color    : COLOR;
+                    UNITY_VERTEX_INPUT_INSTANCE_ID
     			};
 
 				struct v2g {
@@ -284,6 +327,7 @@
 	    			float4 uv       : TEXCOORD0;
 	    			fixed4 color    : COLOR;
                     float4 gPos     : TEXCOORD1;
+                    UNITY_VERTEX_OUTPUT_STEREO
 				};
 
 				struct g2f {
@@ -301,6 +345,10 @@
 
 				v2g vert(appdata v) {
     				v2g o;
+                UNITY_SETUP_INSTANCE_ID(v);
+                UNITY_INITIALIZE_OUTPUT(v2g, o);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+
     				o.vertex = v.vertex;
     				o.uv     = v.texcoord;
 					fixed4 color = v.color * _Color;
@@ -483,16 +531,18 @@
     				float4 vertex   : POSITION;
 					float4 texcoord : TEXCOORD0;
 					#if HEXA_ALPHA
-					float3 gPos     : TEXCOORD1;
+					    float3 gPos     : TEXCOORD1;
 					#endif
+                    UNITY_VERTEX_INPUT_INSTANCE_ID
     			};
 
 				struct v2g {
 	    			float4 pos   : SV_POSITION;
 	    			float4 uv    : TEXCOORD0;
 	    			#if HEXA_ALPHA
-                    float3 gPos  : TEXCOORD1;
+                        float3 gPos  : TEXCOORD1;
                     #endif
+                    UNITY_VERTEX_OUTPUT_STEREO
                 };
 
 				struct g2f {
@@ -505,6 +555,10 @@
 
 				v2g vert(appdata v) {
     				v2g o;
+                UNITY_SETUP_INSTANCE_ID(v);
+                UNITY_INITIALIZE_OUTPUT(v2g, o);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+
     				o.pos   = v.vertex;
     				o.uv    = v.texcoord;
 					#if HEXA_ALPHA
@@ -596,6 +650,7 @@
     				float4 vertex   : POSITION;
 					float4 texcoord : TEXCOORD0;
 					fixed4 color    : COLOR;
+                    UNITY_VERTEX_INPUT_INSTANCE_ID
     			};
 
 				struct v2f {
@@ -603,10 +658,15 @@
 	    			float4 uv    : TEXCOORD0;
 	    			fixed4 color : COLOR;
 	    			SHADOW_COORDS(1)
+                    UNITY_VERTEX_OUTPUT_STEREO
 				};
 
 				v2f vert(appdata v) {
     				v2f o;
+                UNITY_SETUP_INSTANCE_ID(v);
+                UNITY_INITIALIZE_OUTPUT(v2f, o);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+
     				float extrusion = 1.0 + v.texcoord.w * _ExtrusionMultiplier;
     				v.vertex.xyz *= extrusion;
     				o.pos = UnityObjectToClipPos(v.vertex);
@@ -648,16 +708,22 @@
     				float4 vertex   : POSITION;
 					float4 texcoord : TEXCOORD0;
 					fixed4 color    : COLOR;
+                    UNITY_VERTEX_INPUT_INSTANCE_ID
     			};
 
 				struct v2f {
 	    			float4 pos   : SV_POSITION;
 	    			fixed4 color : COLOR;
 	    			SHADOW_COORDS(0)
+                    UNITY_VERTEX_OUTPUT_STEREO
 				};
 
 				v2f vert(appdata v) {
     				v2f o;
+                UNITY_SETUP_INSTANCE_ID(v);
+                UNITY_INITIALIZE_OUTPUT(v2f, o);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+
 					float extrusion = 1.0 + v.texcoord.w * _ExtrusionMultiplier;
 	                v.vertex.xyz *= extrusion;
 	                o.pos = UnityObjectToClipPos(v.vertex);
