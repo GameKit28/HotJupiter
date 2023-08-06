@@ -672,7 +672,7 @@ TextureImporter:
       213: 21300444
     second: ExtraProps_222
   externalObjects: {}
-  serializedVersion: 11
+  serializedVersion: 12
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -689,10 +689,12 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: 0.25
     normalMapFilter: 0
+    flipGreenChannel: 0
   isReadable: 0
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMipmapLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -701,12 +703,12 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: -1
-    aniso: -1
-    mipBias: -100
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
     wrapU: 1
     wrapV: 1
-    wrapW: -1
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -724,11 +726,15 @@ TextureImporter:
   textureType: 8
   textureShape: 1
   singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
   maxTextureSizeSet: 0
   compressionQualitySet: 0
   textureFormatSet: 0
   ignorePngGamma: 0
   applyGammaDecoding: 1
+  swizzle: 50462976
+  cookieLightType: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -740,6 +746,7 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 1
   - serializedVersion: 3
@@ -752,6 +759,33 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 1
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 1
+  - serializedVersion: 3
+    buildTarget: Server
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 1
   spriteSheet:
@@ -5450,9 +5484,232 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-  spritePackingTag: 
+    nameFileIdTable:
+      ExtraProps_0: 21300000
+      ExtraProps_1: 21300002
+      ExtraProps_10: 21300020
+      ExtraProps_100: 21300200
+      ExtraProps_101: 21300202
+      ExtraProps_102: 21300204
+      ExtraProps_103: 21300206
+      ExtraProps_104: 21300208
+      ExtraProps_105: 21300210
+      ExtraProps_106: 21300212
+      ExtraProps_107: 21300214
+      ExtraProps_108: 21300216
+      ExtraProps_109: 21300218
+      ExtraProps_11: 21300022
+      ExtraProps_110: 21300220
+      ExtraProps_111: 21300222
+      ExtraProps_112: 21300224
+      ExtraProps_113: 21300226
+      ExtraProps_114: 21300228
+      ExtraProps_115: 21300230
+      ExtraProps_116: 21300232
+      ExtraProps_117: 21300234
+      ExtraProps_118: 21300236
+      ExtraProps_119: 21300238
+      ExtraProps_12: 21300024
+      ExtraProps_120: 21300240
+      ExtraProps_121: 21300242
+      ExtraProps_122: 21300244
+      ExtraProps_123: 21300246
+      ExtraProps_124: 21300248
+      ExtraProps_125: 21300250
+      ExtraProps_126: 21300252
+      ExtraProps_127: 21300254
+      ExtraProps_128: 21300256
+      ExtraProps_129: 21300258
+      ExtraProps_13: 21300026
+      ExtraProps_130: 21300260
+      ExtraProps_131: 21300262
+      ExtraProps_132: 21300264
+      ExtraProps_133: 21300266
+      ExtraProps_134: 21300268
+      ExtraProps_135: 21300270
+      ExtraProps_136: 21300272
+      ExtraProps_137: 21300274
+      ExtraProps_138: 21300276
+      ExtraProps_139: 21300278
+      ExtraProps_14: 21300028
+      ExtraProps_140: 21300280
+      ExtraProps_141: 21300282
+      ExtraProps_142: 21300284
+      ExtraProps_143: 21300286
+      ExtraProps_144: 21300288
+      ExtraProps_145: 21300290
+      ExtraProps_146: 21300292
+      ExtraProps_147: 21300294
+      ExtraProps_148: 21300296
+      ExtraProps_149: 21300298
+      ExtraProps_15: 21300030
+      ExtraProps_150: 21300300
+      ExtraProps_151: 21300302
+      ExtraProps_152: 21300304
+      ExtraProps_153: 21300306
+      ExtraProps_154: 21300308
+      ExtraProps_155: 21300310
+      ExtraProps_156: 21300312
+      ExtraProps_157: 21300314
+      ExtraProps_158: 21300316
+      ExtraProps_159: 21300318
+      ExtraProps_16: 21300032
+      ExtraProps_160: 21300320
+      ExtraProps_161: 21300322
+      ExtraProps_162: 21300324
+      ExtraProps_163: 21300326
+      ExtraProps_164: 21300328
+      ExtraProps_165: 21300330
+      ExtraProps_166: 21300332
+      ExtraProps_167: 21300334
+      ExtraProps_168: 21300336
+      ExtraProps_169: 21300338
+      ExtraProps_17: 21300034
+      ExtraProps_170: 21300340
+      ExtraProps_171: 21300342
+      ExtraProps_172: 21300344
+      ExtraProps_173: 21300346
+      ExtraProps_174: 21300348
+      ExtraProps_175: 21300350
+      ExtraProps_176: 21300352
+      ExtraProps_177: 21300354
+      ExtraProps_178: 21300356
+      ExtraProps_179: 21300358
+      ExtraProps_18: 21300036
+      ExtraProps_180: 21300360
+      ExtraProps_181: 21300362
+      ExtraProps_182: 21300364
+      ExtraProps_183: 21300366
+      ExtraProps_184: 21300368
+      ExtraProps_185: 21300370
+      ExtraProps_186: 21300372
+      ExtraProps_187: 21300374
+      ExtraProps_188: 21300376
+      ExtraProps_189: 21300378
+      ExtraProps_19: 21300038
+      ExtraProps_190: 21300380
+      ExtraProps_191: 21300382
+      ExtraProps_192: 21300384
+      ExtraProps_193: 21300386
+      ExtraProps_194: 21300388
+      ExtraProps_195: 21300390
+      ExtraProps_196: 21300392
+      ExtraProps_197: 21300394
+      ExtraProps_198: 21300396
+      ExtraProps_199: 21300398
+      ExtraProps_2: 21300004
+      ExtraProps_20: 21300040
+      ExtraProps_200: 21300400
+      ExtraProps_201: 21300402
+      ExtraProps_202: 21300404
+      ExtraProps_203: 21300406
+      ExtraProps_204: 21300408
+      ExtraProps_205: 21300410
+      ExtraProps_206: 21300412
+      ExtraProps_207: 21300414
+      ExtraProps_208: 21300416
+      ExtraProps_209: 21300418
+      ExtraProps_21: 21300042
+      ExtraProps_210: 21300420
+      ExtraProps_211: 21300422
+      ExtraProps_212: 21300424
+      ExtraProps_213: 21300426
+      ExtraProps_214: 21300428
+      ExtraProps_215: 21300430
+      ExtraProps_216: 21300432
+      ExtraProps_217: 21300434
+      ExtraProps_218: 21300436
+      ExtraProps_219: 21300438
+      ExtraProps_22: 21300044
+      ExtraProps_220: 21300440
+      ExtraProps_221: 21300442
+      ExtraProps_222: 21300444
+      ExtraProps_23: 21300046
+      ExtraProps_24: 21300048
+      ExtraProps_25: 21300050
+      ExtraProps_26: 21300052
+      ExtraProps_27: 21300054
+      ExtraProps_28: 21300056
+      ExtraProps_29: 21300058
+      ExtraProps_3: 21300006
+      ExtraProps_30: 21300060
+      ExtraProps_31: 21300062
+      ExtraProps_32: 21300064
+      ExtraProps_33: 21300066
+      ExtraProps_34: 21300068
+      ExtraProps_35: 21300070
+      ExtraProps_36: 21300072
+      ExtraProps_37: 21300074
+      ExtraProps_38: 21300076
+      ExtraProps_39: 21300078
+      ExtraProps_4: 21300008
+      ExtraProps_40: 21300080
+      ExtraProps_41: 21300082
+      ExtraProps_42: 21300084
+      ExtraProps_43: 21300086
+      ExtraProps_44: 21300088
+      ExtraProps_45: 21300090
+      ExtraProps_46: 21300092
+      ExtraProps_47: 21300094
+      ExtraProps_48: 21300096
+      ExtraProps_49: 21300098
+      ExtraProps_5: 21300010
+      ExtraProps_50: 21300100
+      ExtraProps_51: 21300102
+      ExtraProps_52: 21300104
+      ExtraProps_53: 21300106
+      ExtraProps_54: 21300108
+      ExtraProps_55: 21300110
+      ExtraProps_56: 21300112
+      ExtraProps_57: 21300114
+      ExtraProps_58: 21300116
+      ExtraProps_59: 21300118
+      ExtraProps_6: 21300012
+      ExtraProps_60: 21300120
+      ExtraProps_61: 21300122
+      ExtraProps_62: 21300124
+      ExtraProps_63: 21300126
+      ExtraProps_64: 21300128
+      ExtraProps_65: 21300130
+      ExtraProps_66: 21300132
+      ExtraProps_67: 21300134
+      ExtraProps_68: 21300136
+      ExtraProps_69: 21300138
+      ExtraProps_7: 21300014
+      ExtraProps_70: 21300140
+      ExtraProps_71: 21300142
+      ExtraProps_72: 21300144
+      ExtraProps_73: 21300146
+      ExtraProps_74: 21300148
+      ExtraProps_75: 21300150
+      ExtraProps_76: 21300152
+      ExtraProps_77: 21300154
+      ExtraProps_78: 21300156
+      ExtraProps_79: 21300158
+      ExtraProps_8: 21300016
+      ExtraProps_80: 21300160
+      ExtraProps_81: 21300162
+      ExtraProps_82: 21300164
+      ExtraProps_83: 21300166
+      ExtraProps_84: 21300168
+      ExtraProps_85: 21300170
+      ExtraProps_86: 21300172
+      ExtraProps_87: 21300174
+      ExtraProps_88: 21300176
+      ExtraProps_89: 21300178
+      ExtraProps_9: 21300018
+      ExtraProps_90: 21300180
+      ExtraProps_91: 21300182
+      ExtraProps_92: 21300184
+      ExtraProps_93: 21300186
+      ExtraProps_94: 21300188
+      ExtraProps_95: 21300190
+      ExtraProps_96: 21300192
+      ExtraProps_97: 21300194
+      ExtraProps_98: 21300196
+      ExtraProps_99: 21300198
+  mipmapLimitGroupName: 
   pSDRemoveMatte: 0
-  pSDShowRemoveMatteOption: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 
