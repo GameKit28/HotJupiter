@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using HexasphereGrid;
 
-namespace HexasphereGrid {
+namespace HexasphereGrid_Demos {
 	public class Demo2 : MonoBehaviour {
 
 		[Tooltip ("Texture with colored territories.")]
@@ -34,7 +35,7 @@ namespace HexasphereGrid {
 		}
 
 
-		void TileMouseOver (int tileIndex) {
+		void TileMouseOver (Hexasphere hexa, int tileIndex) {
 
 			// Get color of current cell
 			Color32 cellColor = hexa.GetTileColor (tileIndex, true);

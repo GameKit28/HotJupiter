@@ -1,4 +1,4 @@
-Shader "Hexasphere/Text" {
+﻿Shader "Hexasphere/Text" {
 	Properties {
 		_MainTex ("Font Texture", 2D) = "white" {}
 		_Color ("Text Color", Color) = (1,1,1,1)
@@ -6,12 +6,11 @@ Shader "Hexasphere/Text" {
 
 
 		SubShader{
-			Tags { "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent" "RenderPipeline" = "LightweightPipeline" }
+			Tags { "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent" "RenderPipeline" = "UniversalPipeline" }
 			Lighting Off Cull Off Fog { Mode Off }
 			ZWrite Off
 			Blend SrcAlpha OneMinusSrcAlpha
 			Pass {
-				// Tags { "LightMode" = "LightweightForward" }
 				 CGPROGRAM
 				 #pragma vertex vert
 				 #pragma fragment frag
@@ -23,12 +22,14 @@ Shader "Hexasphere/Text" {
 					 float4 vertex : POSITION;
 					 fixed4 color : COLOR;
 					 float2 texcoord : TEXCOORD0;
+					 UNITY_VERTEX_INPUT_INSTANCE_ID
 				 };
 
 				 struct v2f {
 					 float4 vertex : POSITION;
 					 fixed4 color : COLOR;
 					 float2 texcoord : TEXCOORD0;
+					UNITY_VERTEX_OUTPUT_STEREO
 				 };
 
 				 sampler2D _MainTex;
@@ -38,11 +39,15 @@ Shader "Hexasphere/Text" {
 				 v2f vert(appdata_t v)
 				 {
 					 v2f o;
+	                 UNITY_SETUP_INSTANCE_ID(v);
+					 UNITY_INITIALIZE_OUTPUT(v2f, o);
+					 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+
 					 o.vertex = UnityObjectToClipPos(v.vertex);
 					 #if UNITY_REVERSED_Z
-					 o.vertex.z += 0.001;
+						 o.vertex.z += 0.001;
 					 #else
-					 o.vertex.z -= 0.001;
+						 o.vertex.z -= 0.001;
 					 #endif  
 					 o.color = v.color * _Color;
 					 o.texcoord = TRANSFORM_TEX(v.texcoord,_MainTex);
@@ -76,12 +81,14 @@ Shader "Hexasphere/Text" {
 				float4 vertex : POSITION;
 				fixed4 color : COLOR;
 				float2 texcoord : TEXCOORD0;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
 
 			struct v2f {
 				float4 vertex : POSITION;
 				fixed4 color : COLOR;
 				float2 texcoord : TEXCOORD0;
+                UNITY_VERTEX_OUTPUT_STEREO
 			};
 
 			sampler2D _MainTex;
@@ -91,11 +98,15 @@ Shader "Hexasphere/Text" {
 			v2f vert (appdata_t v)
 			{
 				v2f o;
+                UNITY_SETUP_INSTANCE_ID(v);
+                UNITY_INITIALIZE_OUTPUT(v2f, o);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+
 				o.vertex = UnityObjectToClipPos(v.vertex);
 				#if UNITY_REVERSED_Z
-				o.vertex.z += 0.001;
+					o.vertex.z += 0.001;
 				#else
-				o.vertex.z -= 0.001;
+					o.vertex.z -= 0.001;
 				#endif	
 				o.color = v.color * _Color;
 				o.texcoord = TRANSFORM_TEX(v.texcoord,_MainTex);

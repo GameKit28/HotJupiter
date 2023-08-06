@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using HexasphereGrid;
 
-namespace HexasphereGrid {
+namespace HexasphereGrid_Demos {
 	public class Demo5 : MonoBehaviour {
 
 		public Texture2D heightMap, worldColors;

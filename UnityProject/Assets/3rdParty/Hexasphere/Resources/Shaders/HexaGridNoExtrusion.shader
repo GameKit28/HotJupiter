@@ -8,7 +8,7 @@
 
 
     SubShader {
-            Tags { "Queue" = "Geometry-2" "RenderPipeline" = "LightweightPipeline" }
+            Tags { "Queue" = "Geometry-2" "RenderPipeline" = "UniversalPipeline" }
             Pass {
                     Blend[_SrcBlend][_DstBlend]
                     ZWrite[_ZWrite]
@@ -16,7 +16,6 @@
                     #pragma vertex vert
                     #pragma fragment frag
                     #pragma fragmentoption ARB_precision_hint_fastest
-        //#pragma multi_compile_fwdbase nolightmap nodynlightmap novertexlight nodirlightmap
         #include "UnityCG.cginc"
         #include "AutoLight.cginc"
 
@@ -24,15 +23,21 @@
 
         struct appdata {
             float4 vertex   : POSITION;
+            UNITY_VERTEX_INPUT_INSTANCE_ID
         };
 
         struct v2f {
             float4 pos      : SV_POSITION;
             SHADOW_COORDS(0)
+            UNITY_VERTEX_OUTPUT_STEREO
         };
 
         v2f vert(appdata v) {
             v2f o;
+                UNITY_SETUP_INSTANCE_ID(v);
+                UNITY_INITIALIZE_OUTPUT(v2f, o);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+
             o.pos = UnityObjectToClipPos(v.vertex);
             TRANSFER_SHADOW(o);
             return o;
@@ -69,15 +74,21 @@
 
                 struct appdata {
     				float4 vertex   : POSITION;
+                    UNITY_VERTEX_INPUT_INSTANCE_ID
     			};
 
 				struct v2f {
 	    			float4 pos      : SV_POSITION;
 	    			SHADOW_COORDS(0)
+                    UNITY_VERTEX_OUTPUT_STEREO
 				};
 
 				v2f vert(appdata v) {
     				v2f o;
+                UNITY_SETUP_INSTANCE_ID(v);
+                UNITY_INITIALIZE_OUTPUT(v2f, o);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+
 	                o.pos = UnityObjectToClipPos(v.vertex);
 	                TRANSFER_SHADOW(o);
     				return o;

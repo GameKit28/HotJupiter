@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using HexasphereGrid;
 
-namespace HexasphereGrid {
+namespace HexasphereGrid_Demos {
 	public class Demo3 : MonoBehaviour {
 
 		[Tooltip ("Texture with elevation data. The red channel is used as the height value.")]
@@ -41,7 +42,7 @@ namespace HexasphereGrid {
 				float distance = 1.0f + (pos - epicenter).sqrMagnitude * 50f;
 
 				// calculate wave
-				float extrusionAmount = 0.5f + Mathf.Sin (-time + distance * 10f) * 0.5f / (distance * distance);
+				float extrusionAmount = Mathf.Sin (-time + distance * 10f) * 0.5f / (distance * distance);
 
 				// make average with previous value to smooth changes
 				extrusionAmount = (extrusionAmount + tile.extrudeAmount) * 0.5f;
