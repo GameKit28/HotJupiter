@@ -12,7 +12,7 @@ namespace HexasphereGrid {
 			_gpu_scale (tex, width, height, mode);
 
 			// Update new texture
-			tex.Resize (width, height);
+			tex.Reinitialize (width, height);
 			tex.ReadPixels (texR, 0, 0, true);
 			tex.Apply (true);
 
