@@ -1,3 +1,6 @@
 [submodule "UnityProject/Assets/MeEngine"]
 	path = UnityProject/Assets/MeEngine
 	url = git@github.com:GameKit28/MeEngine.git
+[submodule "UnityProject/Assets/BoardGameToolkit"]
+	path = UnityProject/Assets/BoardGameToolkit
+	url = git@github.com:GameKit28/BoardGameToolkit.git
