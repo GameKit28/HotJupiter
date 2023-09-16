@@ -10,6 +10,8 @@ jobs:
       # Checkout (without LFS)
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          submodules: true
 
       # Git LFS
       - name: Create LFS file list
@@ -24,7 +26,7 @@ jobs:
 
       - name: Git LFS Pull
         run: |
-          git lfs pull
+          git lfs pull --recurse-submodules
           git add .
           git reset --hard
 
