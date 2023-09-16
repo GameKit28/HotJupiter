@@ -48,10 +48,10 @@ jobs:
 
       # Upload Test Artifacts
       - uses: actions/upload-artifact@v2
-      if: always()
-      with:
-        name: Test results
-        path: artifacts
+        if: always()
+        with:
+          name: Test results
+          path: artifacts
 
       # Build
       - name: Build project
