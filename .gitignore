@@ -74,7 +74,7 @@ UnityProject/Assets/csc.rsp
 
 UnityProject/ProjectSettings/GraphicsSettings.asset
 UnityProject/ProjectSettings/ProjectSettings.asset
-UnityProject/ProjectSettings/ProjectVersion.txt
+#UnityProject/ProjectSettings/ProjectVersion.txt
 
 #ignore specific folders
 #MeEngine is SysLinked
