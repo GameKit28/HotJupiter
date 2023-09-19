@@ -67,6 +67,7 @@ jobs:
         with:
           projectPath: UnityProject
           targetPlatform: StandaloneWindows64
+          allowDirtyBuild: true
 
       # Output
       - uses: actions/upload-artifact@v3
