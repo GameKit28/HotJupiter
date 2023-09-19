@@ -57,6 +57,15 @@ jobs:
           name: Test results
           path: artifacts
 
+      # Free Disk Space
+      - name: Free Disk Space
+        run: |
+          sudo swapoff -a
+          sudo rm -f /swapfile
+          sudo apt clean
+          docker rmi $(docker images -q)
+          df -h
+
       # Build
       - name: Build project
         uses: game-ci/unity-builder@v3
