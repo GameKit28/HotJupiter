@@ -1,8 +1,6 @@
 ﻿Shader "Hexasphere/HexaGridNoExtrusionSpotlight" {
     Properties {
         _Color ("Main Color", Color) = (1,0.5,0.5,1)
-		[HideInInspector] _SrcBlend ("__src", Float) = 1.0
-		[HideInInspector] _DstBlend ("__dst", Float) = 0.0
 		[HideInInspector] _ZWrite ("__zw", Float) = 1.0
         _Radius ("Cutoff Radius", Range(0.1, 500)) = 2
         [HideInInspector] _Center ("Cutoff Center", Vector) = (0,0,0,0)
@@ -12,7 +10,6 @@
     SubShader {
         Tags { "Queue" = "Geometry-2" "RenderPipeline" = "UniversalPipeline" }
         Pass {
-            //Blend[_SrcBlend][_DstBlend]
             ZWrite[_ZWrite]
             CGPROGRAM
 
@@ -60,16 +57,14 @@
             }
 
             fixed4 frag(v2f i) : SV_Target {
-                //fixed atten = SHADOW_ATTENUATION(i);
                 fixed4 color = _Color;
-                //color.a = i.dist;
-
-                //color.rgb *= atten;
-                //clip(5 - i.dist);
-                //fixed r;
-                //modf(i.dist, r);
                 clip(_Radius - i.dist);
-                //color.rgb = color * (1 - clamp(i.dist / _Radius, 0, 1));
+
+                fixed whitePulse = (cos((_Time * -35) + (i.dist * 0.5)) + 1) / 2;
+                //(((_Time * 50) + i.dist) % _Radius) / _Radius;
+                whitePulse = pow(whitePulse, 100);
+                color.rgb = lerp(color.rgb, fixed3(1, 1, 1), fixed3(whitePulse, whitePulse, whitePulse));
+
                 return color;
             }
             ENDCG
