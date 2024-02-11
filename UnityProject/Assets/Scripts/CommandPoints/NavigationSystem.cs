@@ -93,7 +93,7 @@ public class NavigationSystem: MonoBehaviour
 
         //Climb Altitude
         if(pieceController.pieceTemplate.effortlessClimb){
-            if(pieceController.GetPivotTileLevel() < 6){
+            if(pieceController.GetPivotTileLevel() < HexMapHelper.MaxLevel){
                 InstantiateCommandPoint(
                     startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity),
                     pieceController.GetPivotTileLevel() + 1,
@@ -101,7 +101,7 @@ public class NavigationSystem: MonoBehaviour
                 }
 
         }else{
-            if(pieceController.GetPivotTileLevel() < 6 && pieceController.gamePiece.currentVelocity >= 2){
+            if(pieceController.GetPivotTileLevel() < HexMapHelper.MaxLevel && pieceController.gamePiece.currentVelocity >= 2){
                 InstantiateCommandPoint(
                     startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity - 1),
                     pieceController.GetPivotTileLevel() + 1,

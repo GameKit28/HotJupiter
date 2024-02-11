@@ -14,11 +14,14 @@ public class HexMapUI : MonoBehaviour
     public static EventPublisher eventPublisher { get; private set; } = new EventPublisher();
 
     public List<Hexasphere> tileSpheres = new List<Hexasphere>();
+    public WorldCursor cursor;
     static HexMapUI instance;
 
     public float scrollThreshold = 0.1f;
 
     public int startingUIMapLevel = 2;
+
+    private const string shaderWorldPosVariable = "_Center";
 
     public static int currentUIMapLevel {
         get {
@@ -55,6 +58,10 @@ public class HexMapUI : MonoBehaviour
 
     void Start(){
         HideAllButCurrentUILevel();
+
+        if(HexMapHelper.MaxLevel != instance.tileSpheres.Count - 1){
+            Debug.LogWarning($"HexMapUI expects to have {HexMapHelper.MaxLevel + 1} tileSperes to match the HexMapHelper MaxLevel.");
+        }
     }
 
     void Update(){
@@ -63,6 +70,11 @@ public class HexMapUI : MonoBehaviour
         }else if((Input.mouseScrollDelta.y < -scrollThreshold  || Input.GetKeyDown(KeyCode.KeypadMinus)) && _UIMapLevel > 0) {
             SetUIMapLevel(_UIMapLevel - 1);
         }
+
+        //Update Grid Shader Based on Mouse Position
+        Vector3 cursorWorldPosition = cursor.CursorWorldPosition;
+        MeshRenderer renderer = currentTilemap.GetComponentInChildren<MeshRenderer>();
+        renderer.material.SetVector(shaderWorldPosVariable, cursorWorldPosition);
     }
 
     private void HideAllButCurrentUILevel(){

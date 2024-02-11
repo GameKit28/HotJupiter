@@ -88,6 +88,7 @@ public class HexMapHelper : MonoBehaviour
     public PlanetSizer planetSizer;
 
     public const float HexWidth = 1.0f; //The incircle diameter of a hexagon
+    public const int MaxLevel = 5;
 
     void Awake(){
         instance = this;
@@ -238,7 +239,7 @@ public class HexMapHelper : MonoBehaviour
     }*/
 
     public static int GetLevelFromAltitude(float altitude){
-        return Mathf.Clamp(Mathf.RoundToInt((altitude + gridFirstAltitudeOffset) / gridAltitudeOffsets), 0, 6);
+        return Mathf.Clamp(Mathf.RoundToInt((altitude + gridFirstAltitudeOffset) / gridAltitudeOffsets), 0, MaxLevel);
     }
 
     public static float GetAltitudeFromLevel(int level) {

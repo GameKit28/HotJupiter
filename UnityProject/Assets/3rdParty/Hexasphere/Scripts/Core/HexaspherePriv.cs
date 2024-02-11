@@ -747,7 +747,7 @@ namespace HexasphereGrid {
         Material gridMatNoExtrusion {
             get {
                 if (_gridMatNoExtrusion == null) {
-                    _gridMatNoExtrusion = Instantiate(Resources.Load<Material>("Materials/HexaGridMatNoExtrusion"));
+                    _gridMatNoExtrusion = Instantiate(Resources.Load<Material>("Materials/HexaGridMatNoExtrusionSpotlight"));
                     _gridMatNoExtrusion.hideFlags = HideFlags.DontSave;
                 }
                 return _gridMatNoExtrusion;
