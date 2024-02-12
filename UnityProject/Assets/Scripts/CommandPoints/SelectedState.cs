@@ -30,7 +30,7 @@ public partial class CommandPointFsm {
             //Swap Color between (Cyan selected color and level color)
             swapCountdown -= TimeManager.UIDeltaTime;
             if(swapCountdown < 0) {
-                ParentFsm.sprite.GetComponentInChildren<SpriteRenderer>().color = isBaseColor ? Color.cyan : HexMapUI.GetLevelColor(ParentFsm.destinationLevel);
+                ParentFsm.sprite.GetComponentInChildren<SpriteRenderer>().color = isBaseColor ? Color.white : HexMapUI.GetLevelColor(ParentFsm.destinationLevel);
                 swapCountdown += colorSwapRate;
                 isBaseColor = !isBaseColor;
             }
