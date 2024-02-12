@@ -54,11 +54,11 @@ namespace HotJupiter{
                 endPosition - endHeading, endPosition + endHeading, true));
         }
 
-        public void SubscribeNavigationEvents(EventPublisher navigationSystemEventPublisher)
+        public void SubscribeNavigationEvents(NavigationSystem navigationSystem)
         {
             if(view != null) {
-                navigationSystemEventPublisher.SubscribeAll(view);
-                view.eventPublisher.SubscribeAll(this);
+                navigationSystem.eventPublisher.SubscribeAll(view);
+                view.eventPublisher.SubscribeAll(navigationSystem);
             }
         }
     }

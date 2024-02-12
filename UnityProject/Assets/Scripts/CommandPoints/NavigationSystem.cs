@@ -156,7 +156,7 @@ namespace HotJupiter{
             commandPoint.SetEndVelocity(endVelocity);
             commandPoint.SetGForce(Mathf.Max(0, gForce));
             commandPoint.SetTilePath(path); //Hidden knowledge, must be called after SetGForce
-            commandPoint.SubscribeNavigationEvents(this.eventPublisher);
+            commandPoint.SubscribeNavigationEvents(this);
 
             availableCommandPoints.Add(commandPoint);
             return commandPoint;
