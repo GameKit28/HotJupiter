@@ -4,6 +4,8 @@ using UnityEngine;
 using BansheeGz.BGSpline.Curve;
 using BansheeGz.BGSpline.Components;
 using MeEngine.Events;
+
+namespace HotJupiter {
 public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
 {
     public BaseManuStats pieceTemplate;
@@ -93,4 +95,5 @@ public class PieceController : MonoBehaviour, IHaveTilePosition, IHaveTileFacing
     void OnStartPlayingOutTurn(GameControllerFsm.Events.BeginPlayingOutTurnState @event){
         SetActivePath(selectedCommandPoint.model.spline);
     }
+}
 }

@@ -4,6 +4,8 @@ using UnityEngine;
 using BansheeGz.BGSpline.Curve;
 using BansheeGz.BGSpline.Components;
 using MeEngine.Events;
+
+namespace HotJupiter {
 public abstract class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveTileFacing, IHaveTileFootprint
 {
     public static class Events {
@@ -81,4 +83,5 @@ public abstract class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveTil
         PositionAndOrientPiece();
         gameObject.SetActive(true);
     }
+}
 }

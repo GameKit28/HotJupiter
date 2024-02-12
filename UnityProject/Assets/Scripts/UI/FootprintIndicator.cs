@@ -4,6 +4,7 @@ using UnityEngine;
 using MeEngine.Events;
 using HexasphereGrid;
 
+namespace HotJupiter {
 public class FootprintIndicator : MonoBehaviour
 {
     const bool hideWhenExecuting = true;
@@ -128,4 +129,5 @@ public class FootprintIndicator : MonoBehaviour
     private void OnPlayingOutTurnEnd(GameControllerFsm.Events.EndPlayingOutTurnState @event){
         GetComponent<MeshRenderer>().enabled = true;
     }
+}
 }

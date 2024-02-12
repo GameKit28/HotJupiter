@@ -25,7 +25,7 @@ namespace HexasphereGrid {
 			src.Apply (true);	
 
 			//Using RTT for best quality and performance. Thanks, Unity 5
-			RenderTexture rtt = new RenderTexture (width, height, 32);
+			RenderTexture rtt = new RenderTexture (width, height, 16);
 
 			//Set the RTT in order to render to it
 			Graphics.SetRenderTarget (rtt);
@@ -34,7 +34,7 @@ namespace HexasphereGrid {
 			GL.LoadPixelMatrix (0, 1, 1, 0);
 
 			//Then clear & draw the texture to fill the entire RTT.
-			GL.Clear (true, true, new Color (0, 0, 0, 0));
+			GL.Clear(true, true, Color.black);
 			Graphics.DrawTexture (new Rect (0, 0, 1, 1), src);
 
 		}

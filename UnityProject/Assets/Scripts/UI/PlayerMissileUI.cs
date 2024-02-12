@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using MeEngine.Events;
 
+namespace HotJupiter {
 public class PlayerMissileUI : MonoBehaviour
 {
     public ShipGamePiece playerGamePiece;
@@ -41,4 +42,5 @@ public class PlayerMissileUI : MonoBehaviour
             toggleButton.GetComponentInChildren<Text>().text = "Reloading";
         }
     }
+}
 }

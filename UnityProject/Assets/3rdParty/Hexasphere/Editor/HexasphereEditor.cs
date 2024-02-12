@@ -246,10 +246,10 @@ namespace HexasphereGrid {
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Export Wireframe")) {
                 if (EditorUtility.DisplayDialog("Create Asset", "Current hexasphere wireframe mesh will be exported to project root.", "Ok", "Cancel")) {
-                    Transform t = hexa.transform.Find("WireFrame/Wire");
+                    Transform t = hexa.transform.Find("WireFrame");
                     if (t != null) {
-                        MeshFilter mf = t.GetComponent<MeshFilter>();
-                        if (mf != null) {
+                        MeshFilter[] mfs = t.GetComponentsInChildren<MeshFilter>();
+                        foreach (MeshFilter mf in mfs) {
                             SaveMeshAsset(mf.sharedMesh);
                         }
                     }
@@ -257,15 +257,21 @@ namespace HexasphereGrid {
             }
             if (GUILayout.Button("Export Model")) {
                 if (EditorUtility.DisplayDialog("Create Asset", "Current hexasphere shaded model will be exported to project root.", "Ok", "Cancel")) {
-                    Transform t = hexa.transform.Find("ShadedFrame/Shade");
+                    Transform t = hexa.transform.Find("ShadedFrame");
                     if (t != null) {
-                        MeshFilter mf = t.GetComponent<MeshFilter>();
-                        if (mf != null) {
+                        MeshFilter[] mfs = t.GetComponentsInChildren<MeshFilter>();
+                        foreach (MeshFilter mf in mfs) {
                             SaveMeshAsset(mf.sharedMesh);
                         }
                     }
                 }
             }
+            if (GUILayout.Button("Export Hexasphere")) {
+                if (EditorUtility.DisplayDialog("Export Hexasphere", "This operation will create a permanent copy of the hexasphere in the scene.", "Ok", "Cancel")) {
+                    SaveHexasphere();
+                }
+            }
+
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.Separator();
 
@@ -471,7 +477,7 @@ namespace HexasphereGrid {
                     if (!e.shift && !e.control) {
                         tileSelectedIndices.Clear();
                     }
-                    if (!tileSelectedIndices.Contains(tileHighlightedIndex)) { 
+                    if (!tileSelectedIndices.Contains(tileHighlightedIndex)) {
                         tileSelectedIndices.Add(tileHighlightedIndex);
                     }
 
@@ -539,9 +545,16 @@ namespace HexasphereGrid {
                     break;
             }
             mesh = Instantiate<Mesh>(mesh);
+            path = AssetDatabase.GenerateUniqueAssetPath(path);
             AssetDatabase.CreateAsset(mesh, path);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+        }
+
+        void SaveHexasphere() {
+            GameObject o = hexa.Export();
+            EditorGUIUtility.PingObject(o);
+            GUIUtility.ExitGUI();
         }
 
         void ResetTiles() {
@@ -619,7 +632,7 @@ namespace HexasphereGrid {
                     renderingMode = (int)renderingModeField.GetValue(renderer);
                 }
 
-                if (renderingMode == 0 && depthPrimingMode != 0) {
+                if (depthPrimingMode > 0 && renderingMode != 1) {
                     EditorGUILayout.HelpBox("Depth Priming Mode in URP asset must be disabled.", MessageType.Warning);
                     if (GUILayout.Button("Show Pipeline Asset")) {
                         Selection.activeObject = (Object)renderer;

@@ -70,7 +70,7 @@
             fixed atten = SHADOW_ATTENUATION(i);
             #if HEXA_LIT
                 float d = saturate(dot(normalize(i.norm), _MainLightPosition.xyz));
-                color = (color * _MainLightColor) * d;
+                color.rgb = (color.rgb * _MainLightColor.rgb) * d;
             #endif
             color *= _Color;
             color.rgb *= atten;
@@ -146,7 +146,7 @@
     				fixed atten = SHADOW_ATTENUATION(i);
                     #if HEXA_LIT
                         float d = saturate(dot(normalize(i.norm), _WorldSpaceLightPos0.xyz));
-                        color = (color * _LightColor0) * d;
+                        color.rgb = (color.rgb * _LightColor0.rgb) * d;
                     #endif
     				color *= _Color;
     				color.rgb *= atten;

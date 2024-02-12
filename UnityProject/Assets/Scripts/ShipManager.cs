@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
+namespace HotJupiter {
 public class ShipManager : MonoBehaviour
 {
     private static List<ShipGamePiece> allShips;
@@ -16,4 +17,5 @@ public class ShipManager : MonoBehaviour
     public static List<ShipGamePiece> GetAllShips(){
         return allShips;
     }
+}
 }

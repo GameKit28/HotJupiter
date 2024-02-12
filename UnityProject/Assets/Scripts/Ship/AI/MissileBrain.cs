@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MeEngine.Events;
 
+namespace HotJupiter {
 public class MissileBrain : BaseBrain<MissileGamePiece>
 {   
     void Awake() {
@@ -76,4 +77,5 @@ public class MissileBrain : BaseBrain<MissileGamePiece>
         Debug.Log("Missile Selecing Command");
         pieceController.SetSelectedCommandPoint(SelectCommand());
     }
+}
 }

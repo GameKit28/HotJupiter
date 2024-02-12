@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MeEngine.FsmManagement;
 
+namespace HotJupiter {
 public partial class CommandPointViewFsm {
     public class WaitingState : MeFsmState<CommandPointViewFsm>
     {
@@ -18,4 +19,5 @@ public partial class CommandPointViewFsm {
             SwapState<HoverState>();
         }
     }
+}
 }

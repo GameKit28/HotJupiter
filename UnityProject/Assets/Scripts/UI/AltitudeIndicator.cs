@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MeEngine.Events;
 
+namespace HotJupiter {
 public class AltitudeIndicator : MonoBehaviour
 {
     //private const bool hideWhenExecuting = true;
@@ -65,4 +66,5 @@ public class AltitudeIndicator : MonoBehaviour
         heightCylinder.GetComponentInChildren<MeshRenderer>().enabled = true;
         baseSprite.GetComponent<SpriteRenderer>().enabled = true;
     }*/
+}
 }

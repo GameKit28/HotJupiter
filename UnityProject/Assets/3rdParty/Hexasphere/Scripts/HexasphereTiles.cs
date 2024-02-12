@@ -18,12 +18,12 @@ namespace HexasphereGrid {
         /// <summary>
         /// Array of generated tiles.
         /// </summary>
-        public Tile[] tiles;
+        public HexasphereGrid.Tile[] tiles;
 
         /// <summary>
         /// Returns the index of the tile in the tiles list
         /// </summary>
-        public int GetTileIndex(Tile tile) {
+        public int GetTileIndex(HexasphereGrid.Tile tile) {
             if (tiles == null)
                 return -1;
             return tile.index;
@@ -162,10 +162,6 @@ namespace HexasphereGrid {
             for (int k = 0; k < tc; k++) {
                 int tileIndex = tileIndices[k];
                 SetTileMaterial(tileIndex, mat, temporary);
-                if (!temporary) {
-                    Tile tile = tiles[tileIndex];
-                    colorShadedDirty[tile.uvShadedChunkIndex] = true;
-                }
             }
             if (!temporary) {
                 pendingColorsUpdate = true;
@@ -180,8 +176,9 @@ namespace HexasphereGrid {
         /// <param name="texture">Color.</param>
         /// <param name="temporary">If set to <c>true</c> the tile is colored temporarily and returns to default color when it gets unselected.</param>
         public bool SetTileTexture(int tileIndex, Texture2D texture, bool temporary = false) {
-            if (!temporary)
+            if (!temporary) {
                 pendingTextureArrayUpdate = true;
+            }
             return SetTileTexture(tileIndex, texture, Color.white, temporary);
         }
 
@@ -241,8 +238,7 @@ namespace HexasphereGrid {
         /// </summary>
         /// <param name="tileIndex">Tile index.</param>
         public float GetTileTextureRotation(int tileIndex) {
-            if (tileIndex < 0 || tileIndex >= tiles.Length)
-                return 0;
+            if (!ValidTileIndex(tileIndex)) return 0;
             return tiles[tileIndex].rotation;
         }
 
@@ -253,19 +249,30 @@ namespace HexasphereGrid {
         /// <returns>The tile rotation.</returns>
         /// <param name="tileIndex">Tile index.</param>
         public float GetTileVertex0Angle(int tileIndex) {
-            if (tileIndex < 0 || tileIndex >= tiles.Length)
-                return 0;
+            if (!ValidTileIndex(tileIndex)) return 0;
 
-            Vector3 tileCenter = (tiles[tileIndex].vertices[0] + tiles[tileIndex].vertices[3]) * 0.5f;
-            Vector3 v0 = tiles[tileIndex].vertices[0] - tileCenter;
-
+            Tile tile = tiles[tileIndex];
+            Vector3 tileCenter;
+            Vector3[] tileVertices = tile.vertices;
             float angle;
+
+            if (tileVertices.Length == 5) {
+                tileCenter = (tileVertices[0] + tileVertices[2] + tileVertices[3]) / 3f;
+                angle = 18.7f;
+            } else {
+                tileCenter = (tileVertices[0] + tileVertices[3]) / 2f;
+                angle = 0;
+            }
+            Vector3 v0 = tile.vertices[0] - tileCenter;
+
             if (tileCenter.y > 0) {
                 Vector3 v1 = new Vector3(0, 0.5f, 0) - tileCenter;
-                angle = -SignedAngle(v0, v1, tileCenter);
+                v1 = Vector3.ProjectOnPlane(v1, tileCenter);
+                angle -= SignedAngle(v0, v1, tileCenter);
             } else {
                 Vector3 v1 = new Vector3(0, -0.5f, 0) - tileCenter;
-                angle = -SignedAngle(v0, v1, tileCenter) + 180f;
+                v1 = Vector3.ProjectOnPlane(v1, tileCenter);
+                angle -= SignedAngle(v0, v1, tileCenter) + 180f;
             }
             return angle * Mathf.Deg2Rad;
         }
@@ -273,17 +280,15 @@ namespace HexasphereGrid {
 
         public int GetTileVertexCount(int tileIndex) {
             if (!ValidTileIndex(tileIndex)) return 0;
-
             return tiles[tileIndex].vertexPoints.Length;
-
         }
 
         /// <summary>
         /// Sets texture rotation of tile so its top edge points to North
         /// </summary>
         public bool SetTileTextureRotationToNorth(int tileIndex) {
-            if (tileIndex < 0 || tileIndex >= tiles.Length)
-                return false;
+            if (!ValidTileIndex(tileIndex)) return false;
+
             float angle = GetTileVertex0Angle(tileIndex);
             float rotation = -angle - Mathf.PI * 0.5f;
             return SetTileTextureRotation(tileIndex, rotation);
@@ -295,9 +300,8 @@ namespace HexasphereGrid {
         /// Texture index is from 1..32. It will return 0 if texture does not exist or it does not match any texture in the list of textures.
         /// </summary>
         public int GetTileTextureIndex(int tileIndex) {
-            if (tileIndex < 0 || tileIndex >= tiles.Length) {
-                return 0;
-            }
+            if (!ValidTileIndex(tileIndex)) return 0;
+
             Material mat = tiles[tileIndex].customMat;
             if (mat == null || !mat.HasProperty(ShaderParams.MainTex)) {
                 return 0;
@@ -773,31 +777,52 @@ namespace HexasphereGrid {
         /// </summary>
         /// <returns>The tiles within distance.</returns>
         /// <param name="maxSteps">Max number of steps.</param>
-        public List<int> GetTilesWithinSteps(int tileIndex, int maxSteps) {
-            if (tileIndex < 0 || tileIndex >= tiles.Length)
-                return null;
+        /// <param name="usePathFinding">If true (by default), the algorithm takes into account if the destination tile can be reached using path-finding (checks if tiles can be crossed)</param>
+        public List<int> GetTilesWithinSteps(int tileIndex, int maxSteps, bool usePathFinding = true) {
+            if (!ValidTileIndex(tileIndex)) return null;
 
             List<int> candidates = new List<int>(GetTileNeighbours(tileIndex));
             Dictionary<int, bool> processed = new Dictionary<int, bool>(tileIndex); // dictionary is faster for value types than HashSet
             processed[tileIndex] = true;
             List<int> results = new List<int>();
-            int candidateLast = candidates.Count - 1;
-            while (candidateLast >= 0) {
-                // Pop candidate
-                int t = candidates[candidateLast];
-                candidates.RemoveAt(candidateLast);
-                candidateLast--;
-                List<int> tt = FindPath(tileIndex, t, maxSteps);
-                if (tt != null && !processed.ContainsKey(t)) {
-                    results.Add(t);
-                    processed[t] = true;
-                    int[] nn = GetTileNeighbours(t);
-                    for (int k = 0; k < nn.Length; k++) {
-                        if (!processed.ContainsKey(nn[k])) {
-                            candidates.Add(nn[k]);
-                            candidateLast++;
+
+            if (usePathFinding) {
+                int candidateLast = candidates.Count - 1;
+                while (candidateLast >= 0) {
+                    // Pop candidate
+                    int t = candidates[candidateLast];
+                    candidates.RemoveAt(candidateLast);
+                    candidateLast--;
+                    List<int> tt = FindPath(tileIndex, t, maxSteps);
+                    if (tt != null && !processed.ContainsKey(t)) {
+                        results.Add(t);
+                        processed[t] = true;
+                        int[] nn = GetTileNeighbours(t);
+                        int l = nn.Length;
+                        for (int k = 0; k < l; k++) {
+                            if (!processed.ContainsKey(nn[k])) {
+                                candidates.Add(nn[k]);
+                                candidateLast++;
+                            }
                         }
                     }
+                }
+            } else {
+                List<int> resultsAtPreviousStep = new List<int> { tileIndex };
+                List<int> resultsAtCurrentStep = new List<int>();
+                for (int stepsFinished = 0; stepsFinished < maxSteps; stepsFinished++) {
+                    // Get all unique tiles adjacent to the results at the previous step that we haven't already processed
+                    resultsAtCurrentStep.Clear();
+                    foreach (var prevIndex in resultsAtPreviousStep) {
+                        foreach (int neighbor in GetTileNeighbours(prevIndex)) {
+                            if (!processed.ContainsKey(neighbor)) {
+                                resultsAtCurrentStep.Add(neighbor);
+                                results.Add(neighbor);
+                            }
+                            processed[neighbor] = true;
+                        }
+                    }
+                    resultsAtPreviousStep = resultsAtCurrentStep;
                 }
             }
             return results;

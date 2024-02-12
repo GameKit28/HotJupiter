@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MeEngine.Events;
 
+namespace HotJupiter {
 public class DirectionIndicator : MonoBehaviour
 {
     const bool hideWhenExecuting = true;
@@ -47,4 +48,5 @@ public class DirectionIndicator : MonoBehaviour
     private void OnPlayingOutTurnEnd(GameControllerFsm.Events.EndPlayingOutTurnState @event){
         GetComponentInChildren<SpriteRenderer>().enabled = true;
     }
+}
 }

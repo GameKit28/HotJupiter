@@ -4,6 +4,8 @@ using UnityEngine;
 using BansheeGz.BGSpline.Curve;
 using BansheeGz.BGSpline.Components;
 using MeEngine.Events;
+
+namespace HotJupiter {
 public class ShipGamePiece : NavigatingGamePiece
 {
     public AudioClip missileFireSound;
@@ -81,4 +83,5 @@ public class ShipGamePiece : NavigatingGamePiece
 
         missileCooldown = Mathf.Max(0, missileCooldown - 1);
     }
+}
 }

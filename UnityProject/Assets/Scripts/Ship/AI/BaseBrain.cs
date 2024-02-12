@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+namespace HotJupiter {
 public abstract class BaseBrain<TGamePiece> : MonoBehaviour
 {
     public TGamePiece myGamePiece;
@@ -16,4 +18,5 @@ public abstract class BaseBrain<TGamePiece> : MonoBehaviour
     public virtual CommandPointController SelectCommand(){
         return null;
     }
+}
 }

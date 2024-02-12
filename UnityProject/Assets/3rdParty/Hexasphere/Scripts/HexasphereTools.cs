@@ -241,8 +241,46 @@ namespace HexasphereGrid {
 			}
 		}
 
-		#endregion
 
-	}
+		/// <summary>
+		/// Creates a permanent copy of the hexasphere in the scene
+		/// </summary>
+		public GameObject Export() {
+			bool enabledState = enabled;
+			enabled = false;
+			GameObject o = Instantiate(gameObject);
+			o.transform.position = Vector3.zero;
+			Transform[] tts = o.GetComponentsInChildren<Transform>();
+			foreach(Transform t in tts) {
+				t.gameObject.hideFlags = HideFlags.None;
+				MeshFilter mf = t.GetComponent<MeshFilter>();
+				if (mf != null && mf.sharedMesh != null) {
+					Mesh mesh = Instantiate(mf.sharedMesh);
+					mesh.hideFlags = HideFlags.None;
+					mf.sharedMesh = mesh;
+				}
+				Renderer r = t.GetComponent<Renderer>();
+				if (r != null && r.sharedMaterial != null) {
+					Material mat = Instantiate(r.sharedMaterial);
+					Texture tex = mat.mainTexture;
+					if (tex != null) {
+						tex = Instantiate(tex);
+						mat.mainTexture = tex;
+					}
+					mat.hideFlags = HideFlags.None;
+					r.sharedMaterial = mat;
+				}
+			}
+			Hexasphere h = o.GetComponent<Hexasphere>();
+			h.preserveMaterials = true;
+			DestroyImmediate(h);
+
+			enabled = enabledState;
+			return o;
+		}
+
+        #endregion
+
+    }
 
 }

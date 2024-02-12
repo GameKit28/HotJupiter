@@ -4,6 +4,8 @@ using UnityEngine;
 using BansheeGz.BGSpline.Curve;
 using BansheeGz.BGSpline.Components;
 using MeEngine.Events;
+
+namespace HotJupiter {
 public class MissileGamePiece : NavigatingGamePiece
 {
     public MissileStats missileTemplate;
@@ -22,4 +24,5 @@ public class MissileGamePiece : NavigatingGamePiece
 
         footprint = new DynamicFootprint(this, missileTemplate.footprint);
     }
+}
 }

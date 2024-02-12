@@ -62,7 +62,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _BumpScale: 1
-    - _ColorShift: 0.40279388
+    - _ColorShift: 0.29477692
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0

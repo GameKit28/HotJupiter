@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MeEngine.Events;
+
+namespace HotJupiter {
 public class EnemyShipBrain : BaseBrain<ShipGamePiece>
 {
     void Awake() {
@@ -35,4 +37,5 @@ public class EnemyShipBrain : BaseBrain<ShipGamePiece>
     void OnNewTurnPost(GameControllerFsm.Events.BeginCommandSelectionStatePost @event){
         pieceController.SetSelectedCommandPoint(SelectCommand());
     }
+}
 }

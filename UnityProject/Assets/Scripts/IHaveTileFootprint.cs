@@ -1,6 +1,8 @@
 using UnityEngine;
 
-public interface IHaveTileFootprint
-{
-    FootprintBase GetFootprint();
+namespace HotJupiter{
+    public interface IHaveTileFootprint
+    {
+        FootprintBase GetFootprint();
+    }
 }

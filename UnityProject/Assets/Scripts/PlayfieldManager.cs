@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace HotJupiter {
 public class PlayfieldManager : MonoBehaviour
 {
     //Path Conflict Resolution Order
@@ -189,4 +190,5 @@ public class PlayfieldManager : MonoBehaviour
             Debug.LogWarning($"Reservation Holder {reservationHolder} has no active reservations.");
         }
     }
+}
 }

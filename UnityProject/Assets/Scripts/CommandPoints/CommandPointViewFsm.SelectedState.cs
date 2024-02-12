@@ -4,6 +4,7 @@ using UnityEngine;
 using MeEngine.FsmManagement;
 using MeEngine.Events;
 
+namespace HotJupiter {
 public partial class CommandPointViewFsm {
     public class SelectedState : MeFsmState<CommandPointViewFsm>
     {
@@ -35,4 +36,5 @@ public partial class CommandPointViewFsm {
             
         }
     }
+}
 }
