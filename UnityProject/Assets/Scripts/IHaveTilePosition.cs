@@ -1,7 +1,9 @@
 using UnityEngine;
 
-public interface IHaveTilePosition
-{
-    TileCoords GetPivotTilePosition();
-    int GetPivotTileLevel();
+namespace HotJupiter{
+    public interface IHaveTilePosition
+    {
+        TileCoords GetPivotTilePosition();
+        TileLevel GetPivotTileLevel();
+    }
 }

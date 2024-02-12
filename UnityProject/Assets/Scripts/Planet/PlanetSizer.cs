@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using HexasphereGrid;
 
+namespace HotJupiter {
 public class PlanetSizer : MonoBehaviour
 {
     public Hexasphere basePlanetSphere;
@@ -43,4 +44,5 @@ public class PlanetSizer : MonoBehaviour
         }
         Debug.Log($"Planet Sized To: {planetRadius}");
     }
+}
 }

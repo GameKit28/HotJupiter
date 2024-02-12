@@ -76,6 +76,10 @@ namespace HexasphereGrid {
         Texture2DArray finalTexArray;
         bool triggerOnGenerateEvent;
 
+        [NonSerialized]
+        public bool preserveMaterials;
+
+
         #region Gameloop events
 
         void OnEnable() {
@@ -91,6 +95,7 @@ namespace HexasphereGrid {
         }
 
         void OnDestroy() {
+            if (preserveMaterials) return;
             if (_gridMatExtrusion != null)
                 DestroyImmediate(_gridMatExtrusion);
             if (_gridMatNoExtrusion != null)
@@ -276,34 +281,6 @@ namespace HexasphereGrid {
 
         public void Init() {
 
-            if (!_tileTextureStretch) {
-                // compute hexagon uvs to fit circle
-                for (int k = 0; k < 6; k++) {
-                    float angle = Mathf.PI - k * 2f * Mathf.PI / 6f;
-                    float uvx = Mathf.Cos(angle) * 0.5f + 0.5f;
-                    float uvy = Mathf.Sin(angle) * 0.5f + 0.5f;
-                    hexagonUVsExtruded[k].x = hexagonUVs[k].x = uvx;
-                    hexagonUVsExtruded[k].y = hexagonUVs[k].y = uvy;
-                }
-                for (int k = 0; k < 6; k++) {
-                    hexagonUVsInverted[k] = hexagonUVs[k];
-                    hexagonUVsInverted[k].y = 1f - hexagonUVsInverted[k].y;
-                }
-
-                // compute pentagon uvs to fit circle
-                for (int k = 0; k < 5; k++) {
-                    float angle = Mathf.PI - (k + 1) * 2f * Mathf.PI / 5f;
-                    float uvx = Mathf.Cos(angle) * 0.5f + 0.5f;
-                    float uvy = Mathf.Sin(angle) * 0.5f + 0.5f;
-                    pentagonUVsExtruded[k].x = pentagonUVs[k].x = uvx;
-                    pentagonUVsExtruded[k].y = pentagonUVs[k].y = uvy;
-                }
-                for (int k = 0; k < 5; k++) {
-                    pentagonUVsInverted[k] = pentagonUVs[k];
-                    pentagonUVsInverted[k].y = 1f - pentagonUVs[k].y;
-                }
-            }
-
             sphereCollider = GetComponent<SphereCollider>();
             if (sphereCollider == null) {
                 sphereCollider = gameObject.AddComponent<SphereCollider>();
@@ -331,10 +308,84 @@ namespace HexasphereGrid {
             if (_cameraMain == null) {
                 _cameraMain = Camera.main;
                 if (_cameraMain == null) {
-                    _cameraMain = FindObjectOfType<Camera>();
+                    _cameraMain = Misc.FindObjectOfType<Camera>();
                     if (_cameraMain == null) {
                         Debug.LogWarning("No camera found!");
                     }
+                }
+            }
+        }
+
+        void UpdateReferenceUVs() {
+
+            if (_tileTextureStretch) {
+                hexagonUVs[0] = new Vector2(0, 0.5f);
+                hexagonUVs[1] = new Vector2(0.25f, 1f);
+                hexagonUVs[2] = new Vector2(0.75f, 1f);
+                hexagonUVs[3] = new Vector2(1f, 0.5f);
+                hexagonUVs[4] = new Vector2(0.75f, 0f);
+                hexagonUVs[5] = new Vector2(0.25f, 0f);
+
+                hexagonUVsExtruded[0] = new Vector2(0, 0.5f);
+                hexagonUVsExtruded[1] = new Vector2(0.25f, 1f);
+                hexagonUVsExtruded[2] = new Vector2(0.75f, 1f);
+                hexagonUVsExtruded[3] = new Vector2(1f, 0.5f);
+                hexagonUVsExtruded[4] = new Vector2(0.75f, 0f);
+                hexagonUVsExtruded[5] = new Vector2(0.25f, 0f);
+                hexagonUVsExtruded[6] = new Vector2(0.25f, 0.5f);
+                hexagonUVsExtruded[7] = new Vector2(0.75f, 0.5f);
+
+                hexagonUVsInverted[0] = new Vector2(0, 0.5f);
+                hexagonUVsInverted[1] = new Vector2(0.25f, 0f);
+                hexagonUVsInverted[2] = new Vector2(0.75f, 0f);
+                hexagonUVsInverted[3] = new Vector2(1f, 0.5f);
+                hexagonUVsInverted[4] = new Vector2(0.75f, 1f);
+                hexagonUVsInverted[5] = new Vector2(0.25f, 1f);
+
+                pentagonUVs[0] = new Vector2(0, 0.33f);
+                pentagonUVs[1] = new Vector2(0.25f, 1f);
+                pentagonUVs[2] = new Vector2(0.75f, 1f);
+                pentagonUVs[3] = new Vector2(1f, 0.33f);
+                pentagonUVs[4] = new Vector2(0.5f, 0f);
+
+                pentagonUVsExtruded[0] = new Vector2(0, 0.33f);
+                pentagonUVsExtruded[1] = new Vector2(0.25f, 1f);
+                pentagonUVsExtruded[2] = new Vector2(0.75f, 1f);
+                pentagonUVsExtruded[3] = new Vector2(1f, 0.33f);
+                pentagonUVsExtruded[4] = new Vector2(0.5f, 0f);
+                pentagonUVsExtruded[5] = new Vector2(0.375f, 0.5f);
+                pentagonUVsExtruded[6] = new Vector2(0.625f, 0.5f);
+
+                pentagonUVsInverted[0] = new Vector2(0f, 0.66f);
+                pentagonUVsInverted[1] = new Vector2(0.25f, 0f);
+                pentagonUVsInverted[2] = new Vector2(0.75f, 0f);
+                pentagonUVsInverted[3] = new Vector2(1f, 0.66f);
+                pentagonUVsInverted[4] = new Vector2(0.5f, 1f);
+            } else {
+                // compute hexagon uvs to fit circle
+                for (int k = 0; k < 6; k++) {
+                    float angle = Mathf.PI - k * 2f * Mathf.PI / 6f;
+                    float uvx = Mathf.Cos(angle) * 0.5f + 0.5f;
+                    float uvy = Mathf.Sin(angle) * 0.5f + 0.5f;
+                    hexagonUVsExtruded[k].x = hexagonUVs[k].x = uvx;
+                    hexagonUVsExtruded[k].y = hexagonUVs[k].y = uvy;
+                }
+                for (int k = 0; k < 6; k++) {
+                    hexagonUVsInverted[k] = hexagonUVs[k];
+                    hexagonUVsInverted[k].y = 1f - hexagonUVsInverted[k].y;
+                }
+
+                // compute pentagon uvs to fit circle
+                for (int k = 0; k < 5; k++) {
+                    float angle = Mathf.PI - (k - 37.4f/180f) * 2f * Mathf.PI / 5f;
+                    float uvx = Mathf.Cos(angle) * 0.5f + 0.5f;
+                    float uvy = Mathf.Sin(angle) * 0.5f + 0.5f;
+                    pentagonUVsExtruded[k].x = pentagonUVs[k].x = uvx;
+                    pentagonUVsExtruded[k].y = pentagonUVs[k].y = uvy;
+                }
+                for (int k = 0; k < 5; k++) {
+                    pentagonUVsInverted[k] = pentagonUVs[k];
+                    pentagonUVsInverted[k].y = 1f - pentagonUVs[k].y;
                 }
             }
         }
@@ -747,7 +798,7 @@ namespace HexasphereGrid {
         Material gridMatNoExtrusion {
             get {
                 if (_gridMatNoExtrusion == null) {
-                    _gridMatNoExtrusion = Instantiate(Resources.Load<Material>("Materials/HexaGridMatNoExtrusionSpotlight"));
+                    _gridMatNoExtrusion = Instantiate(Resources.Load<Material>("Materials/HexaGridMatNoExtrusion"));
                     _gridMatNoExtrusion.hideFlags = HideFlags.DontSave;
                 }
                 return _gridMatNoExtrusion;
@@ -808,8 +859,7 @@ namespace HexasphereGrid {
 
 
         Point GetCachedPoint(Point point) {
-            Point thePoint;
-            if (points.TryGetValue(point, out thePoint)) {
+            if (points.TryGetValue(point, out Point thePoint)) {
                 return thePoint;
             } else {
                 points[point] = point;
@@ -829,6 +879,8 @@ namespace HexasphereGrid {
             if (highlightMaterial != null) {
                 highlightMaterial.color = _highlightColor;
             }
+
+            UpdateReferenceUVs();
 
             // In inverted mode, moves the camera into the center of the sphere
             if (_cameraMain != null && currentInvertedMode != _invertedMode) {
@@ -1859,7 +1911,7 @@ namespace HexasphereGrid {
                             }
                         }
 #endif
-                        texArray[k] = Instantiate(texArray[k]) as Texture2D;
+                        texArray[k] = Instantiate(texArray[k]);
                         texArray[k].hideFlags = HideFlags.DontSave;
                         TextureScaler.Scale(texArray[k], _tileTextureSize, _tileTextureSize, FilterMode.Trilinear);
                     }
@@ -2027,7 +2079,6 @@ namespace HexasphereGrid {
             new Vector2 (0.5f, 0f),
             new Vector2 (0.375f, 0.5f),
             new Vector2 (0.625f, 0.5f)
-
         };
         readonly int[] pentagonIndicesInverted = new int[] {
             0, 4, 1,

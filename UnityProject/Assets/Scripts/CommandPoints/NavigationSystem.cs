@@ -1,163 +1,171 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using MeEngine.Events;
-public class NavigationSystem: MonoBehaviour
-{
-    public GameObject commandPointPrefab;
-    public PieceController pieceController;
 
-    private List<CommandPointFsm> availableCommandPoints = new List<CommandPointFsm>();
-
-    bool hasGeneratedThisTurn = false;
-
-    void Awake(){
-        GameControllerFsm.eventPublisher.SubscribeAll(this);
-    }
-
-    public void GenerateCommandPoints()
+namespace HotJupiter{
+    public class NavigationSystem: MonoBehaviour
     {
-        if (hasGeneratedThisTurn) return;
+        public static class Events {
+            public struct NewPointSelected : IEvent {public CommandPointController SelectedPoint; }
+        }
+        public EventPublisher eventPublisher = new EventPublisher();
 
-        //Standard Destinations
+        public GameObject commandPointPrefab;
+        public PieceController pieceController;
 
-        //Forward Facing (current speed)
-        //This is the default selected command point for players
-        TileWithFacing startingVec = new TileWithFacing { position = pieceController.GetPivotTilePosition(), facing = pieceController.GetTileFacing() };
+        private List<CommandPointController> availableCommandPoints = new List<CommandPointController>();
 
-        var defalutSelectedPoint = InstantiateCommandPoint(
-            startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity),
-            pieceController.GetPivotTileLevel(),
-            pieceController.gamePiece.currentVelocity);
 
-        //Forward Facing (speed up)
-        if(pieceController.gamePiece.currentVelocity < pieceController.pieceTemplate.TopSpeed && pieceController.pieceTemplate.canAccelerate) {
-            InstantiateCommandPoint(
-                startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity + 1),
-                pieceController.GetPivotTileLevel(),
-                pieceController.gamePiece.currentVelocity + 1);
+        bool hasGeneratedThisTurn = false;
+
+        void Awake(){
+            GameControllerFsm.eventPublisher.SubscribeAll(this);
         }
 
-        //Forward Facing (slow down)
-        if(pieceController.gamePiece.currentVelocity > 2 && pieceController.pieceTemplate.canDecelerate) {
-            InstantiateCommandPoint(
-                startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity - 1),
-                pieceController.GetPivotTileLevel(),
-                pieceController.gamePiece.currentVelocity - 1);
-        }
-
-        //Turn Left (straight bank)
-        InstantiateCommandPoint(
-            startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity).Face(HexDirection.ForwardLeft),
-            pieceController.GetPivotTileLevel(),
-            pieceController.gamePiece.currentVelocity);
-
-
-        //Turn Right (straight bank)
-        InstantiateCommandPoint(
-            startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity).Face(HexDirection.ForwardRight),
-            pieceController.GetPivotTileLevel(),
-            pieceController.gamePiece.currentVelocity);
-
-        for(int manu = 1; manu <= pieceController.pieceTemplate.Maneuverability; manu++){
-            if(pieceController.gamePiece.currentVelocity - manu >= 1) {
-                if(pieceController.pieceTemplate.canStrafe){
-                    //Strafe Left
-                    InstantiateCommandPoint(
-                        startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity - manu).Traverse(HexDirection.ForwardLeft, manu).Face(HexDirection.ForwardRight),
-                        pieceController.GetPivotTileLevel(),
-                        pieceController.gamePiece.currentVelocity);
-
-                    //Strafe Right
-                    InstantiateCommandPoint(
-                        startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity - manu).Traverse(HexDirection.ForwardRight, manu).Face(HexDirection.ForwardLeft),
-                        pieceController.GetPivotTileLevel(),
-                        pieceController.gamePiece.currentVelocity);
-                }
-
-                //Turn Left
-                InstantiateCommandPoint(
-                    startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity - manu).Traverse(HexDirection.ForwardLeft, manu),
-                    pieceController.GetPivotTileLevel(),
-                    pieceController.gamePiece.currentVelocity);
-
-                //Turn Right
-                InstantiateCommandPoint(
-                    startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity - manu).Traverse(HexDirection.ForwardRight, manu),
-                    pieceController.GetPivotTileLevel(),
-                    pieceController.gamePiece.currentVelocity);
-            }
-        }
-
-        
-
-        //Climb Altitude
-        if(pieceController.pieceTemplate.effortlessClimb){
-            if(pieceController.GetPivotTileLevel() < HexMapHelper.MaxLevel){
-                InstantiateCommandPoint(
-                    startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity),
-                    pieceController.GetPivotTileLevel() + 1,
-                    pieceController.gamePiece.currentVelocity);
-                }
-
-        }else{
-            if(pieceController.GetPivotTileLevel() < HexMapHelper.MaxLevel && pieceController.gamePiece.currentVelocity >= 2){
-                InstantiateCommandPoint(
-                    startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity - 1),
-                    pieceController.GetPivotTileLevel() + 1,
-                    pieceController.gamePiece.currentVelocity);
-            }
-        }
-
-        //Descend Altitude
-        if(pieceController.GetPivotTileLevel() > 1){
-            InstantiateCommandPoint(
-                    startingVec.Traverse(HexDirection.Forward, pieceController.gamePiece.currentVelocity),
-                    pieceController.GetPivotTileLevel() - 1,
-                    pieceController.gamePiece.currentVelocity);
-        }
-        
-        if(pieceController.isPlayerControlled) defalutSelectedPoint.SelectPoint(true);
-
-        hasGeneratedThisTurn = true;
-    }
-
-    public List<CommandPointFsm> GetAvailableCommandPoints(){
-        return availableCommandPoints;
-    }
-
-    [EventListener]
-    void OnStartNewTurn(GameControllerFsm.Events.BeginCommandSelectionState @event)
-    {
-        foreach(CommandPointFsm point in availableCommandPoints) {
-            GameObject.Destroy(point.gameObject);
-        }
-        availableCommandPoints.Clear();
-
-        hasGeneratedThisTurn = false;
-        GenerateCommandPoints();
-    }
-
-    private CommandPointFsm InstantiateCommandPoint(TileWithFacing tileVec, int level, int endVelocity){
-        CommandPointFsm commandPoint = GameObject.Instantiate(commandPointPrefab, transform.position, transform.rotation, transform).GetComponent<CommandPointFsm>();
-        commandPoint.SetNavigationSystem(this);
-
-        commandPoint.SetSource(pieceController.worldModel.transform.position, HexMapHelper.GetFacingVector(pieceController.gamePiece.currentTile, pieceController.gamePiece.currentTileFacing));
-        commandPoint.SetDestination(tileVec.position, tileVec.facing, level);
-        commandPoint.SetEndVelocity(endVelocity);
-        if(!pieceController.isPlayerControlled) commandPoint.gameObject.SetActive(false);
-
-        availableCommandPoints.Add(commandPoint);
-        return commandPoint;
-    }
-
-    public void NewPointSelected(CommandPointFsm selectedPoint){
-        Debug.Log("Selecting Command Point: " + selectedPoint);
-        foreach (var point in availableCommandPoints)
+        public void GenerateCommandPoints()
         {
-            if(point != selectedPoint) point.SelectPoint(false);
-        }
-        pieceController.SetSelectedCommandPoint(selectedPoint);
-    }
+            if (hasGeneratedThisTurn) return;
 
+            int gForceModifier = 0;
+            if(pieceController.gamePiece.currentVelocity == pieceController.pieceTemplate.TopSpeed) gForceModifier = 1;
+            if(pieceController.gamePiece.currentVelocity == 2) gForceModifier = -1;
+
+            //Standard Destinations
+
+            //Forward Facing (current speed)
+            //This is the default selected command point for players
+            TileWithFacing startingVec = new TileWithFacing { position = pieceController.GetPivotTilePosition(), facing = pieceController.GetTileFacing(), level = pieceController.GetPivotTileLevel() };
+
+            var defalutSelectedPoint = InstantiateCommandPoint(
+                new TilePath(startingVec).TraversePlanar(HexDirection.Forward, pieceController.gamePiece.currentVelocity),
+                pieceController.gamePiece.currentVelocity,
+                0);
+
+            //Forward Facing (speed up)
+            if(pieceController.gamePiece.currentVelocity < pieceController.pieceTemplate.TopSpeed && pieceController.pieceTemplate.canAccelerate) {
+                InstantiateCommandPoint(
+                    new TilePath(startingVec).TraversePlanar(HexDirection.Forward, pieceController.gamePiece.currentVelocity + 1),
+                    pieceController.gamePiece.currentVelocity + 1,
+                    1);
+            }
+
+            //Forward Facing (slow down)
+            if(pieceController.gamePiece.currentVelocity > 2 && pieceController.pieceTemplate.canDecelerate) {
+                InstantiateCommandPoint(
+                    new TilePath(startingVec).TraversePlanar(HexDirection.Forward, pieceController.gamePiece.currentVelocity - 1),
+                    pieceController.gamePiece.currentVelocity - 1,
+                    1);
+            }
+
+            //Turn Left (straight bank)
+            InstantiateCommandPoint(
+                new TilePath(startingVec).TraversePlanar(HexDirection.Forward, pieceController.gamePiece.currentVelocity).Face(HexDirection.ForwardLeft),
+                pieceController.gamePiece.currentVelocity,
+                0 + gForceModifier);
+
+
+            //Turn Right (straight bank)
+            InstantiateCommandPoint(
+                new TilePath(startingVec).TraversePlanar(HexDirection.Forward, pieceController.gamePiece.currentVelocity).Face(HexDirection.ForwardRight),
+                pieceController.gamePiece.currentVelocity,
+                0 + gForceModifier);
+
+            //Turn Radius
+            for(int manu = 1; manu <= pieceController.pieceTemplate.Maneuverability; manu++){
+                int baseGForce = manu - 1;
+                if(pieceController.gamePiece.currentVelocity - manu >= 1) {
+                    if(pieceController.pieceTemplate.canStrafe){
+                        //Strafe Left
+                        InstantiateCommandPoint(
+                            new TilePath(startingVec).TraversePlanar(HexDirection.Forward, pieceController.gamePiece.currentVelocity - manu).TraversePlanar(HexDirection.ForwardLeft, manu).Face(HexDirection.ForwardRight),
+                            pieceController.gamePiece.currentVelocity,
+                            baseGForce + gForceModifier);
+
+                        //Strafe Right
+                        InstantiateCommandPoint(
+                            new TilePath(startingVec).TraversePlanar(HexDirection.Forward, pieceController.gamePiece.currentVelocity - manu).TraversePlanar(HexDirection.ForwardRight, manu).Face(HexDirection.ForwardLeft),
+                            pieceController.gamePiece.currentVelocity,
+                            baseGForce + gForceModifier);
+                    }
+
+                    //Turn Left
+                    InstantiateCommandPoint(
+                        new TilePath(startingVec).TraversePlanar(HexDirection.Forward, pieceController.gamePiece.currentVelocity - manu).TraversePlanar(HexDirection.ForwardLeft, manu),
+                        pieceController.gamePiece.currentVelocity,
+                        baseGForce + gForceModifier);
+
+                    //Turn Right
+                    InstantiateCommandPoint(
+                        new TilePath(startingVec).TraversePlanar(HexDirection.Forward, pieceController.gamePiece.currentVelocity - manu).TraversePlanar(HexDirection.ForwardRight, manu),
+                        pieceController.gamePiece.currentVelocity,
+                        baseGForce + gForceModifier);
+                }
+            }
+
+            //Climb Altitude
+            if(pieceController.pieceTemplate.effortlessClimb){
+                if(pieceController.GetPivotTileLevel() < TileLevel.MAX && pieceController.gamePiece.currentVelocity >= 1){
+                    InstantiateCommandPoint(
+                        new TilePath(startingVec).TraversePlanar(HexDirection.Forward, pieceController.gamePiece.currentVelocity - 1).TraverseVertical(1).TraversePlanar(HexDirection.Forward, 1),
+                        pieceController.gamePiece.currentVelocity,
+                        1 + gForceModifier);
+                    }
+
+            }else{
+                if(pieceController.GetPivotTileLevel() < TileLevel.MAX && pieceController.gamePiece.currentVelocity >= 2){
+                    InstantiateCommandPoint(
+                        new TilePath(startingVec).TraversePlanar(HexDirection.Forward, pieceController.gamePiece.currentVelocity - 2).TraverseVertical(1).TraversePlanar(HexDirection.Forward, 1),
+                        pieceController.gamePiece.currentVelocity,
+                        1 + gForceModifier);
+                }
+            }
+
+            //Descend Altitude
+            if(pieceController.GetPivotTileLevel() > 1 && pieceController.gamePiece.currentVelocity >= 1){
+                InstantiateCommandPoint(
+                        new TilePath(startingVec).TraversePlanar(HexDirection.Forward, pieceController.gamePiece.currentVelocity - 1).TraverseVertical(-1).TraversePlanar(HexDirection.Forward, 1),
+                        pieceController.gamePiece.currentVelocity,
+                        1 + gForceModifier);
+            }
+            
+            eventPublisher.Publish(new Events.NewPointSelected() { SelectedPoint = defalutSelectedPoint });
+
+            hasGeneratedThisTurn = true;
+        }
+
+        public List<CommandPointController> GetAvailableCommandPoints(){
+            return availableCommandPoints;
+        }
+
+        [EventListener]
+        void OnStartNewTurn(GameControllerFsm.Events.BeginCommandSelectionState @event)
+        {
+            foreach(CommandPointController point in availableCommandPoints) {
+                GameObject.Destroy(point.gameObject);
+            }
+            availableCommandPoints.Clear();
+
+            hasGeneratedThisTurn = false;
+            GenerateCommandPoints();
+        }
+
+        private CommandPointController InstantiateCommandPoint(TilePath path, int endVelocity, int gForce){
+            CommandPointController commandPoint = GameObject.Instantiate(commandPointPrefab, transform.position, transform.rotation, transform).GetComponent<CommandPointController>();
+
+            commandPoint.SetSource(pieceController.worldModel.transform.position, HexMapHelper.GetFacingVector(pieceController.gamePiece.currentTile.position, pieceController.gamePiece.currentTile.facing));
+            commandPoint.SetEndVelocity(endVelocity);
+            commandPoint.SetGForce(Mathf.Max(0, gForce));
+            commandPoint.SetTilePath(path); //Hidden knowledge, must be called after SetGForce
+            commandPoint.SubscribeNavigationEvents(this.eventPublisher);
+
+            availableCommandPoints.Add(commandPoint);
+            return commandPoint;
+        }
+
+        [EventListener]
+        private void OnCommandPointClicked(CommandPointViewFsm.Events.CommandPointClicked @event){
+            Debug.Log("Selecting Command Point: " + @event.CommandPoint);
+            eventPublisher.Publish(new Events.NewPointSelected() { SelectedPoint = @event.CommandPoint });
+        }
+    }
 }

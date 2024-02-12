@@ -30,7 +30,7 @@ namespace HexasphereGrid_Demos {
 			// Updates extrusion amount for each tile; doing it this way for all tiles and every frame can be consuming, but this is an example
 			float time = Time.time * 5f;
 			for (int tileIndex = 0; tileIndex < hexa.tiles.Length; tileIndex++) {
-				Tile tile = hexa.tiles [tileIndex];
+				HexasphereGrid.Tile tile = hexa.tiles [tileIndex];
 
 				// only affect water tiles
 				if (!tile.isWater) continue;

@@ -4,8 +4,11 @@ using UnityEngine;
 using MeEngine.Events;
 using HexasphereGrid;
 
+namespace HotJupiter {
 public class FootprintIndicator : MonoBehaviour
 {
+    const bool hideWhenExecuting = true;
+
     [SerializeReference]
     public GameObject attachedObject; // Must derive from IHaveTilePosition
     private List<Mesh> polygons = new List<Mesh>();
@@ -55,6 +58,8 @@ public class FootprintIndicator : MonoBehaviour
         if (attachedObject != null) {
             tileFootprintObject = attachedObject.GetComponent<IHaveTileFootprint>();
         }
+
+        GameControllerFsm.eventPublisher.SubscribeAll(this);
     }
 
     void Initialize(int size){
@@ -72,22 +77,22 @@ public class FootprintIndicator : MonoBehaviour
     void Update()
     {
         if(isDirty && tileFootprintObject.GetFootprint() != null){        
-            List<TileWithLevel> footParts = tileFootprintObject.GetFootprint().GetAllTilesInFootprint();
+            List<FootprintTile> footParts = tileFootprintObject.GetFootprint().GetAllTilesInFootprint();
             
             if(polygons.Count == 0) Initialize(footParts.Count);
             Color meshColor = Color.white;
             
             for(int footPartIndex = 0; footPartIndex < footParts.Count; footPartIndex++){
-                TileWithLevel footPart = footParts[footPartIndex];
-                Tile footTile = HexMapUI.GetHexasphereTile(footPart.position, footPart.level);
+                FootprintTile footPart = footParts[footPartIndex];
+                HexasphereGrid.Tile footTile = HexMapUI.GetHexasphereTile(footPart.tile);
                 if(footTile != null) {
                     Vector3[] vertices = new Vector3[7];
-                    vertices[0] = transform.InverseTransformPoint(footTile.center * 2f * HexMapHelper.GetRadialOffsetFromLevel(footPart.level));
+                    vertices[0] = transform.InverseTransformPoint(footTile.center * 2f * HexMapHelper.GetRadialOffsetFromLevel(footPart.tile.level));
                     for(int i = 0; i < footTile.vertices.Length; i++){
-                        vertices[i + 1] = transform.InverseTransformPoint(footTile.vertices[i] * 2f * HexMapHelper.GetRadialOffsetFromLevel(footPart.level));
+                        vertices[i + 1] = transform.InverseTransformPoint(footTile.vertices[i] * 2f * HexMapHelper.GetRadialOffsetFromLevel(footPart.tile.level));
                     }
 
-                    meshColor = HexMapUI.GetLevelColor(footPart.level);
+                    meshColor = HexMapUI.GetLevelColor(footPart.tile.level);
 
                     polygons[footPartIndex].SetVertices(vertices);
                     polygons[footPartIndex].SetTriangles(
@@ -114,4 +119,15 @@ public class FootprintIndicator : MonoBehaviour
     void OnFootprintUpdated(){
         isDirty = true;
     }
+
+    [EventListener]
+    private void OnPlayingOutTurnStart(GameControllerFsm.Events.BeginPlayingOutTurnState @event){
+        GetComponent<MeshRenderer>().enabled = !hideWhenExecuting;
+    }
+
+    [EventListener]
+    private void OnPlayingOutTurnEnd(GameControllerFsm.Events.EndPlayingOutTurnState @event){
+        GetComponent<MeshRenderer>().enabled = true;
+    }
+}
 }

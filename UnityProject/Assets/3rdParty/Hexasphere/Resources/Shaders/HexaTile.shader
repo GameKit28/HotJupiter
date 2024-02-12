@@ -66,7 +66,7 @@
             fixed4 color = _Color;
             #if HEXA_LIT
                 float d = saturate(dot(normalize(i.norm), _MainLightPosition.xyz));
-                color = (color * _MainLightColor) * d;
+                color.rgb = (color.rgb * _MainLightColor.rgb) * d;
             #endif
             color.rgb *= atten;
             color.a *= _TileAlpha;
@@ -135,7 +135,7 @@
     				fixed4 color = _Color;
                     #if HEXA_LIT
                         float d = saturate(dot(normalize(i.norm), _WorldSpaceLightPos0.xyz));
-                        color = (color * _LightColor0) * d;
+                        color.rgb = (color.rgb * _LightColor0.rgb) * d;
                     #endif
     				color.rgb *= atten;
     				color.a *= _TileAlpha;

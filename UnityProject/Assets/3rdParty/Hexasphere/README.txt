@@ -27,9 +27,9 @@ Support
 -------
 Please read the documentation PDF and browse/play with the demo scene and sample source code included before contacting us for support :-)
 
-* Support: contact@kronnect.me
-* Website-Forum: http://kronnect.me
-* Twitter: @KronnectGames
+* Support Forum: https://kronnect.com
+* Twitter: @Kronnect
+* Email (non support): contact@kronnect.com
 
 
 Future updates
@@ -43,6 +43,76 @@ Of course, all updates of Hexasphere Grid System will be eventually available on
 
 Version history
 ---------------
+
+Current version
+- API: added "usePathFinding" argument to method GetTilesWithinSteps() to optionally use a faster alternative ignoring pathfinding
+- [Fix] Fixed GetTilesNeighbour() issue with Euclidean distance setting
+
+Version 6.3
+- "Export Hexasphere" now preserves colors and textures
+
+Version 6.2
+- Added "Export Hexasphere" option in the Hexasphere inspector. Creates a permanent copy of the hexasphere in the scene.
+- API: improved SetTileTextureRotationToNorth algorithm resulting in correct orientation on all tiles
+- A warning is now shown in the inspector if Depth Priming Mode is enabled in URP
+
+Version 6.1
+- API: added GenerateTileGameObject method
+- [Fix] Fixed extruded side faces lighting issue
+
+Version 6.0
+- Change: API: OnPathFindingCrossTile event now gets two parameters: "To" and "From" tile index
+- API: added GetTileAtLatLon(latitude, longitude)
+- API: added GetTileVertexCount(tileIndex)
+- API: added SetTileVerticesElevation(tileIndex): elevates all vertices without using geometry shaders
+- API: added event OnGeneration
+- API: CHANGE: all events now receive as first parameter a reference to the hexasphere instance that triggers the event
+
+Version 5.9
+- Added new style: "Invisible"
+- Added "Highlight Style" property
+- [Fix] Fixed highlight effect showing full in white in URP
+
+Version 5.8
+- Added rotating transparent arrow to demo scene 1
+- Added "Tile Texture Stretch" option to customize uv mapping behaviour
+- API: added GetExtrudedPosition: adjusts a position to the surface of the hexasphere, including extrusion
+- [Fix] Fixed path-finding issue with "ignoreCanCross" option
+- [Fix] Fixed uv mapping distortion
+
+Version 5.7
+- Added "Fly To Tilt Angle"
+- API: added "Raycast" method
+
+Version 5.6
+- Added shadow receiving support in URP (requires Unity 2020.3.27 or later)
+- Reduced global keywords usage
+
+Version 5.5
+- Added VR Single Pass support
+
+Version 5.4
+- API: added new events: OnFlyStart, OnFlyEnd, OnDragStart, OnDragEnd, OnZoom
+- API: added IsTileVisibleFromCamera
+
+Version 5.3.2 22/Dec/2021
+- Minimum Unity version is now 2019.4.13
+- [Fix] Fixed "Respect Other UI" issue with world space canvas
+
+Version 5.3.1 22/Nov/2021
+- Added support for URP 12
+
+Version 5.3 31/Oct/2021
+- Added Smoothness and Specular Tint options to inspector (compatible with non-extruded modes)
+
+Version 5.2 19/Jul/2021
+- Demo scene 1: added example of spawning a prefab and moving around the sphere by cliking on target tile
+- API: OnTileClick event will now receive the tile index even if highlight is disabled
+
+Version 5.1 9/Mar/2021
+- Generation performance improvements
+- Minor improvements to Grid Editor selection of multile tiles
+- [Fix] Exported settings were not loaded when disabling/enabling the config component several times
 
 Version 5.0
 - Added "Minimum Light" option

@@ -4,6 +4,8 @@ using UnityEngine;
 using BansheeGz.BGSpline.Curve;
 using BansheeGz.BGSpline.Components;
 using MeEngine.Events;
+
+namespace HotJupiter {
 public class ShipGamePiece : NavigatingGamePiece
 {
     public AudioClip missileFireSound;
@@ -28,7 +30,7 @@ public class ShipGamePiece : NavigatingGamePiece
         missileCount = shipTemplete.missileCount;
         missileCooldown = 0;
 
-        footprint = new DynamicFootprint(shipTemplete.footprint);
+        footprint = new DynamicFootprint(this, shipTemplete.footprint);
     }
 
     protected override void Update()
@@ -60,13 +62,13 @@ public class ShipGamePiece : NavigatingGamePiece
             missileCount -= 1;
             missileCooldown = shipTemplete.missileFireCooldownTurns;
 
-            MissileFactory.SpawnMissile(currentTile, currentTileFacing, currentLevel, this, shipTemplete.missileTemplate);
+            MissileFactory.SpawnMissile(currentTile, this, shipTemplete.missileTemplate);
             AudioSource.PlayClipAtPoint(missileFireSound, transform.position);
         }
     }
 
     [EventListener]
-    public void OnProcessEndTurn(GameControllerFsm.Events.BeginProcessingCommandsState @event) {
+    public void OnProcessEndTurn(GameControllerFsm.Events.BeginIntentDeclarationState @event) {
         Debug.Log("On Process End Turn");
         if(willFireMissileThisTurn){
             FireMissile();
@@ -81,4 +83,5 @@ public class ShipGamePiece : NavigatingGamePiece
 
         missileCooldown = Mathf.Max(0, missileCooldown - 1);
     }
+}
 }

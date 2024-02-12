@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace HotJupiter {
 public class CameraController : MonoBehaviour
 {
     float cameraSpeedX = 5f;
@@ -50,4 +51,5 @@ public class CameraController : MonoBehaviour
 
         cameraFocalPoint.transform.LookAt(lookAtNormal, normal);
     }
+}
 }

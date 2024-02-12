@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using MeEngine.Events;
 
+namespace HotJupiter {
 public class DirectionIndicator : MonoBehaviour
 {
+    const bool hideWhenExecuting = true;
+
     private const float centerOffset = 0.55f;
 
     [SerializeReference]
@@ -22,6 +25,10 @@ public class DirectionIndicator : MonoBehaviour
         }
     }
 
+    void Start(){
+        GameControllerFsm.eventPublisher.SubscribeAll(this);
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -32,6 +39,14 @@ public class DirectionIndicator : MonoBehaviour
         transform.rotation = HexMapHelper.GetRotationFromFacing(tilePositionObject.GetPivotTilePosition(), hexDirectionObject.GetTileFacing());
     }
 
-    //[EventListener]
-    //void OnAltitudeUIChange()
+    [EventListener]
+    private void OnPlayingOutTurnStart(GameControllerFsm.Events.BeginPlayingOutTurnState @event){
+        GetComponentInChildren<SpriteRenderer>().enabled = !hideWhenExecuting;
+    }
+
+    [EventListener]
+    private void OnPlayingOutTurnEnd(GameControllerFsm.Events.EndPlayingOutTurnState @event){
+        GetComponentInChildren<SpriteRenderer>().enabled = true;
+    }
+}
 }

@@ -11,7 +11,7 @@ public partial class GameControllerFsm : MeFsm
         public struct BeginPlayingOutTurnState : IEvent {}
         public struct EndPlayingOutTurnState : IEvent {}
 
-        public struct BeginProcessingCommandsState : IEvent {}
+        public struct BeginIntentDeclarationState : IEvent {}
     }
 
     public static EventPublisher eventPublisher { get; private set; } = new EventPublisher();
@@ -23,11 +23,11 @@ public partial class GameControllerFsm : MeFsm
     }
 
     public void OnEndTurnClicked() {
-        DoEndTurn();
+        DoCommitTurn();
     }
 
-    private void DoEndTurn(){
+    private void DoCommitTurn(){
         Debug.Log("end turn");
-        SwapState<ProcessingCommandsState>();
+        SwapState<IntentDeclarationState>();
     }
 }

@@ -44,9 +44,13 @@ namespace HexasphereGrid_Demos {
 
         const int ARROW_TILE_INDEX = 534;
 
+        public Texture2D arrowTexture;
+
+
         void Start() {
             // Gets the script for the "Hexasphere" gameobject
             hexa = Hexasphere.GetInstance("Hexasphere");
+            divisions = hexa.numDivisions;
 
             hexa.OnTileClick += TileClick;
             hexa.OnTileMouseOver += TileMouseOver;
@@ -68,6 +72,19 @@ namespace HexasphereGrid_Demos {
             hexa.SetTileColor(ti, Color.green);
 
             hexa.SetTileMaterial(ARROW_TILE_INDEX, arrowMaterial, true);
+
+            GameObject n = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            n.transform.position = hexa.transform.TransformPoint(0, 0.5f, 0);
+
+            for (int k = 0;k<hexa.tiles.Length;k++) {
+                hexa.SetTileTexture(k, arrowTexture);
+                hexa.SetTileTextureRotationToNorth(k);
+                if (hexa.tiles[k].vertices.Length == 5) {
+                    n = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                    hexa.ParentAndAlignToTile(n, k);
+                    n.transform.localScale = Vector3.one * 0.01f;
+                }
+            }
 
         }
 
@@ -190,6 +207,10 @@ namespace HexasphereGrid_Demos {
                 SpawnCapsule();
             }
 
+            if (GUI.Button(new Rect(Screen.width - 230, 170, 220, 30), "Arrows Oriented")) {
+                AddArrowsOrientedToNorth();
+            }
+
         }
 
         /// <summary>
@@ -205,6 +226,14 @@ namespace HexasphereGrid_Demos {
                 hexa.SetTileColor(k, co);
             }
         }
+
+        void AddArrowsOrientedToNorth() {
+            foreach (var hs in hexa.tiles) {
+                hexa.SetTileTexture(hs.index, arrowTexture);
+                hexa.SetTileTextureRotationToNorth(hs.index);
+            }
+        }
+
 
         /// <summary>
         /// Applies a random extrusion to all tiles
@@ -232,7 +261,7 @@ namespace HexasphereGrid_Demos {
                 // Animate tile height
                 hexa.SetTileExtrudeAmount(animateTileIndex, Mathf.PingPong(Time.time, 1f));
                 // Also animate neighbours
-                Tile tile = hexa.tiles[animateTileIndex];
+                HexasphereGrid.Tile tile = hexa.tiles[animateTileIndex];
                 hexa.SetTileExtrudeAmount(tile.neighbours, Mathf.PingPong(Time.time - 0.1f, 1f));
             }
 

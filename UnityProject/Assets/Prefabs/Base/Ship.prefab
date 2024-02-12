@@ -5540,6 +5540,12 @@ PrefabInstance:
       propertyPath: pieceController
       value: 
       objectReference: {fileID: 4472176637989411702}
+    - target: {fileID: 525200103300990859, guid: 6401f62795a6485479fc499a41301a8b,
+        type: 3}
+      propertyPath: commandPointPrefab
+      value: 
+      objectReference: {fileID: 6833982719639373737, guid: e41916f794d667d48b7db3c4147ae0ed,
+        type: 3}
     - target: {fileID: 6203100925872966005, guid: 6401f62795a6485479fc499a41301a8b,
         type: 3}
       propertyPath: m_RootOrder

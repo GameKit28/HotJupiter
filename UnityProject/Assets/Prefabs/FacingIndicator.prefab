@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8815687375622576123}
   - component: {fileID: 3655305864024700096}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7200789963159951781}
   - component: {fileID: 5333125961398626230}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: FacingIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}

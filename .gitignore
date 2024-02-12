@@ -81,3 +81,5 @@ UnityProject/ProjectSettings/ProjectSettings.asset
 #MeEngine is SysLinked
 UnityProject/Assets/MeEngine
 UnityProject/Assets/Hexasphere/Resources/Materials/HexaTileHighlightMat.mat
+UnityProject/Assets/3rdParty/Hexasphere/Resources/Materials/HexaTileHighlightMat.mat
+*.vsconfig

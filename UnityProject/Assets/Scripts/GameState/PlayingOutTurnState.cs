@@ -23,7 +23,7 @@ public partial class GameControllerFsm : MeFsm
         // Update is called once per frame
         void Update()
         {
-            if(TimeManager.TurnRatio >= 1.0f){
+            if(TimeManager.TurnTimeNormalized >= 1.0f){
                 SwapState<CommandSelectionState>();
             }
         }

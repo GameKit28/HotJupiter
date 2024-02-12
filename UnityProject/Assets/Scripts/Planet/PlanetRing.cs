@@ -2,46 +2,52 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlanetRing : MonoBehaviour, IHaveTileFootprint
-{
-    public LineRenderer line;
-    public int level;
-    public int facingIndex = 0;
-
-    public int maxLength = 20;
-
-    StaticFootprint footprint;
-
-    // Start is called before the first frame update
-    void Start()
+namespace HotJupiter{
+    public class PlanetRing : MonoBehaviour, IHaveTileFootprint
     {
-        TileCoords startTile = HexMapHelper.GetTileFromWorldPoint(transform.position);
-        TileWithFacing startVec = new TileWithFacing() {
-            position = startTile,
-            facing = HexMapHelper.GetNeighborTiles(startTile)[facingIndex]
-            };
+        public LineRenderer line;
+        public TileLevel level;
+        public int facingIndex = 0;
 
-        List<TileWithLevel> footprintParts = new List<TileWithLevel>();
-        footprintParts.Add(new TileWithLevel() {position = startVec.position, level = level});
+        public int maxLength = 20;
 
-        List<Vector3> lineNodes = new List<Vector3>();
-        TileWithFacing currentVec = startVec;
-        for(int nodeIndex = 0; nodeIndex < maxLength; nodeIndex++){
-            currentVec = currentVec.Traverse(HexDirection.Forward);
-            if(currentVec.position == startVec.position) {
-                break;
+        StaticFootprint footprint;
+
+        // Start is called before the first frame update
+        void Start()
+        {
+            TileCoords startTile = HexMapHelper.GetTileFromWorldPoint(transform.position);
+            TileWithFacing startVec = new TileWithFacing() {
+                position = startTile,
+                facing = HexMapHelper.GetNeighborTiles(startTile)[facingIndex],
+                level = level
+                };
+
+            List<FootprintTile> footprintParts = new List<FootprintTile>();
+            footprintParts.Add(new FootprintTile(startVec.position, startVec.level, TileObstacleType.Solid));
+
+            List<Vector3> lineNodes = new List<Vector3>();
+            TileWithFacing currentVec = startVec;
+            for(int nodeIndex = 0; nodeIndex < maxLength; nodeIndex++){
+                currentVec = currentVec.TraversePlanar(HexDirection.Forward);
+                if(currentVec.position == startVec.position) {
+                    break;
+                }
+                lineNodes.Add(HexMapHelper.GetWorldPointFromTile(currentVec.position, level));
+                var footprintTile = new FootprintTile(currentVec.position, level, TileObstacleType.Solid);
+                footprintParts.Add(footprintTile);
+
+                PlayfieldManager.TryReserveTile(footprintTile, this, new PlayfieldManager.SimulationTimePeriod(0, TimeManager.TurnDuration));
             }
-            lineNodes.Add(HexMapHelper.GetWorldPointFromTile(currentVec.position, level));
-            footprintParts.Add(new TileWithLevel(){position = currentVec.position, level = level});
-        }
-        line.positionCount = lineNodes.Count;
-        line.SetPositions(lineNodes.ToArray());
+            line.positionCount = lineNodes.Count;
+            line.SetPositions(lineNodes.ToArray());
 
-        footprint = new StaticFootprint(footprintParts);
-    }
-    
-    public FootprintBase GetFootprint()
-    {
-        return footprint;
+            footprint = new StaticFootprint(this, footprintParts);
+        }
+        
+        public FootprintBase GetFootprint()
+        {
+            return footprint;
+        }
     }
 }

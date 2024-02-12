@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace HotJupiter {
 [CreateAssetMenu(fileName = "Ship", menuName = "ScriptableObjects/Ship", order = 1)]
 public class ShipStats : BaseManuStats
 {
@@ -11,4 +12,5 @@ public class ShipStats : BaseManuStats
     public int missileFireCooldownTurns = 2;
 
     public MissileStats missileTemplate;
+}
 }
