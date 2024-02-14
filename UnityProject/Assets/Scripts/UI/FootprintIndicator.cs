@@ -76,7 +76,7 @@ public class FootprintIndicator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(isDirty && tileFootprintObject.GetFootprint() != null){        
+        /*if(isDirty && tileFootprintObject.GetFootprint() != null){        
             List<FootprintTile> footParts = tileFootprintObject.GetFootprint().GetAllTilesInFootprint();
             
             if(polygons.Count == 0) Initialize(footParts.Count);
@@ -113,7 +113,7 @@ public class FootprintIndicator : MonoBehaviour
             GetComponent<MeshRenderer>().material.color = meshColor;
         
             isDirty = false;
-        }
+        }*/
     }
 
     void OnFootprintUpdated(){

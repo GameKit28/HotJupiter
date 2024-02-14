@@ -5,18 +5,23 @@ using UnityEngine;
 using MeEngine.Events;
 using HexasphereGrid;
 
-namespace HotJupiter {
+namespace HotJupiter
+{
     public class HexMapUI : MonoBehaviour
     {
         public static class Events {
             public struct UIMapLevelChanged : IEvent { public int previousMapLevel; public int newMapLevel; }
         }
+        static HexMapUI instance;
 
         public static EventPublisher eventPublisher { get; private set; } = new EventPublisher();
 
-        public List<Hexasphere> tileSpheres = new List<Hexasphere>();
+        public List<HexGridSphere> tileSpheres = new List<HexGridSphere>();
+        private List<Material> tileSphereMaterials = new List<Material>();
+        public Material gridMaterial;
+        
         public WorldCursor cursor;
-        static HexMapUI instance;
+        
 
         public float scrollThreshold = 0.1f;
 
@@ -31,7 +36,7 @@ namespace HotJupiter {
         }
         private int _UIMapLevel;
 
-        public static Hexasphere currentTilemap {
+        public static HexGridSphere currentTilemap {
             get {
                 return instance.tileSpheres[instance._UIMapLevel];
             }
@@ -63,6 +68,13 @@ namespace HotJupiter {
             if(TileLevel.MAX != instance.tileSpheres.Count - 1){
                 Debug.LogWarning($"HexMapUI expects to have {TileLevel.MAX + 1} tileSperes to match the HexMapHelper MaxLevel.");
             }
+
+            foreach(HexGridSphere sphere in tileSpheres){
+                MeshRenderer renderer = sphere.GetComponentInChildren<MeshRenderer>();
+                renderer.material = new Material(gridMaterial);
+                renderer.material.color = sphere.Color;
+                tileSphereMaterials.Add(renderer.material);
+            }
         }
 
         void Update(){
@@ -74,8 +86,7 @@ namespace HotJupiter {
 
             //Update Grid Shader Based on Mouse Position
             Vector3 cursorWorldPosition = cursor.CursorWorldPosition;
-            MeshRenderer renderer = currentTilemap.GetComponentInChildren<MeshRenderer>();
-            renderer.material.SetVector(shaderWorldPosVariable, cursorWorldPosition);
+            tileSphereMaterials[_UIMapLevel].SetVector(shaderWorldPosVariable, cursorWorldPosition);
         }
 
         private void HideAllButCurrentUILevel(){
@@ -85,16 +96,16 @@ namespace HotJupiter {
             }
         }
         public static Color GetLevelColor(int level) {
-            return instance.tileSpheres[Mathf.Clamp(level, 0, instance.tileSpheres.Count - 1)].wireframeColor;
+            return instance.tileSpheres[Mathf.Clamp(level, 0, instance.tileSpheres.Count - 1)].Color;
         }
 
-        public static HexasphereGrid.Tile GetHexasphereTile(Tile tile){
+        /*public static HexasphereGrid.Tile GetHexasphereTile(Tile tile){
             Hexasphere hexasphere = instance.tileSpheres[Mathf.Clamp(tile.level, 0, instance.tileSpheres.Count - 1)];
             if(hexasphere.tiles != null){ 
                 return hexasphere.tiles[tile.position.index];
             }else{
                 return null;
             }
-        }
+        }*/
     }
 }

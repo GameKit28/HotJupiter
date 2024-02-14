@@ -7,7 +7,7 @@ namespace HotJupiter {
 public class PlanetSizer : MonoBehaviour
 {
     public Hexasphere basePlanetSphere;
-    public List<Hexasphere> sphereHexGrids;
+    public List<HexGridSphere> sphereHexGrids;
 
     const float unitHexArea = 0.866f; //A hexagon with an incircle diamater of one, has this area.
 

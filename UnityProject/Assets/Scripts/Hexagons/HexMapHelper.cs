@@ -197,7 +197,8 @@ namespace HotJupiter {
         public const float gridAltitudeOffsets = 0.45f;
 
         public Hexasphere baseHexasphere;
-        public PlanetSizer planetSizer;
+        public HexGridSphere baseHexGrid;
+        //public PlanetSizer planetSizer;
 
         public const float HexWidth = 1.0f; //The incircle diameter of a hexagon
 
@@ -362,7 +363,7 @@ namespace HotJupiter {
         }
 
         public static float GetRadialOffsetFromLevel(TileLevel level){
-            return instance.planetSizer.planetRadius + GetAltitudeFromLevel(level);
+            return instance.baseHexGrid.Radius + GetAltitudeFromLevel(level);
         }
 
         public static float CrowFlyDistance(Tile hex1, Tile hex2){
