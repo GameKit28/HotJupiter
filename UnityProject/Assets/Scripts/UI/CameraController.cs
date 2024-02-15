@@ -8,13 +8,13 @@ public class CameraController : MonoBehaviour
     float cameraSpeedX = 5f;
     float cameraSpeedZ = 15f;
 
-    public PlanetSizer focalPlanet;
+    public HexGridSphere focalPlanet;
     public GameObject cameraFocalPoint;
     public Transform focalTargetTransform;
 
     private float focalPointRadius {
         get {
-            return focalPlanet.planetRadius + HexMapHelper.gridFirstAltitudeOffset;
+            return focalPlanet.Radius + HexMapHelper.gridFirstAltitudeOffset;
         }
     }
 

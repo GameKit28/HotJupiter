@@ -76,7 +76,7 @@ public class FootprintIndicator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        /*if(isDirty && tileFootprintObject.GetFootprint() != null){        
+        if(isDirty && tileFootprintObject.GetFootprint() != null){        
             List<FootprintTile> footParts = tileFootprintObject.GetFootprint().GetAllTilesInFootprint();
             
             if(polygons.Count == 0) Initialize(footParts.Count);
@@ -84,7 +84,7 @@ public class FootprintIndicator : MonoBehaviour
             
             for(int footPartIndex = 0; footPartIndex < footParts.Count; footPartIndex++){
                 FootprintTile footPart = footParts[footPartIndex];
-                HexasphereGrid.Tile footTile = HexMapUI.GetHexasphereTile(footPart.tile);
+                HexasphereGrid.Tile footTile = HexMapHelper.GetHexasphereTile(footPart.tile);
                 if(footTile != null) {
                     Vector3[] vertices = new Vector3[7];
                     vertices[0] = transform.InverseTransformPoint(footTile.center * 2f * HexMapHelper.GetRadialOffsetFromLevel(footPart.tile.level));
@@ -113,7 +113,7 @@ public class FootprintIndicator : MonoBehaviour
             GetComponent<MeshRenderer>().material.color = meshColor;
         
             isDirty = false;
-        }*/
+        }
     }
 
     void OnFootprintUpdated(){

@@ -51,7 +51,7 @@ namespace HotJupiter
         public static void SetUIMapLevel(int newLevel){
 
             int previousLevel = instance._UIMapLevel;
-            instance._UIMapLevel = Mathf.Clamp(newLevel, 0, instance.tileSpheres.Count);
+            instance._UIMapLevel = Mathf.Clamp(newLevel, 0, instance.tileSpheres.Count - 1);
 
             instance.HideAllButCurrentUILevel();
             eventPublisher.Publish(new Events.UIMapLevelChanged() { previousMapLevel = previousLevel, newMapLevel = newLevel });
@@ -98,14 +98,5 @@ namespace HotJupiter
         public static Color GetLevelColor(int level) {
             return instance.tileSpheres[Mathf.Clamp(level, 0, instance.tileSpheres.Count - 1)].Color;
         }
-
-        /*public static HexasphereGrid.Tile GetHexasphereTile(Tile tile){
-            Hexasphere hexasphere = instance.tileSpheres[Mathf.Clamp(tile.level, 0, instance.tileSpheres.Count - 1)];
-            if(hexasphere.tiles != null){ 
-                return hexasphere.tiles[tile.position.index];
-            }else{
-                return null;
-            }
-        }*/
     }
 }

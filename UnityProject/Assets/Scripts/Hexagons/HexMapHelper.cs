@@ -261,7 +261,7 @@ namespace HotJupiter {
         public static Vector3 GetWorldPointFromTile(TileCoords tileCoords, TileLevel level = new TileLevel()){
             HexasphereGrid.Tile tile = instance.baseHexasphere.tiles[tileCoords.index];
             if(level == 0){
-                return instance.baseHexasphere.GetTileCenter(tileCoords.index, true);
+                return instance.baseHexasphere.GetTileCenter(tileCoords.index);
             }else{
                 return instance.baseHexasphere.GetTileCenter(tileCoords.index) + (GetTileNormal(tileCoords) * GetAltitudeFromLevel(level));
             }
@@ -370,6 +370,14 @@ namespace HotJupiter {
             Vector3 pos1 = GetWorldPointFromTile(hex1);
             Vector3 pos2 = GetWorldPointFromTile(hex2);
             return Vector3.Distance(pos1, pos2);
+        }
+
+        public static HexasphereGrid.Tile GetHexasphereTile(Tile tile){
+            if(instance.baseHexasphere.tiles != null){ 
+                return instance.baseHexasphere.tiles[tile.position.index];
+            }else{
+                return null;
+            }
         }
     }
 }

@@ -9,11 +9,12 @@ namespace HotJupiter
         public Color Color;
         public float Radius {get; private set;}
 
-        void Start(){
+        void Awake(){
             SphereCollider collider = GetComponent<SphereCollider>();
             MeshFilter meshFilter = GetComponent<MeshFilter>();
-            Radius = meshFilter.mesh.bounds.size.x / 2f;
-            collider.radius = Radius;
+            float localRadius = meshFilter.mesh.bounds.size.x / 2f;
+            Radius = transform.localScale.x * localRadius;
+            collider.radius = localRadius;
         }
     }
 }
