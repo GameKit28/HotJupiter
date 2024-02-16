@@ -11,6 +11,7 @@ namespace HotJupiter {
         public Camera cursorCamera;
 
         public float scrollThreshold = 0.1f;
+        public float highlightPulseRate = 4f;
 
         private TileCoords _highlightedTile;
         public TileCoords HighlightedTile {
@@ -55,6 +56,10 @@ namespace HotJupiter {
                 UpdateHexTile();
                 shouldRegenerateMesh = false;
             }
+
+            //Pulse the cursor between white and the grid color
+            hexMeshRenderer.material.color = Color.Lerp(Color.white, HexMapUI.GetLevelColor(HexMapUI.currentUIMapLevel), 
+                Mathf.Abs(Mathf.Sin(TimeManager.UITime * highlightPulseRate)));
         }
 
         Vector3 GetPlaneIntersection(){
@@ -69,7 +74,6 @@ namespace HotJupiter {
 
         private void UpdateHexTile(){
             hexTileMesh.GenerateMeshFromTile(new Tile(HighlightedTile, HexMapUI.currentUIMapLevel), hexMeshFilter.transform);
-            hexMeshRenderer.material.color = HexMapUI.GetLevelColor(HexMapUI.currentUIMapLevel);
         }
 
         [EventListener]
