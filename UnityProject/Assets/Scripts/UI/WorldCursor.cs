@@ -1,11 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using HexasphereGrid;
-using MeEngine.Events;
+﻿using MeEngine.Events;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
-namespace HotJupiter {
+namespace HotJupiter
+{
     public class WorldCursor : MonoBehaviour
     {
         public Camera cursorCamera;
@@ -63,9 +60,8 @@ namespace HotJupiter {
         }
 
         Vector3 GetPlaneIntersection(){
-            RaycastHit hitData;
             Ray ray = cursorCamera.ScreenPointToRay(Input.mousePosition);
-            if(Physics.Raycast(ray, out hitData)){
+            if (Physics.Raycast(ray, out RaycastHit hitData)){
                 return hitData.point;
             }else{
                 return Vector3.zero;

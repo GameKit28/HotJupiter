@@ -1,0 +1,4 @@
+#ignore third-party code #these ignore statements don't seem to work at time of writing -Kit
+#UnityProject/Assets/3rdParty/
+#UnityProject/Assets/BoardGameToolkit/
+#UnityProject/Assets/MeEngine/
