@@ -16,6 +16,8 @@ public class HexTileMesh
     private static Vector3[] normals = new Vector3[7]; // 6 + 1(center)
     private static Vector2[] uvs = new Vector2[7]; //6 + 1(center)
 
+    private static List<ITile> singleEntryList = new List<ITile>(1){null}; //re-used by generate methods to avoid allocating a new list each time
+
     static HexTileMesh(){
         //Generate Triangles for Hex Shaped Polygon
         for(int i = 0; i < 6; i++){
@@ -51,6 +53,13 @@ public class HexTileMesh
             polygons.Add(polygon);
         }
         combineInstances = new CombineInstance[polygonCount];
+    }
+
+    public Mesh GenerateMeshFromTile<TType>(TType tile, Transform parent)
+        where TType : ITile
+    {
+        singleEntryList[0] = tile;
+        return GenerateMeshFromTiles(singleEntryList, parent);
     }
 
     public Mesh GenerateMeshFromTiles<TType>(List<TType> tiles, Transform parent)
