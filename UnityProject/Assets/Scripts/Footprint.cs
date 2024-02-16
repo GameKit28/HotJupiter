@@ -31,9 +31,12 @@ namespace HotJupiter{
         }
     }
 
-    public struct FootprintTile {
+    public struct FootprintTile : ITile {
         public Tile tile;
         public TileObstacleType obstacleType;
+
+        public TileCoords position {get{return tile.position;} set{tile.position = value;}}
+        public TileLevel level {get{return tile.level;} set{tile.level = value;}}
 
         public FootprintTile(TileCoords position, TileLevel level, TileObstacleType obstacleType){
             tile = new Tile(position, level);

@@ -74,19 +74,23 @@ namespace HotJupiter {
     }
 
     [System.Serializable]
-    public struct TileWithFacing {
-        public TileCoords position;
+    public struct TileWithFacing : ITile {
+        private TileCoords _position;
+        public TileCoords position {get{return _position;} set{_position = value;}}
+        
+        private TileLevel _level;
+        public TileLevel level {get{return _level;} set{_level = value;}}
+
         public TileCoords facing;
-        public TileLevel level;
 
         public TileWithFacing(TileCoords position, TileCoords facing, TileLevel level = new TileLevel()){
-            this.position = position;
+            this._position = position;
             this.facing = facing;
-            this.level = level;
+            this._level = level;
         }
 
         public static explicit operator Tile(TileWithFacing tile) {
-            return new Tile(tile.position, tile.level);
+            return new Tile(tile._position, tile._level);
         }
 
         public override bool Equals(object obj)
@@ -96,17 +100,17 @@ namespace HotJupiter {
 
             TileWithFacing otherStruct = (TileWithFacing)obj;
 
-            return this.level == otherStruct.level && this.position == otherStruct.position && this.facing == otherStruct.facing;
+            return this._level == otherStruct._level && this._position == otherStruct._position && this.facing == otherStruct.facing;
         }
 
         public override int GetHashCode()
         {
-            return facing.GetHashCode().WrapShift(4) ^ position.GetHashCode().WrapShift(2) ^ level.GetHashCode();
+            return facing.GetHashCode().WrapShift(4) ^ _position.GetHashCode().WrapShift(2) ^ _level.GetHashCode();
         }
 
         public override string ToString()
         {
-            return $"TileWithFacing - Position:{position}, Facing:{facing}, Level:{level}";
+            return $"TileWithFacing - Position:{_position}, Facing:{facing}, Level:{_level}";
         }
     }
 
@@ -158,14 +162,23 @@ namespace HotJupiter {
         }
     }
 
+    public interface ITile {
+        TileCoords position {get; set;}
+        TileLevel level {get; set;}
+    }
+
     [System.Serializable]
-    public struct Tile {
-        public TileCoords position;
-        public TileLevel level;
+    public struct Tile : ITile{
+        private TileCoords _position;
+        public TileCoords position {get{return _position;} set{_position = value;}}
+
+        private TileLevel _level;
+        public TileLevel level {get{return _level;} set{_level = value;}}
+
 
         public Tile(TileCoords position, TileLevel level = new TileLevel()) {
-            this.position = position;
-            this.level = level;
+            this._position = position;
+            this._level = level;
         }
 
         public override bool Equals(object obj)
@@ -175,17 +188,17 @@ namespace HotJupiter {
 
             Tile otherStruct = (Tile)obj;
 
-            return this.level == otherStruct.level && this.position == otherStruct.position;
+            return this._level == otherStruct._level && this._position == otherStruct._position;
         }
 
         public override int GetHashCode()
         {
-            return position.GetHashCode().WrapShift(2) ^ level.GetHashCode();
+            return _position.GetHashCode().WrapShift(2) ^ _level.GetHashCode();
         }
 
         public override string ToString()
         {
-            return $"Tile - Position:{position}, Level:{level.level}";
+            return $"Tile - Position:{_position}, Level:{_level.level}";
         }
     }
 
@@ -372,7 +385,7 @@ namespace HotJupiter {
             return Vector3.Distance(pos1, pos2);
         }
 
-        public static HexasphereGrid.Tile GetHexasphereTile(Tile tile){
+        public static HexasphereGrid.Tile GetHexasphereTile(ITile tile){
             if(instance.baseHexasphere.tiles != null){ 
                 return instance.baseHexasphere.tiles[tile.position.index];
             }else{
