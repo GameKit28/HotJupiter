@@ -1,87 +1,103 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using BansheeGz.BGSpline.Curve;
 using BansheeGz.BGSpline.Components;
+using BansheeGz.BGSpline.Curve;
 using MeEngine.Events;
+using UnityEngine;
 
-namespace HotJupiter {
-public class ShipGamePiece : NavigatingGamePiece
+namespace HotJupiter
 {
-    public AudioClip missileFireSound;
+	public class ShipGamePiece : NavigatingGamePiece
+	{
+		public AudioClip missileFireSound;
 
-    public ShipStats shipTemplete;
+		public ShipStats shipTemplete;
 
-    int missileCount;
-    int missileCooldown;
+		int missileCount;
+		int missileCooldown;
 
-    bool willFireMissileThisTurn = false;
+		bool willFireMissileThisTurn = false;
 
-    protected override void Awake() {
-        base.Awake();
+		protected override void Awake()
+		{
+			base.Awake();
 
-        GameObject.Destroy(gamePieceModel.transform.Find("PlaceholderShip").gameObject);
+			GameObject.Destroy(gamePieceModel.transform.Find("PlaceholderShip").gameObject);
 
-        GameObject newModel = GameObject.Instantiate(shipTemplete.model, gamePieceModel.transform, false);
-        newModel.transform.localPosition = Vector3.zero;
-        newModel.transform.localScale = Vector3.one;
-        newModel.transform.localRotation = Quaternion.identity;
+			GameObject newModel = GameObject.Instantiate(
+				shipTemplete.model,
+				gamePieceModel.transform,
+				false
+			);
+			newModel.transform.localPosition = Vector3.zero;
+			newModel.transform.localScale = Vector3.one;
+			newModel.transform.localRotation = Quaternion.identity;
 
-        missileCount = shipTemplete.missileCount;
-        missileCooldown = 0;
+			missileCount = shipTemplete.missileCount;
+			missileCooldown = 0;
 
-        footprint = new DynamicFootprint(this, shipTemplete.footprint);
-    }
+			footprint = new DynamicFootprint(this, shipTemplete.footprint);
+		}
 
-    protected override void Update()
-    {
-        base.Update();
+		protected override void Update()
+		{
+			base.Update();
 
-        if(Input.GetKeyDown(KeyCode.M)) {
-            Debug.Log("Firing Missile");
-            QueueMissile(true);
-        }
-    }
+			if (Input.GetKeyDown(KeyCode.M))
+			{
+				Debug.Log("Firing Missile");
+				QueueMissile(true);
+			}
+		}
 
-    public void QueueMissile(bool fireThisTurn){
-        Debug.Log("Will Fire Missile: " + fireThisTurn);
-        willFireMissileThisTurn = fireThisTurn;
-    }
+		public void QueueMissile(bool fireThisTurn)
+		{
+			Debug.Log("Will Fire Missile: " + fireThisTurn);
+			willFireMissileThisTurn = fireThisTurn;
+		}
 
-    public bool CanFireMissile() {
-        return missileCooldown < 1 && missileCount > 0;
-    }
+		public bool CanFireMissile()
+		{
+			return missileCooldown < 1 && missileCount > 0;
+		}
 
-    public int GetMissileCount() {
-        return missileCount;
-    }
+		public int GetMissileCount()
+		{
+			return missileCount;
+		}
 
-    private void FireMissile(){
-        if(CanFireMissile()) {
-            Debug.Log("Firing Missile");
-            missileCount -= 1;
-            missileCooldown = shipTemplete.missileFireCooldownTurns;
+		private void FireMissile()
+		{
+			if (CanFireMissile())
+			{
+				Debug.Log("Firing Missile");
+				missileCount -= 1;
+				missileCooldown = shipTemplete.missileFireCooldownTurns;
 
-            MissileFactory.SpawnMissile(currentTile, this, shipTemplete.missileTemplate);
-            AudioSource.PlayClipAtPoint(missileFireSound, transform.position);
-        }
-    }
+				MissileFactory.SpawnMissile(currentTile, this, shipTemplete.missileTemplate);
+				AudioSource.PlayClipAtPoint(missileFireSound, transform.position);
+			}
+		}
 
-    [EventListener]
-    public void OnProcessEndTurn(GameControllerFsm.Events.BeginIntentDeclarationState @event) {
-        Debug.Log("On Process End Turn");
-        if(willFireMissileThisTurn){
-            FireMissile();
-            willFireMissileThisTurn = false;
-        }
-    }
+		[EventListener]
+		public void OnProcessEndTurn(GameControllerFsm.Events.BeginIntentDeclarationState @event)
+		{
+			Debug.Log("On Process End Turn");
+			if (willFireMissileThisTurn)
+			{
+				FireMissile();
+				willFireMissileThisTurn = false;
+			}
+		}
 
+		[EventListener]
+		protected override void OnEndPlayingPhase(
+			GameControllerFsm.Events.EndPlayingOutTurnState @event
+		)
+		{
+			base.OnEndPlayingPhase(@event);
 
-    [EventListener]
-    protected override void OnEndPlayingPhase(GameControllerFsm.Events.EndPlayingOutTurnState @event){
-        base.OnEndPlayingPhase(@event);
-
-        missileCooldown = Mathf.Max(0, missileCooldown - 1);
-    }
-}
+			missileCooldown = Mathf.Max(0, missileCooldown - 1);
+		}
+	}
 }

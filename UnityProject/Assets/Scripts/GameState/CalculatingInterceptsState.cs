@@ -1,20 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using MeEngine.FsmManagement;
 using MeEngine.Events;
+using MeEngine.FsmManagement;
+using UnityEngine;
 
-public partial class GameControllerFsm : MeFsm
+namespace HotJupiter
 {
-    //
-    public class CalculatingInterceptsState : MeFsmState<GameControllerFsm>
-    {
-        protected override void EnterState()
-        {
-            base.EnterState();
-            Debug.Log("Entering CalculatingInterceptsState");
+	public partial class GameControllerFsm : MeFsm
+	{
+		//
+		public class CalculatingInterceptsState : MeFsmState<GameControllerFsm>
+		{
+			protected override void EnterState()
+			{
+				base.EnterState();
+				Debug.Log("Entering CalculatingInterceptsState");
 
-            SwapState<PlayingOutTurnState>();
-        }
-    }
+				SwapState<PlayingOutTurnState>();
+			}
+		}
+	}
 }

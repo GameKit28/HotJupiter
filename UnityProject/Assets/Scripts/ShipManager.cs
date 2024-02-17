@@ -1,21 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
+using UnityEngine;
 
-namespace HotJupiter {
-public class ShipManager : MonoBehaviour
+namespace HotJupiter
 {
-    private static List<ShipGamePiece> allShips;
+	public class ShipManager : MonoBehaviour
+	{
+		private static List<ShipGamePiece> allShips;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        allShips = GameObject.FindObjectsOfType<ShipGamePiece>().ToList();
-    }
+		// Start is called before the first frame update
+		void Start()
+		{
+			allShips = GameObject.FindObjectsOfType<ShipGamePiece>().ToList();
+		}
 
-    public static List<ShipGamePiece> GetAllShips(){
-        return allShips;
-    }
-}
+		public static List<ShipGamePiece> GetAllShips()
+		{
+			return allShips;
+		}
+	}
 }

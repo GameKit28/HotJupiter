@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace HotJupiter {
-[CreateAssetMenu(fileName = "Obstacle", menuName = "HotJupiter/Obstacle", order = 1)]
-
-public class ObstacleTemplate : ScriptableObject
+namespace HotJupiter
 {
-    public RelativeFootprintTemplate footprint;
-    public List<GameObject> modelPrefabs;
-}
+	[CreateAssetMenu(fileName = "Obstacle", menuName = "HotJupiter/Obstacle", order = 1)]
+	public class ObstacleTemplate : ScriptableObject
+	{
+		public RelativeFootprintTemplate footprint;
+		public List<GameObject> modelPrefabs;
+	}
 }

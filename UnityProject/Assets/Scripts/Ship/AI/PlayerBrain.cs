@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace HotJupiter {
-public class PlayerBrain : BaseBrain<ShipGamePiece>
+namespace HotJupiter
 {
-    // It's Empty
-}
+	public class PlayerBrain : BaseBrain<ShipGamePiece>
+	{
+		// It's Empty
+	}
 }

@@ -1,87 +1,112 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using BansheeGz.BGSpline.Curve;
 using BansheeGz.BGSpline.Components;
+using BansheeGz.BGSpline.Curve;
 using MeEngine.Events;
+using UnityEngine;
 
-namespace HotJupiter {
-public abstract class BaseGamePiece : MonoBehaviour, IHaveTilePosition, IHaveTileFacing, IHaveTileFootprint
+namespace HotJupiter
 {
-    public static class Events {
-        public struct CompletedSetup : IEvent {}
-    }
-    public EventPublisher eventPublisher {get; private set;} = new EventPublisher();
+	public abstract class BaseGamePiece
+		: MonoBehaviour,
+			IHaveTilePosition,
+			IHaveTileFacing,
+			IHaveTileFootprint
+	{
+		public static class Events
+		{
+			public struct CompletedSetup : IEvent { }
+		}
 
-    public TileWithFacing currentTile;
+		public EventPublisher eventPublisher { get; private set; } = new EventPublisher();
 
-    private TileWithFacing destinationTile;
+		public TileWithFacing currentTile;
 
-    public GameObject gamePieceModel;
+		private TileWithFacing destinationTile;
 
-    public TileCoords GetPivotTilePosition(){
-        return currentTile.position;
-    }
+		public GameObject gamePieceModel;
 
-    public TileLevel GetPivotTileLevel(){
-        return currentTile.level;
-    }
+		public TileCoords GetPivotTilePosition()
+		{
+			return currentTile.position;
+		}
 
-    protected DynamicFootprint footprint;
+		public TileLevel GetPivotTileLevel()
+		{
+			return currentTile.level;
+		}
 
-    public FootprintBase GetFootprint(){
-        return footprint;
-    }
+		protected DynamicFootprint footprint;
 
-    public TileCoords GetTileFacing(){
-        return currentTile.facing;
-    }
+		public FootprintBase GetFootprint()
+		{
+			return footprint;
+		}
 
-    protected virtual void Awake() {
-        GameControllerFsm.eventPublisher.SubscribeAll(this);
-    }
+		public TileCoords GetTileFacing()
+		{
+			return currentTile.facing;
+		}
 
-    // Start is called before the first frame update
-    protected virtual void Start()
-    {
-        currentTile.position = HexMapHelper.GetTileFromWorldPoint(transform.position);
-        currentTile.facing = HexMapHelper.GetNeighborTiles(currentTile.position)[0];
+		protected virtual void Awake()
+		{
+			GameControllerFsm.eventPublisher.SubscribeAll(this);
+		}
 
-        PositionAndOrientPiece();
-        eventPublisher.Publish(new Events.CompletedSetup());
-    }
+		// Start is called before the first frame update
+		protected virtual void Start()
+		{
+			currentTile.position = HexMapHelper.GetTileFromWorldPoint(transform.position);
+			currentTile.facing = HexMapHelper.GetNeighborTiles(currentTile.position)[0];
 
-    protected virtual void Update(){
+			PositionAndOrientPiece();
+			eventPublisher.Publish(new Events.CompletedSetup());
+		}
 
-    }
+		protected virtual void Update() { }
 
-    public void SetDestination(TileWithFacing tile) {
-        this.destinationTile = tile;
-    }
+		public void SetDestination(TileWithFacing tile)
+		{
+			this.destinationTile = tile;
+		}
 
-    public TileWithFacing GetDestinationTile(){
-        //Used by missiles to intercept
-        return this.destinationTile;
-    }
+		public TileWithFacing GetDestinationTile()
+		{
+			//Used by missiles to intercept
+			return this.destinationTile;
+		}
 
-    public void PositionAndOrientPiece(){
-        transform.position = HexMapHelper.GetWorldPointFromTile(currentTile.position, currentTile.level);
-        gamePieceModel.transform.rotation = HexMapHelper.GetRotationFromFacing(currentTile.position, currentTile.facing);
+		public void PositionAndOrientPiece()
+		{
+			transform.position = HexMapHelper.GetWorldPointFromTile(
+				currentTile.position,
+				currentTile.level
+			);
+			gamePieceModel.transform.rotation = HexMapHelper.GetRotationFromFacing(
+				currentTile.position,
+				currentTile.facing
+			);
 
-        footprint.SetPivotTile(currentTile);
-    }
+			footprint.SetPivotTile(currentTile);
+		}
 
-    [EventListener]
-    protected virtual void OnBeginPlayingPhase(GameControllerFsm.Events.BeginPlayingOutTurnState @event) {
-        gameObject.SetActive(false);
-    }
+		[EventListener]
+		protected virtual void OnBeginPlayingPhase(
+			GameControllerFsm.Events.BeginPlayingOutTurnState @event
+		)
+		{
+			gameObject.SetActive(false);
+		}
 
-    [EventListener]
-    protected virtual void OnEndPlayingPhase(GameControllerFsm.Events.EndPlayingOutTurnState @event){
-        currentTile = destinationTile;
+		[EventListener]
+		protected virtual void OnEndPlayingPhase(
+			GameControllerFsm.Events.EndPlayingOutTurnState @event
+		)
+		{
+			currentTile = destinationTile;
 
-        PositionAndOrientPiece();
-        gameObject.SetActive(true);
-    }
-}
+			PositionAndOrientPiece();
+			gameObject.SetActive(true);
+		}
+	}
 }

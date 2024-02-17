@@ -1,74 +1,119 @@
-using UnityEngine;
 using MeEngine.Events;
 using MeEngine.FsmManagement;
+using UnityEngine;
 
-namespace HotJupiter{
-    public partial class CommandPointViewFsm : MeFsm {
-        public static class Events {
-            public struct CommandPointClicked : IEvent { public CommandPointController CommandPoint; }
-        }
-        public EventPublisher eventPublisher = new EventPublisher();
+namespace HotJupiter
+{
+	public partial class CommandPointViewFsm : MeFsm
+	{
+		public static class Events
+		{
+			public struct CommandPointClicked : IEvent
+			{
+				public CommandPointController CommandPoint;
+			}
+		}
 
-        public GameObject spriteHolder;
-        public SpriteRenderer spriteRenderer;
-        public CommandPointModel model;
-        public CommandPointController controller;
+		public EventPublisher eventPublisher = new EventPublisher();
 
-        public PathingMaterialScheme materialScheme;
+		public GameObject spriteHolder;
+		public SpriteRenderer spriteRenderer;
+		public CommandPointModel model;
+		public CommandPointController controller;
 
-        protected override void Start()
-        {
-            base.Start();
-        }
+		public PathingMaterialScheme materialScheme;
 
-        [EventListener]
-        void OnDestinationSet(CommandPointController.Events.DestinationSet @event){
-            Debug.Log("View recieved destination set event");
-            //Position the sprite within the Hex
-            spriteHolder.transform.position = HexMapHelper.GetWorldPointFromTile(model.destinationTile.position, model.destinationTile.level) + ((HexMapHelper.GetFacingVector(model.destinationTile.position, model.destinationTile.facing) * HexMapHelper.HexWidth * 0.3f));
+		protected override void Start()
+		{
+			base.Start();
+		}
 
-            //Face the sprite the correct direction
-            spriteHolder.transform.rotation = HexMapHelper.GetRotationFromFacing(model.destinationTile.position, model.destinationTile.facing);
+		[EventListener]
+		void OnDestinationSet(CommandPointController.Events.DestinationSet @event)
+		{
+			Debug.Log("View recieved destination set event");
+			//Position the sprite within the Hex
+			spriteHolder.transform.position =
+				HexMapHelper.GetWorldPointFromTile(
+					model.destinationTile.position,
+					model.destinationTile.level
+				)
+				+ (
+					(
+						HexMapHelper.GetFacingVector(
+							model.destinationTile.position,
+							model.destinationTile.facing
+						)
+						* HexMapHelper.HexWidth
+						* 0.3f
+					)
+				);
 
-            //Color the sprite based on height
-            spriteRenderer.color = HexMapUI.GetLevelColor(model.destinationTile.level);
+			//Face the sprite the correct direction
+			spriteHolder.transform.rotation = HexMapHelper.GetRotationFromFacing(
+				model.destinationTile.position,
+				model.destinationTile.facing
+			);
 
-            //Is any point on path colliding with a static object?
-            bool collisionEncountered = false;
-            foreach(var node in model.tilePath.GetTilesInPath()){
-                if(PlayfieldManager.GetTileObstacleTypeAtTime((Tile)node, 0) == TileObstacleType.Solid){ //TODO: Maybe use path time to check this instead of time 0
-                    collisionEncountered = true;
-                    Debug.Log("Collision Encountered");
-                    break;
-                }
-            }
+			//Color the sprite based on height
+			spriteRenderer.color = HexMapUI.GetLevelColor(model.destinationTile.level);
 
-            PathIndicatorType pathIndicator = PathIndicatorType.Selected;
+			//Is any point on path colliding with a static object?
+			bool collisionEncountered = false;
+			foreach (var node in model.tilePath.GetTilesInPath())
+			{
+				if (
+					PlayfieldManager.GetTileObstacleTypeAtTime((Tile)node, 0)
+					== TileObstacleType.Solid
+				)
+				{ //TODO: Maybe use path time to check this instead of time 0
+					collisionEncountered = true;
+					Debug.Log("Collision Encountered");
+					break;
+				}
+			}
 
-            if(collisionEncountered){
-                pathIndicator = PathIndicatorType.Collision;
-            }else{
-                if(model.gForce <= 0) {
-                    pathIndicator = PathIndicatorType.Selected;
-                }else if(model.gForce == 1) {
-                    pathIndicator = PathIndicatorType.G1;
-                }else if(model.gForce == 2) {
-                    pathIndicator = PathIndicatorType.G2;
-                }else if(model.gForce >= 3) {
-                    pathIndicator = PathIndicatorType.G3;
-                }
-            }
+			PathIndicatorType pathIndicator = PathIndicatorType.Selected;
 
-            model.spline.GetComponent<LineRenderer>().material = materialScheme.GetMaterialFromIndicator(pathIndicator);
-        }
+			if (collisionEncountered)
+			{
+				pathIndicator = PathIndicatorType.Collision;
+			}
+			else
+			{
+				if (model.gForce <= 0)
+				{
+					pathIndicator = PathIndicatorType.Selected;
+				}
+				else if (model.gForce == 1)
+				{
+					pathIndicator = PathIndicatorType.G1;
+				}
+				else if (model.gForce == 2)
+				{
+					pathIndicator = PathIndicatorType.G2;
+				}
+				else if (model.gForce >= 3)
+				{
+					pathIndicator = PathIndicatorType.G3;
+				}
+			}
 
-        [EventListener]
-        void OnNewPointSelected(NavigationSystem.Events.NewPointSelected @event){
-            if(@event.SelectedPoint == controller) {
-                SwapState<SelectedState>();
-            }else{
-                SwapState<WaitingState>();
-            }
-        }
-    }
+			model.spline.GetComponent<LineRenderer>().material =
+				materialScheme.GetMaterialFromIndicator(pathIndicator);
+		}
+
+		[EventListener]
+		void OnNewPointSelected(NavigationSystem.Events.NewPointSelected @event)
+		{
+			if (@event.SelectedPoint == controller)
+			{
+				SwapState<SelectedState>();
+			}
+			else
+			{
+				SwapState<WaitingState>();
+			}
+		}
+	}
 }

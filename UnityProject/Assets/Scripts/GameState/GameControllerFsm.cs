@@ -1,33 +1,45 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using MeEngine.FsmManagement;
 using MeEngine.Events;
-public partial class GameControllerFsm : MeFsm
+using MeEngine.FsmManagement;
+using UnityEngine;
+
+namespace HotJupiter
 {
-    public static class Events{
-        public struct BeginCommandSelectionState : IEvent {}
-        public struct BeginCommandSelectionStatePost : IEvent {} //Hacky, but some systems need to do their thing after others.
-        public struct BeginPlayingOutTurnState : IEvent {}
-        public struct EndPlayingOutTurnState : IEvent {}
+	public partial class GameControllerFsm : MeFsm
+	{
+		public static class Events
+		{
+			public struct BeginCommandSelectionState : IEvent { }
 
-        public struct BeginIntentDeclarationState : IEvent {}
-    }
+			public struct BeginCommandSelectionStatePost : IEvent { } //Hacky, but some systems need to do their thing after others.
 
-    public static EventPublisher eventPublisher { get; private set; } = new EventPublisher();
+			public struct BeginPlayingOutTurnState : IEvent { }
 
-    void Update(){
-        if(Input.GetKeyDown(KeyCode.Escape)){
-            Application.Quit();
-        }
-    }
+			public struct EndPlayingOutTurnState : IEvent { }
 
-    public void OnEndTurnClicked() {
-        DoCommitTurn();
-    }
+			public struct BeginIntentDeclarationState : IEvent { }
+		}
 
-    private void DoCommitTurn(){
-        Debug.Log("end turn");
-        SwapState<IntentDeclarationState>();
-    }
+		public static EventPublisher eventPublisher { get; private set; } = new EventPublisher();
+
+		void Update()
+		{
+			if (Input.GetKeyDown(KeyCode.Escape))
+			{
+				Application.Quit();
+			}
+		}
+
+		public void OnEndTurnClicked()
+		{
+			DoCommitTurn();
+		}
+
+		private void DoCommitTurn()
+		{
+			Debug.Log("end turn");
+			SwapState<IntentDeclarationState>();
+		}
+	}
 }

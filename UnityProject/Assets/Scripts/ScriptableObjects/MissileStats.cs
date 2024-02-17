@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace HotJupiter {
-[CreateAssetMenu(fileName = "Missile", menuName = "ScriptableObjects/Missile", order = 1)]
-public class MissileStats : BaseManuStats
+namespace HotJupiter
 {
-
-    public int payload = 2;
-}
+	[CreateAssetMenu(fileName = "Missile", menuName = "ScriptableObjects/Missile", order = 1)]
+	public class MissileStats : BaseManuStats
+	{
+		public int payload = 2;
+	}
 }

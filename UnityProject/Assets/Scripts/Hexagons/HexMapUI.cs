@@ -1,102 +1,135 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using HexasphereGrid;
 //using UnityEngine.Tilemaps;
 using MeEngine.Events;
-using HexasphereGrid;
+using UnityEngine;
 
 namespace HotJupiter
 {
-    public class HexMapUI : MonoBehaviour
-    {
-        public static class Events {
-            public struct UIMapLevelChanged : IEvent { public int previousMapLevel; public int newMapLevel; }
-        }
-        static HexMapUI instance;
+	public class HexMapUI : MonoBehaviour
+	{
+		public static class Events
+		{
+			public struct UIMapLevelChanged : IEvent
+			{
+				public int previousMapLevel;
+				public int newMapLevel;
+			}
+		}
 
-        public static EventPublisher eventPublisher { get; private set; } = new EventPublisher();
+		static HexMapUI instance;
 
-        public List<HexGridSphere> tileSpheres = new List<HexGridSphere>();
-        private List<Material> tileSphereMaterials = new List<Material>();
-        public Material gridMaterial;
-        
-        public WorldCursor cursor;
-        
+		public static EventPublisher eventPublisher { get; private set; } = new EventPublisher();
 
-        public float scrollThreshold = 0.1f;
+		public List<HexGridSphere> tileSpheres = new List<HexGridSphere>();
+		private List<Material> tileSphereMaterials = new List<Material>();
+		public Material gridMaterial;
 
-        public int startingUIMapLevel = 2;
+		public WorldCursor cursor;
 
-        private const string shaderWorldPosVariable = "_Center";
+		public float scrollThreshold = 0.1f;
 
-        public static int currentUIMapLevel {
-            get {
-                return instance._UIMapLevel;
-            }
-        }
-        private int _UIMapLevel;
+		public int startingUIMapLevel = 2;
 
-        public static HexGridSphere currentTilemap {
-            get {
-                return instance.tileSpheres[instance._UIMapLevel];
-            }
-        }
+		private const string shaderWorldPosVariable = "_Center";
 
-        public static float currentUIMapAltitude {
-            get {
-                return HexMapHelper.GetAltitudeFromLevel(instance._UIMapLevel);
-            }
-        }
+		public static int currentUIMapLevel
+		{
+			get { return instance._UIMapLevel; }
+		}
+		private int _UIMapLevel;
 
-        public static void SetUIMapLevel(int newLevel){
+		public static HexGridSphere currentTilemap
+		{
+			get { return instance.tileSpheres[instance._UIMapLevel]; }
+		}
 
-            int previousLevel = instance._UIMapLevel;
-            instance._UIMapLevel = Mathf.Clamp(newLevel, 0, instance.tileSpheres.Count - 1);
+		public static float currentUIMapAltitude
+		{
+			get { return HexMapHelper.GetAltitudeFromLevel(instance._UIMapLevel); }
+		}
 
-            instance.HideAllButCurrentUILevel();
-            eventPublisher.Publish(new Events.UIMapLevelChanged() { previousMapLevel = previousLevel, newMapLevel = newLevel });
-        }
+		public static void SetUIMapLevel(int newLevel)
+		{
+			int previousLevel = instance._UIMapLevel;
+			instance._UIMapLevel = Mathf.Clamp(newLevel, 0, instance.tileSpheres.Count - 1);
 
-        void Awake(){
-            instance = this;
-            _UIMapLevel = startingUIMapLevel;
-        }
+			instance.HideAllButCurrentUILevel();
+			eventPublisher.Publish(
+				new Events.UIMapLevelChanged()
+				{
+					previousMapLevel = previousLevel,
+					newMapLevel = newLevel
+				}
+			);
+		}
 
-        void Start(){
-            HideAllButCurrentUILevel();
+		void Awake()
+		{
+			instance = this;
+			_UIMapLevel = startingUIMapLevel;
+		}
 
-            if(TileLevel.MAX != instance.tileSpheres.Count - 1){
-                Debug.LogWarning($"HexMapUI expects to have {TileLevel.MAX + 1} tileSperes to match the HexMapHelper MaxLevel.");
-            }
+		void Start()
+		{
+			HideAllButCurrentUILevel();
 
-            foreach(HexGridSphere sphere in tileSpheres){
-                MeshRenderer renderer = sphere.GetComponentInChildren<MeshRenderer>();
-                renderer.material = new Material(gridMaterial);
-                renderer.material.color = sphere.Color;
-                tileSphereMaterials.Add(renderer.material);
-            }
-        }
+			if (TileLevel.MAX != instance.tileSpheres.Count - 1)
+			{
+				Debug.LogWarning(
+					$"HexMapUI expects to have {TileLevel.MAX + 1} tileSperes to match the HexMapHelper MaxLevel."
+				);
+			}
 
-        void Update(){
-            if((Input.mouseScrollDelta.y > scrollThreshold || Input.GetKeyDown(KeyCode.KeypadPlus)) && _UIMapLevel < instance.tileSpheres.Count - 1){
-                SetUIMapLevel(_UIMapLevel + 1);
-            }else if((Input.mouseScrollDelta.y < -scrollThreshold  || Input.GetKeyDown(KeyCode.KeypadMinus)) && _UIMapLevel > 0) {
-                SetUIMapLevel(_UIMapLevel - 1);
-            }
+			foreach (HexGridSphere sphere in tileSpheres)
+			{
+				MeshRenderer renderer = sphere.GetComponentInChildren<MeshRenderer>();
+				renderer.material = new Material(gridMaterial);
+				renderer.material.color = sphere.Color;
+				tileSphereMaterials.Add(renderer.material);
+			}
+		}
 
-            //Update Grid Shader Based on Mouse Position
-            Vector3 cursorWorldPosition = cursor.CursorWorldPosition;
-            tileSphereMaterials[_UIMapLevel].SetVector(shaderWorldPosVariable, cursorWorldPosition);
-        }
+		void Update()
+		{
+			if (
+				(Input.mouseScrollDelta.y > scrollThreshold || Input.GetKeyDown(KeyCode.KeypadPlus))
+				&& _UIMapLevel < instance.tileSpheres.Count - 1
+			)
+			{
+				SetUIMapLevel(_UIMapLevel + 1);
+			}
+			else if (
+				(
+					Input.mouseScrollDelta.y < -scrollThreshold
+					|| Input.GetKeyDown(KeyCode.KeypadMinus)
+				)
+				&& _UIMapLevel > 0
+			)
+			{
+				SetUIMapLevel(_UIMapLevel - 1);
+			}
 
-        private void HideAllButCurrentUILevel(){
-            //The grids can be simply enabled or disabled
-            for(int levelIndex = 0; levelIndex < tileSpheres.Count; levelIndex++){
-                tileSpheres[levelIndex].gameObject.SetActive(levelIndex == currentUIMapLevel);
-            }
-        }
-        public static Color GetLevelColor(int level) {
-            return instance.tileSpheres[Mathf.Clamp(level, 0, instance.tileSpheres.Count - 1)].Color;
-        }
-    }
+			//Update Grid Shader Based on Mouse Position
+			Vector3 cursorWorldPosition = cursor.CursorWorldPosition;
+			tileSphereMaterials[_UIMapLevel].SetVector(shaderWorldPosVariable, cursorWorldPosition);
+		}
+
+		private void HideAllButCurrentUILevel()
+		{
+			//The grids can be simply enabled or disabled
+			for (int levelIndex = 0; levelIndex < tileSpheres.Count; levelIndex++)
+			{
+				tileSpheres[levelIndex].gameObject.SetActive(levelIndex == currentUIMapLevel);
+			}
+		}
+
+		public static Color GetLevelColor(int level)
+		{
+			return instance
+				.tileSpheres[Mathf.Clamp(level, 0, instance.tileSpheres.Count - 1)]
+				.Color;
+		}
+	}
 }

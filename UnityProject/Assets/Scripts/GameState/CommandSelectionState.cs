@@ -1,29 +1,35 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using MeEngine.FsmManagement;
 using MeEngine.Events;
+using MeEngine.FsmManagement;
+using UnityEngine;
 
-public partial class GameControllerFsm : MeFsm
+namespace HotJupiter
 {
-    //The player must select a destination tile and any other actions for their turn
-    public class CommandSelectionState : MeFsmState<GameControllerFsm>
-    {
-        protected override void EnterState()
-        {
-            base.EnterState();
-            Debug.Log("Entering CommandSelectionState");
+	public partial class GameControllerFsm : MeFsm
+	{
+		//The player must select a destination tile and any other actions for their turn
+		public class CommandSelectionState : MeFsmState<GameControllerFsm>
+		{
+			protected override void EnterState()
+			{
+				base.EnterState();
+				Debug.Log("Entering CommandSelectionState");
 
-            GameControllerFsm.eventPublisher.Publish(new Events.BeginCommandSelectionState());
-            GameControllerFsm.eventPublisher.Publish(new Events.BeginCommandSelectionStatePost()); //Some systems need to do their thing after others have
-        }
+				GameControllerFsm.eventPublisher.Publish(new Events.BeginCommandSelectionState());
+				GameControllerFsm.eventPublisher.Publish(
+					new Events.BeginCommandSelectionStatePost()
+				); //Some systems need to do their thing after others have
+			}
 
-        // Update is called once per frame
-        void Update()
-        {
-            if(Input.GetKeyDown(KeyCode.Space)) {
-                ParentFsm.DoCommitTurn();
-            }
-        }
-    }
+			// Update is called once per frame
+			void Update()
+			{
+				if (Input.GetKeyDown(KeyCode.Space))
+				{
+					ParentFsm.DoCommitTurn();
+				}
+			}
+		}
+	}
 }

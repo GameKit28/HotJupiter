@@ -2,36 +2,48 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "PathingLineSchema", menuName = "HotJupiter/PathingLineSchema", order = 0)]
-public class PathingMaterialScheme : ScriptableObject
+namespace HotJupiter
 {
-    [System.Serializable]
-    public struct PathIndicatorMaterial{
-        public PathIndicatorType type;
-        public Material material;
-    }
+	[CreateAssetMenu(
+		fileName = "PathingLineSchema",
+		menuName = "HotJupiter/PathingLineSchema",
+		order = 0
+	)]
+	public class PathingMaterialScheme : ScriptableObject
+	{
+		[System.Serializable]
+		public struct PathIndicatorMaterial
+		{
+			public PathIndicatorType type;
+			public Material material;
+		}
 
-    public List<PathIndicatorMaterial> pathMaterials;
-    
-    public Dictionary<PathIndicatorType, Material> pathMaterialsDict;
+		public List<PathIndicatorMaterial> pathMaterials;
 
-    public Material GetMaterialFromIndicator(PathIndicatorType indicatorType){
-        if(pathMaterialsDict == null){
-            pathMaterialsDict = new Dictionary<PathIndicatorType, Material>();
-            foreach(var indicator in pathMaterials){
-                pathMaterialsDict.Add(indicator.type, indicator.material);
-            }
-        }
+		public Dictionary<PathIndicatorType, Material> pathMaterialsDict;
 
-        return pathMaterialsDict[indicatorType];
-    }
+		public Material GetMaterialFromIndicator(PathIndicatorType indicatorType)
+		{
+			if (pathMaterialsDict == null)
+			{
+				pathMaterialsDict = new Dictionary<PathIndicatorType, Material>();
+				foreach (var indicator in pathMaterials)
+				{
+					pathMaterialsDict.Add(indicator.type, indicator.material);
+				}
+			}
+
+			return pathMaterialsDict[indicatorType];
+		}
+	}
+
+	public enum PathIndicatorType
+	{
+		Default,
+		Selected,
+		G1,
+		G2,
+		G3,
+		Collision,
+	}
 }
-
-public enum PathIndicatorType{
-        Default,
-        Selected,
-        G1,
-        G2,
-        G3,
-        Collision,
-    }

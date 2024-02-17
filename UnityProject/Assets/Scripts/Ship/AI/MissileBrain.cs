@@ -1,81 +1,115 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using MeEngine.Events;
+using UnityEngine;
 
-namespace HotJupiter {
-public class MissileBrain : BaseBrain<MissileGamePiece>
-{   
-    void Awake() {
-        GameControllerFsm.eventPublisher.SubscribeAll(this);
-    }
+namespace HotJupiter
+{
+	public class MissileBrain : BaseBrain<MissileGamePiece>
+	{
+		void Awake()
+		{
+			GameControllerFsm.eventPublisher.SubscribeAll(this);
+		}
 
-    public override BaseGamePiece FindTarget()
-    {
-        List<ShipGamePiece> allShips = ShipManager.GetAllShips();
+		public override BaseGamePiece FindTarget()
+		{
+			List<ShipGamePiece> allShips = ShipManager.GetAllShips();
 
-        //Next Turn Hex
-        TileWithFacing startVec = myGamePiece.currentTile;
-        TileWithFacing headingTile = startVec.TraversePlanar(HexDirection.Forward, myGamePiece.currentVelocity);
+			//Next Turn Hex
+			TileWithFacing startVec = myGamePiece.currentTile;
+			TileWithFacing headingTile = startVec.TraversePlanar(
+				HexDirection.Forward,
+				myGamePiece.currentVelocity
+			);
 
-        //Find the ship closest to where I will be if I move forward. Exclude the ship that fired me.
-        ShipGamePiece closestShip = null;
-        float closestShipDistance = float.MaxValue;
+			//Find the ship closest to where I will be if I move forward. Exclude the ship that fired me.
+			ShipGamePiece closestShip = null;
+			float closestShipDistance = float.MaxValue;
 
-        foreach(ShipGamePiece ship in allShips){
-            if(ship == myGamePiece.motherGamePiece) continue;
-            
-            float distance = HexMapHelper.CrowFlyDistance(new Tile(headingTile.position, headingTile.level), new Tile(ship.currentTile.position, ship.currentTile.level));
-            if (distance < closestShipDistance) {
-                closestShipDistance = distance;
-                closestShip = ship;
-            }
-        }
+			foreach (ShipGamePiece ship in allShips)
+			{
+				if (ship == myGamePiece.motherGamePiece)
+					continue;
 
-        currentTarget = closestShip;
-        Debug.DrawLine(HexMapHelper.GetWorldPointFromTile(myGamePiece.currentTile.position), HexMapHelper.GetWorldPointFromTile(currentTarget.currentTile.position), Color.yellow, 5f);
-        return currentTarget;
-    }
+				float distance = HexMapHelper.CrowFlyDistance(
+					new Tile(headingTile.position, headingTile.level),
+					new Tile(ship.currentTile.position, ship.currentTile.level)
+				);
+				if (distance < closestShipDistance)
+				{
+					closestShipDistance = distance;
+					closestShip = ship;
+				}
+			}
 
-    public override CommandPointController SelectCommand()
-    {
-        var availableCommands = pieceController.navigationSystem.GetAvailableCommandPoints();
+			currentTarget = closestShip;
+			Debug.DrawLine(
+				HexMapHelper.GetWorldPointFromTile(myGamePiece.currentTile.position),
+				HexMapHelper.GetWorldPointFromTile(currentTarget.currentTile.position),
+				Color.yellow,
+				5f
+			);
+			return currentTarget;
+		}
 
-        if(currentTarget != null){
-            // Missiles know where their target will be
-            TileWithFacing targetDestinationTile = currentTarget.GetDestinationTile();
-            Vector3 targetDestinationWorldSpace = HexMapHelper.GetWorldPointFromTile(targetDestinationTile.position, targetDestinationTile.level);
+		public override CommandPointController SelectCommand()
+		{
+			var availableCommands = pieceController.navigationSystem.GetAvailableCommandPoints();
 
-            CommandPointController closestPoint = null;
-            float closestPointDist = float.MaxValue;
+			if (currentTarget != null)
+			{
+				// Missiles know where their target will be
+				TileWithFacing targetDestinationTile = currentTarget.GetDestinationTile();
+				Vector3 targetDestinationWorldSpace = HexMapHelper.GetWorldPointFromTile(
+					targetDestinationTile.position,
+					targetDestinationTile.level
+				);
 
-            foreach(CommandPointController point in availableCommands){
-                if(point.model.destinationTile.position == targetDestinationTile.position && point.model.destinationTile.level == targetDestinationTile.level) return point;
+				CommandPointController closestPoint = null;
+				float closestPointDist = float.MaxValue;
 
-                float distance = Vector3.Distance(targetDestinationWorldSpace, HexMapHelper.GetWorldPointFromTile(point.model.destinationTile.position, point.model.destinationTile.level));
-                if(distance < closestPointDist){
-                    closestPoint = point;
-                    closestPointDist = distance;
-                }
-            }
+				foreach (CommandPointController point in availableCommands)
+				{
+					if (
+						point.model.destinationTile.position == targetDestinationTile.position
+						&& point.model.destinationTile.level == targetDestinationTile.level
+					)
+						return point;
 
-            return closestPoint;
+					float distance = Vector3.Distance(
+						targetDestinationWorldSpace,
+						HexMapHelper.GetWorldPointFromTile(
+							point.model.destinationTile.position,
+							point.model.destinationTile.level
+						)
+					);
+					if (distance < closestPointDist)
+					{
+						closestPoint = point;
+						closestPointDist = distance;
+					}
+				}
 
-        }else{
-            return base.SelectCommand();
-        }
-    }
- 
- 
-    [EventListener]
-    void OnNewTurn(GameControllerFsm.Events.BeginCommandSelectionState @event){
-        FindTarget();
-    }
+				return closestPoint;
+			}
+			else
+			{
+				return base.SelectCommand();
+			}
+		}
 
-    [EventListener]
-    void OnEndOfTurn(GameControllerFsm.Events.BeginIntentDeclarationState @event){
-        Debug.Log("Missile Selecing Command");
-        pieceController.SetSelectedCommandPoint(SelectCommand());
-    }
-}
+		[EventListener]
+		void OnNewTurn(GameControllerFsm.Events.BeginCommandSelectionState @event)
+		{
+			FindTarget();
+		}
+
+		[EventListener]
+		void OnEndOfTurn(GameControllerFsm.Events.BeginIntentDeclarationState @event)
+		{
+			Debug.Log("Missile Selecing Command");
+			pieceController.SetSelectedCommandPoint(SelectCommand());
+		}
+	}
 }
